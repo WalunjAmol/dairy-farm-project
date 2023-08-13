@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+{% load static %}
+{% load static i18n %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Login - {{ config.SITE_TITLE }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc."
+              name="description" />
+        <meta content="Coderthemes" name="author" />
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="/media/{{ config.FAVICON }}">
+        <!-- App css -->
+        <!-- <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" id="light-style" />
+        <link href="assets/css/app-dark.min.css" rel="stylesheet" type="text/css" id="dark-style" /> -->
+        <link href='{% static "/saas/assets/css/icons.min.css" %}'
+              rel="stylesheet"
+              type="text/css" />
+        <link href='{% static "/saas/assets/css/app.min.css" %}'
+              rel="stylesheet"
+              type="text/css"
+              id="light-style" />
+        <link href='{% static "/saas/assets/css/app-dark.min.css" %}'
+              rel="stylesheet"
+              type="text/css"
+              id="dark-style" />
+        <style>
+                h1, h2, h3, h4, h5, h6, body, p {
+                font-family: "Open Sans",sans-serif !important;
+            }
+                .custom-card label {
+                font-size: 15px;
+                color: #7e7e7e !important;
+                font-weight: 400;
+                font-family: "Open Sans",sans-serif;
+            }
+            .tt {
+                background-color: #ececec;
+                vertical-align: middle;
+                display: table-cell;
+                padding: 0;
+            }
+            body > div.main-wrap {
+                width: 100%;
+                background: #fff;
+                margin: 0 auto 0;
+                height: 100%;
+                text-align: left;
+                clear: both;
+                display: table;
+                position: relative;
+                z-index: 1;
+            }
+            html, body {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                margin: 0;
+                padding: 0;
+            }
+            .custom-card {
+                border-radius: 5px;
+                filter: drop-shadow(2.5px 4.33px 2.5px rgba(0,0,0,0.05));
+                background-color: #ffffff;
+                border: 1px solid #ffffff;
+                padding: 0px 20px;
+            }
+            .btn-register {
+                font-size: 16px;
+                color: #ffffff;
+                font-weight: 400;
+                font-family: "Open Sans",sans-serif !important;
+                letter-spacing: 0px;
+                text-transform: none;
+                text-align: center;
+                background-color: #787d84 !important;
+                border-radius: 5px !important;
+                line-height: 22px;
+            }
+            .btn-register:hover {
+                color: #ffffff  !important;
+                opacity: 1;
+                background-color: #b18c32 !important;
+            }
+            .btn-block {
+                display: block;
+                width: 100%;
+            }
+            .form-check-input:checked{
+                background-color: #b18c32;
+                border-color: #b18c32;
+            }
+        </style>
+    </head>
+    <body class="loading authentication-bg"
+          data-layout-config='{"leftSideBarTheme":"dark","layoutBoxed":false, "leftSidebarCondensed":false, "leftSidebarScrollable":false,"darkMode":false, "showRightSidebarOnStart": true}'>
+        <div class="main-wrap">
+            <div class="tt account-pages pt-2 pt-sm-5 pb-4 pb-sm-5">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-xxl-4 col-lg-5">
+                            <div class="custom-card">
+                                <!-- Logo -->
+                                <div class="card-header pt-1 pb-1 text-center ">
+                                    <a href="/">
+                                        <span>
+                                            <img src="/media/{{ config.LOGO_IMAGE_SMALL }}" alt="" height="70">
+                                        </span>
+                                    </a>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="text-center w-75 m-auto">
+                                        <!-- <h4 class="text-dark-50 text-center pb-0 fw-bold color-blue">Sign In</h4> -->
+                                        <!-- <p class="text-muted mb-4">Enter your email address and password to access admin panel.</p> -->
+                                    </div>
+                                    {% if form.errors %}
+                                        {% for field in form %}
+                                            {% for error in field.errors %}
+                                                <div class="alert alert-danger alert-dismissable">
+                                                    <strong>{{ error|escape }}</strong>
+                                                </div>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for error in form.non_field_errors %}
+                                            <div class="alert alert-danger alert-dismissable">
+                                                <strong>{{ error|escape }}</strong>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <form action="." method="post">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="id_email" class="form-label">Email address</label>
+                                            <input class="form-control"
+                                                   type="email"
+                                                   name="email"
+                                                   autocomplete="email"
+                                                   id="id_email"
+                                                   required=""
+                                                   placeholder="Enter your email">
+                                        </div>
+                                        <div class="mb-3">
+                                            {% comment %} <a href="{% url 'password_reset' %}" class="text-muted float-end"><small>Forgot your password?</small></a> {% endcomment %}
+                                            <label for="id_password" class="form-label">Password</label>
+                                            <div class="input-group input-group-merge">
+                                                <input type="password"
+                                                       id="id_password"
+                                                       class="form-control"
+                                                       autocomplete="current-password"
+                                                       name="password"
+                                                       placeholder="Enter your password">
+                                                <div class="input-group-text" data-password="false">
+                                                    <span class="password-eye"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 mb-3">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="checkbox-signin" checked>
+                                                <label class="form-check-label" for="checkbox-signin">Remember me</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 mb-0 text-center">
+                                            <button class="btn btn-register btn-block" type="submit">Log In</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <!-- end card-body -->
+                            </div>
+                            <!-- end card -->
+                            <!-- end row -->
+                        </div>
+                        <!-- end col -->
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end container -->
+            </div>
+            <!-- end page -->
+            <!-- <footer class="footer footer-alt">
+            {{config.SITE_FOOTER}}
+        </footer> -->
+        </div>
+        <!-- bundle -->
+        <script src="{% static 'saas/assets/js/vendor.min.js'%} "></script>
+        <script src="{% static 'saas/assets/js/app.min.js'%}    "></script>
+    </body>
+</html>

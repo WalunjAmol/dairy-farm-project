@@ -1,0 +1,15 @@
+/* .btn-primary {
+    color: #fff;
+    background-color: #264482 !important;
+    border-color: #264482 !important;
+} */
+.btn-back {
+    background-color: #f5f5f5;
+    border: 1px solid #dddddd;
+    font-size: 18px;
+    color: #7e7e7e;
+    font-weight: 400;
+    font-family: "Open Sans",sans-serif;
+    text-align: center;
+    letter-spacing: 0px;
+}

@@ -1,0 +1,271 @@
+<!-- ========== Left Sidebar Start ========== -->
+<div class="leftside-menu">
+    {% load static %}{% load static i18n %}
+  <!-- LOGO -->
+    <a href="{% url 'recstaladmin' %}" class="logo text-center logo-light">
+        <span class="logo-lg">
+            <img  src="/media/{{config.LOGO_IMAGE_SMALL}}" alt="" height="40">
+        </span>
+        <span class="logo-sm">
+            <img src="{% static 'saas/assets/images/logo_sm.png'%}" alt="" height="16">
+        </span>
+    </a>
+
+    <!-- LOGO -->
+    <a href="index.html" class="logo text-center logo-dark">
+        <span class="logo-lg">
+            <img src="{% static 'saas/assets/images/logo-dark.png'%}" alt="" height="16">
+        </span>
+        <span class="logo-sm">
+            <img src="{% static 'saas/assets/images/logo_sm_dark.png'%}" alt="" height="16">
+        </span>
+    </a>
+
+    <div class="h-100" id="leftside-menu-container" data-simplebar>
+
+        <!--- Sidemenu -->
+        <ul class="side-nav">
+
+            <li class="side-nav-title side-nav-item">Navigation</li>
+
+            <li class="side-nav-item">
+                <a  href="{% url 'recstaladmin' %}" aria-expanded="false" aria-controls="sidebarDashboards" class="side-nav-link">
+                    <i class="uil-home-alt"></i>
+                    <!-- <span class="badge bg-success float-end">4</span> -->
+                    <span> Dashboards </span>
+                </a>
+                <div class="collapse" id="sidebarDashboards">
+                    <ul class="side-nav-second-level">
+                        <!-- <li> -->
+                            <!-- <a href="dashboard-analytics.html">Analytics</a>
+                        </li>
+                        <li>
+                            <a href="dashboard-crm.html">CRM</a>
+                        </li>
+                        <li>
+                            <a href="index.html">Ecommerce</a>
+                        </li>
+                        <li>
+                            <a href="dashboard-projects.html">Projects</a>
+                        </li> -->
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-title side-nav-item">Apps</li>
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarTasks" aria-expanded="false" aria-controls="sidebarTasks" class="side-nav-link">
+                    <i class="uil-store"></i>
+                    <span> User Management </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarTasks">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{% url 'job_seeker_list' %}">Job Seekers</a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'employer_list' %}">Employers</a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'training_provider_list'%}">Partners</a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'admin-user-list' %}">Admin Users</a>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="collapse" id="sidebarEcommerce">
+                    <ul class="side-nav-second-level">
+                        <!-- <li>
+                            <a href="{% url 'adminuser' %}">Admin User</a>
+                        </li> -->
+                        <li class="side-nav-item">
+                            <!-- <a data-bs-toggle="collapse" href="#sidebarTasks" aria-expanded="false" aria-controls="sidebarTasks" class="side-nav-link">
+                                <i class="uil--alt"></i>
+                                <span> Manage User </span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <div class="collapse" id="sidebarTasks">
+                                <ul class="side-nav-second-level">
+                                    <li>
+                                        <a href="{% url 'job_seeker_list' %}">Job Seeker</a>
+                                    </li>
+            
+                                    <li>
+                                        <a href="{% url 'employer_list' %}">Employers</a>
+                                    </li>
+            
+                                    <li>
+                                        <a href="{% url 'training_provider_list'%}">Training Provider</a>
+                                    </li>
+                                </ul>
+                            </div> -->
+                        </li>
+                        
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarrEcommerce" aria-expanded="false" aria-controls="sidebarEcommerce" class="side-nav-link">
+                    <i class="uil-store"></i>
+                    <span> Job Management </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarrEcommerce">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{% url 'managejobs' %}">Manage Jobs For Employer</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'partner-managejobs' %}">Manage Jobs For Partner</a>
+                        </li>
+                    </ul>
+                    
+                </div>
+            </li> 
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link">
+                    <i class="uil-streering"></i>
+                    <span>Course Management </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarIcons">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{% url 'adminlistcourse' %}">Manage Courses</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'admincandidatelist'  %}">Candidates</a>
+                        </li>
+                        <!-- <li>
+                            <a href="icons-unicons.html">Unicons</a>
+                        </li> -->
+                    </ul>
+                </div>
+            </li>
+            <li class="side-nav-item">
+                <a href="{% url 'testimonial_list' %}" class="side-nav-link">
+                    <i class="uil-calender"></i>
+                    <span> Manage Testimonials</span>
+                </a>
+            </li>
+            <li class="side-nav-item">
+                <a href="{% url 'grouplist' %}" class="side-nav-link">
+                    <i class="uil-calender"></i>
+                    <span> Roles & Permissions</span>
+                </a>
+            </li>
+
+            
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarEmail" aria-expanded="false" aria-controls="sidebarEmail" class="side-nav-link">
+                    <i class="uil-briefcase"></i>
+                    <span> All Masters </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarEmail">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{% url 'jobcategories' %}">Job Category Master</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'listskill' %}">Skills Master</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'listindustry'%}">Industry Master</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'shift_list' %}">Shift Master</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'career_level_list' %}">Career Level Master</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'list_job_type' %}">Job Type Master</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'job_status_list' %}">Job Status Master</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'education_qualification_list' %}">Education Qualification Master</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'course_list' %}">Course Name Master</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'languages_list' %}">Languages Master</a>
+                        </li>
+                    </ul>
+                   
+                </div>
+                <div>
+                    <ul>
+                        
+                    </ul>
+                </div>
+            </li>
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarProjects" aria-expanded="false" aria-controls="sidebarProjects" class="side-nav-link">
+                    <i class="uil-envelope"></i>
+                    <span> Email Template </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarProjects">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{% url 'dashboard-emails-list' %}">Template List</a>
+                        </li>
+                        <!-- <li>
+                            <a href="apps-projects-details.html">Details</a>
+                        </li>
+                        <li>
+                            <a href="apps-projects-gantt.html">Gantt <span class="badge rounded-pill badge-light-lighten font-10 float-end">New</span></a>
+                        </li>
+                        <li>
+                            <a href="apps-projects-add.html">Create Project <span class="badge rounded-pill badge-success-lighten font-10 float-end">New</span></a>
+                        </li> -->
+                    </ul>
+                </div>
+            </li>
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarSubscription" aria-expanded="false" aria-controls="sidebarSubscription" class="side-nav-link">
+                    <i class=" uil-bell"></i>
+                    <span> {% trans "Subscription" %}</span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarSubscription">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{% url 'subscription:plans' %}">Plan Description</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'subscription:view' %}">Subscriptions</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'subscription:users_list' %}">Subscribers List</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'subscription:transaction' %}">Transaction List</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+
+
+        <!-- End Sidebar -->
+
+        <div class="clearfix"></div>
+
+    </div>
+    <!-- Sidebar -left -->
+
+</div>
+<!-- Left Sidebar End -->
