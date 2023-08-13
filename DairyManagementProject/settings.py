@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'admin_management',
-    'dairy_management'
+    'dairy_management',
+    'end_user_management'
 ]
 
 MIDDLEWARE = [

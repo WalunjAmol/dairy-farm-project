@@ -21,7 +21,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dairy-management/',include('dairy_owner_management.urls'))
+    path('dairy-management/',include('dairy_owner_management.urls')),
+    path('customer-management/',include('end_user_management.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
