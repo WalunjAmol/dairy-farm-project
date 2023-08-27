@@ -18,11 +18,16 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+from dairy_owner_management.views import HomeView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dairy-management/',include('dairy_owner_management.urls')),
     path('customer-management/',include('end_user_management.urls')),
+    path('milk-transaction/',include('milk_transaction.urls')),
+    path('',HomeView.as_view(), name='dashboard'),
+
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

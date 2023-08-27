@@ -1,0 +1,217 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% load static %}
+{% load static i18n %}
+{% block content %}
+<style>
+</style>
+<h3 class="text-center mt-3 mb-3 ">Update Customer Transaction Details</h3>
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-content">
+                <div class="tab-pane show active" id="tooltips-validation-preview">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-dismissible alert-danger form-group text-center ">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    <form action="" method="post" novalidate>
+                        {% csrf_token %}
+                        <!-- Row 1 -->
+                        <div class="row">
+                            <div class="col-sm-6 position-relative mb-3">
+                                <label for="end_user" class="form-label">
+                                    Customer Name <span class="required-field"></span>
+                                </label>
+                                {{ form.end_user }}
+                                {% if form.end_user.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.end_user.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-6 position-relative mb-3">
+                                <label for="transaction_producer" class="form-label">
+                                    Customer ID <span class="required-field"></span>
+                                </label>
+                                {{ form.transaction_producer }}
+                                {% if form.transaction_producer.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.transaction_producer.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Row 2 -->
+                        <div class="row">
+                            <div class="col-sm-6 position-relative mb-3">
+                                <label for="center_code" class="form-label">
+                                    Center Code <span class=""></span>
+                                </label>
+                                {{ form.center_code }}
+                                {% if form.center_code.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.center_code.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-6 position-relative mb-3">
+                                <label for="transaction_type" class="form-label">
+                                    Transaction Type <span class=""></span>
+                                </label>
+                                {{ form.transaction_type }}
+                                {% if form.transaction_type.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.transaction_type.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Row 3-->
+                        <div class="row">
+                            <div class="col-sm-4 position-relative mb-3">
+                                <label for="transaction_shift" class="form-label">
+                                    Shift <span class="required-field"></span>
+                                </label>
+                                {{ form.transaction_shift }}
+                                {% if form.transaction_shift.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.transaction_shift.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-4 position-relative mb-3">
+                                <label for="transaction_type" class="form-label">
+                                    Date <span class="required-field"></span>
+                                </label>
+                                {{ form.date }}
+                                {% if form.date.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.date.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-4 position-relative mb-3">
+                                <label for="transaction_type" class="form-label">
+                                    Time <span class="required-field"></span>
+                                </label>
+                                {{ form.time }}
+                                {% if form.time.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.time.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Row 3 -->
+                        <div class="row">
+                            <div class="col-sm-4 position-relative mb-3">
+                                <label for="transaction_liters" class="form-label">
+                                    Liter <span class="required-field"></span>
+                                </label>
+                                {{ form.transaction_liters }}
+                                {% if form.transaction_liters.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.transaction_liters.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-4 position-relative mb-3">
+                                <label for="transaction_fat" class="form-label">
+                                    FAT <span class="required-field"></span>
+                                </label>
+                                {{ form.transaction_fat }}
+                                {% if form.transaction_fat.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.transaction_fat.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-4 position-relative mb-3">
+                                <label for="transaction_snf" class="form-label">
+                                    S.N.F <span class="required-field"></span>
+                                </label>
+                                {{ form.transaction_snf }}
+                                {% if form.transaction_snf.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.transaction_snf.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                         <!-- Row 4 -->
+                         <div class="row">
+                            <div class="col-sm-6 position-relative mb-3">
+                                <label for="transaction_rate" class="form-label">
+                                     Rate <span class=""></span>
+                                </label>
+                                {{ form.transaction_rate }}
+                                {% if form.transaction_rate.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.transaction_rate.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-6 position-relative mb-3">
+                                <label for="transaction_amount" class="form-label">
+                                    Total Amount <span class="required-field"></span>
+                                </label>
+                                {{ form.transaction_amount }}
+                                {% if form.transaction_amount.errors %}
+                                    <div class="error-red alert-dismissable">
+                                        <div class="errorlist">
+                                            <small>{{ form.transaction_amount.errors|escape }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Buttons -->
+                        <div class="row">
+                            <div class="col-sm-6 offset-sm-6 text-end">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="mdi mdi-account-circle"></i>
+                                    update
+                                </button>
+                                <a class="btn btn-secondary" href="{% url 'milk_transaction:milk-transaction-list' %}">Cancel</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- end card-->
+            </div>
+            <!-- end col-->
+        </div>
+        <!-- end preview code-->
+    </div>
+    <!-- end tab-content-->
+</div>
+<!-- end card-body-->
+</div>
+<!-- end card-->
+</div>
+<!-- end col-->
+{% endblock %}
+<!-- Additional scripts if needed -->

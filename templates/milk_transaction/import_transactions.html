@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Import Transactions</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Import Transactions</h1>
+    <form id="import-form">
+        <input type="file" id="file-input" accept=".txt">
+        <button type="submit">Import</button>
+    </form>
+    <div id="message"></div>
+
+    <script>
+        $(document).ready(function () {
+            $('#import-form').on('submit', function (event) {
+                event.preventDefault();
+
+                var formData = new FormData();
+                formData.append('file', $('#file-input')[0].files[0]);
+
+                $.ajax({
+                    url: '/milk-transaction/import-transaction/',  // Change this to the URL where you handle the import on your Django backend
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        $('#message').text(data.message);
+                    },
+                    error: function (xhr, status, error) {
+                        $('#message').text('An error occurred: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

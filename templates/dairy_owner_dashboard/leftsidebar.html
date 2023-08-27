@@ -4,7 +4,7 @@
   <!-- LOGO -->
     <a href="" class="logo text-center logo-light">
         <span class="logo-lg">
-            <img  src="/media/{{config.LOGO_IMAGE_SMALL}}" alt="" height="40">
+            <img  src="/media/logos/shivanya-dairy_farm.jpeg" alt="" height="40">
         </span>
         <span class="logo-sm">
             <img src="{% static 'saas/assets/images/logo_sm.png'%}" alt="" height="16">
@@ -120,16 +120,31 @@
                 <div class="collapse" id="sidebarrEcommerce">
                     <ul class="side-nav-second-level">
                         <li>
-                            <a href="">Milk Processing List</a>
+                            {% comment %} <a href="{% url 'milk_transaction:milk-transaction-list' %}">Milk Processing List</a> {% endcomment %}
+                            <a href="{% url 'milk_transaction:milk-transaction-list' %}">All Records List</a>
                         </li>
                         <li>
-                            {% comment %} <a href="">Manage Jobs For Partner</a> {% endcomment %}
+                            <a href="{% url 'milk_transaction:milk-transaction-import' %}">Import Records List</a> 
                         </li>
                     </ul>
                     
                 </div>
             </li> 
             <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link">
+                    <i class="uil-streering"></i>
+                    <span>Bonus Management </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarIcons">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="">Bonus Details</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            {% comment %} <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons" class="side-nav-link">
                     <i class="uil-streering"></i>
                     <span>Course Management </span>
@@ -256,7 +271,7 @@
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> {% endcomment %}
         <!-- End Sidebar -->
 
         <div class="clearfix"></div>

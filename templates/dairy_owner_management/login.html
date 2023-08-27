@@ -92,6 +92,74 @@
                 background-color: #b18c32;
                 border-color: #b18c32;
             }
+
+    /* Animation styles */
+    .tt {
+        background: linear-gradient(45deg, #FF6B6B, #FF8E53, #FFCC29, #73DDFF);
+        background-size: 400% 400%;
+        animation: gradientAnimation 10s ease infinite;
+    }
+    
+    @keyframes gradientAnimation {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+    
+    /* Center the login form */
+    .tt.account-pages {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    
+    .custom-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        background-color: #FFFFFF;
+        padding: 20px;
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    .custom-card .card-header {
+        padding: 10px;
+    }
+    
+    .custom-card .card-header img {
+        max-width: 100px;
+        height: auto;
+    }
+    
+    .custom-card .form-check-label {
+        font-size: 14px;
+        color: #7E7E7E;
+    }
+    
+    .btn-register {
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background-color: #FFCC29;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 20px;
+        color: #FFFFFF;
+        transition: background-color 0.3s ease-in-out;
+    }
+    
+    .btn-register:hover {
+        background-color: #FFA500;
+    }
+    
         </style>
     </head>
     <body class="loading authentication-bg"

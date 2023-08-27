@@ -1,9 +1,11 @@
+#Django Imports
 from django.db import models
 from django.utils import timezone
 from admin_management.models import CustomUser
-from dairy_management.models import Dairy
 from django.contrib.auth.hashers import make_password
 
+#Internal Imports
+from dairy_management.models import Dairy
 
 # Create your models here.
 
@@ -33,5 +35,6 @@ class EndUser(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField()
+
     def __str__(self):
-        return str(self.custom_id)
+        return f"{self.custom_id}-{self.first_name} {self.last_name}"

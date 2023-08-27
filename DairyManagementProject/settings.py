@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'admin_management',
     'dairy_management',
-    'end_user_management'
+    'end_user_management',
+    'milk_transaction',
+    'bonus_app'
 ]
 
 MIDDLEWARE = [
@@ -120,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'  # Set to Indian Standard Time (IST)
 
 USE_I18N = True
 

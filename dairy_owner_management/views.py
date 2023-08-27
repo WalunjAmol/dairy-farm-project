@@ -36,3 +36,8 @@ class DashboardView(LoginRequiredMixin,TemplateView):
     template_name='dairy_owner_dashboard/content.html'
     login_url= '/dairy-management/login/'
     redirect_field_name = 'redirect_to'
+
+class HomeView(TemplateView):
+    template_name='home/home.html'
+    # login_url= '/dairy-management/login/'
+    # redirect_field_name = 'redirect_to'

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+
 from .manager import CustomUserManager
 from dairy_management.models import Dairy
 
