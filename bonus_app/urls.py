@@ -1,8 +1,18 @@
 from django.urls import path
-from .views import BonusListView, BonusDetailView, BonusCreateView, BonusUpdateView, BonusDeleteView
+from .views import (
+    BonusListView, 
+    BonusDetailView, 
+    BonusCreateView, 
+    BonusUpdateView, 
+    BonusDeleteView,
+    BonusEndUserListView
+)
+
+app_name = 'bonus'  # app name
 
 urlpatterns = [
-    path('bonuses/', BonusListView.as_view(), name='bonus-list'),
+    path('bonus-users/', BonusEndUserListView.as_view(), name='bonus-user-list'),
+    path('bonuse-tansactions/', BonusListView.as_view(), name='bonus-list'),
     path('bonuses/<int:pk>/', BonusDetailView.as_view(), name='bonus-detail'),
     path('bonuses/create/', BonusCreateView.as_view(), name='bonus-create'),
     path('bonuses/<int:pk>/update/', BonusUpdateView.as_view(), name='bonus-update'),

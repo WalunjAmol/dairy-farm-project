@@ -1,0 +1,297 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% load static %}
+{% comment %} {% load core %}  {% endcomment %}
+{% comment %} {% load static i18n %}  {% endcomment %}
+{% block stylesheets %}
+    <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}"
+          rel="stylesheet"
+          type="text/css" />
+    <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}"
+          rel="stylesheet"
+          type="text/css" />
+{% endblock %}
+{% block content %}
+    <!-- <style>
+    #jobseeker-list-table_paginate{
+        text-align: center;
+        margin-right: 275px;
+        margin-top: 10px;
+    }
+    </style> -->
+    <style>
+    .text-success{
+        color: var(--brand-gold) !important;
+    }
+    .text-danger{
+        color: var(--brand-grey) !important;
+    }
+    .uil-phone-volume{
+        color: var(--brand-gold);
+    }
+    </style>
+    <div class="container-fluid">
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <!-- <li class="breadcrumb-item"><a href="javascript: void(0);">Hyper</a></li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>
+                        <li class="breadcrumb-item active">Orders</li> -->
+                        </ol>
+                    </div>
+                    <h4 class="page-title">Customers List</h4>
+                </div>
+            </div>
+        </div>
+        <!-- end page title -->
+        {% block body %}{% endblock %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-xl-8">
+                                <form class="row gy-2 gx-2 align-items-center justify-content-xl-start justify-content-between">
+                                </form>
+                            </div>
+                            <div class="col-xl-4">
+                                <div class="text-xl-end mt-xl-0 mt-2">
+                                    <a href="{% url 'bonus:bonus-create' %}">
+                                        <button type="button" class="btn btn-danger mb-2 me-2">Add Bonus</button>
+                                    </a> 
+                                    <button type="button" class="btn btn-light mb-2 me-1" id="display_input">Search</button>
+                                </div>
+                            </div>
+                            <!-- end col-->
+                        </div>
+                        <div>
+                            <div>
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert alert-dismissible alert-success form-group text-center ">
+                                            <strong>{{ message }}</strong>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-centered table table-sm mb-0 nowrap w-100 for-tfoot"
+                                   id="employer-list-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Customer ID</th>
+                                        <th>Customer Name</th>
+                                        <th>Mobile Number</th>
+                                        <th>Total Bonus taken</th>
+                                        <th>Joining Date</th>
+                                        <th>Dairy Name</th>
+                                        <th style="width: 125px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tfoot class="click-hide">
+                                    <tr>
+                                        <th scope="col">
+                                            <input type="number" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="text" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="text" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="text" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="text" class="form-control">
+                                        </th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+                                    {% for user in users %}
+                                        <tr>
+                                            <td>{{ user.custom_id }}</td>
+                                            <td>
+                                                <a href="{% url 'bonus:bonus-detail' user.id %}" class="text-body fw-bold">{{ user.first_name }} {{ user.last_name }}</a>
+                                            </td>
+                                            <td>{{ user.mobile_number }}</td>
+                                            <td>{{ user.total_bonus|default:0 }}</td>
+                                                <td>
+                                                <a>{{ user.created_at }}</a>
+                                            </td>
+                                            <td>
+                                               {{user.dairy_owner.dairy.name }}
+                                                {% comment %} {% if user.mobile_number %}
+                                                    <i class="uil uil-phone-volume"  style="font-size: 20px;"></i>
+                                                {% else %}
+                                                    <i class="uil uil-phone-slash"
+                                                       style="font-size: 20px;
+                                                              color: rgb(218, 72, 72)"></i>
+                                                {% endif %} {% endcomment %}
+                                            </td>
+                                            <td>
+                                                {% comment %} <a href="{% url 'employer_details' employer.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a>{% endcomment %}
+                                                {% comment %} <a href="{% url 'bonus:bonus-create'%}" class="action-icon"> </i>Add Bonus</a> {% endcomment %}
+                                                <!-- <a onclick="delete_record('{{employer.id}}', '')"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#fill-danger-modal"
+                                                class="action-icon"> <i class="mdi mdi-delete"></i></a> --> 
+                                                
+                                                <div id="fill-danger-modal"
+                                                     class="modal fade"
+                                                     tabindex="-1"
+                                                     role="dialog"
+                                                     aria-labelledby="fill-danger-modalLabel"
+                                                     aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content modal-filled bg-danger">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title" id="fill-danger-modalLabel">Alert!!!</h4>
+                                                                <button type="button"
+                                                                        class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-hidden="true"></button>
+                                                            </div>
+                                                            <div class="modal-body">"Are you sure you want to delete the selected record(s)?"</div>
+                                                            <div class="modal-footer">
+                                                                <!-- <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button> -->
+                                                                <div class="text-center">
+                                                                    <!-- <em class="dripicons-warning h1 text-warning"></em> -->
+                                                                    <h4 class="mt-2 single_delete_h4"></h4>
+                                                                    <p class="mt-3 single_delete_p"></p>
+                                                                    <input type="hidden" id="single-record-id" value="">
+                                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="button"
+                                                                            class="btn btn-warning my-2"
+                                                                            onclick="remove_confirm('/recstaladmin/manage_user/delete_employer/')">
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if is_paginated %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <nav aria-label="Page navigation example"
+                                             class="d-flex justify-content-center mt-4 mb-4">
+                                            <ul class="pagination">
+                                                {% if page_obj.has_previous %}
+                                                    <li class="page-item">
+                                                        <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo;</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item disabled">
+                                                        <a class="page-link">&laquo;</a>
+                                                    </li>
+                                                {% endif %}
+                                                {% for i in page_obj.paginator.page_range %}
+                                                    {% if page_obj.number == i %}
+                                                        <li class="page-item active">
+                                                            <a class="page-link">{{ i }}</a>
+                                                        </li>
+                                                    {% else %}
+                                                        <li class="page-item">
+                                                            <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if page_obj.has_next %}
+                                                    <li class="page-item">
+                                                        <a href="?page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item disabled">
+                                                        <a class="page-link">&raquo;</a>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- end card-body-->
+                </div>
+                <!-- end card-->
+            </div>
+            <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- container -->
+</div>
+<!-- content -->
+{% endblock %}
+{% block javascripts %}
+    <!-- Datatables js -->
+    <script src="{% static 'saas/assets/js/vendor/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'saas/assets/js/vendor/dataTables.bootstrap5.js' %}"></script>
+    <script src="{% static 'saas/assets/js/vendor/dataTables.responsive.min.js' %}"></script>
+    <script>
+    $(document).ready(function() {
+        $("#employer-list-table").dataTable({
+            "ordering": true,
+            "bPaginate": true,
+            "searching": true,
+            "bInfo": false,
+            "order": [],
+            aoColumnDefs: [
+                { "aTargets": [ 0 ], "bSortable": false },
+                { "aTargets": [ 1 ], "bSortable": true },
+                { "aTargets": [ 2 ], "bSortable": true },
+                { "aTargets": [ 3 ], "bSortable": true },
+                { "aTargets": [ 4 ], "bSortable": false },
+                { "aTargets": [ 5 ], "bSortable": true },
+                { "aTargets": [ 6 ], "bSortable": false },
+            ],
+            initComplete: function () {
+                // Apply the search
+                this.api().columns().every( function () {
+                    var that = this;
+                    $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value).draw();
+                        }
+                    });
+                });
+            }
+        })
+        $("#employer-list-table_length").hide();
+        $("#employer-list-table_filter").hide();
+    });
+    function delete_record(id, page_label){
+        $('.single_delete_h4').html(page_label);
+        $('.single_delete_p').html(''+page_label.toLowerCase()+'');
+        $('#single-record-id').val(id);
+        $('#delete-single-modal').modal('show');
+    }
+
+        function remove_confirm(delete_url){
+            var id = $('#single-record-id').val();
+            var url = delete_url + id;
+            window.open(url,"_self")
+        }
+
+
+    </script>
+    <script>
+    $(document).ready(function(){
+        $("button").click(function(){
+            $("tfoot").toggleClass("click-hide");
+        });
+    })
+    </script>
+{% endblock %}

@@ -25,6 +25,8 @@ urlpatterns = [
     path('dairy-management/',include('dairy_owner_management.urls')),
     path('customer-management/',include('end_user_management.urls')),
     path('milk-transaction/',include('milk_transaction.urls')),
+    path('bonus-management/',include('bonus_app.urls')),
+
     path('',HomeView.as_view(), name='dashboard'),
 
 

@@ -1,14 +1,22 @@
 from django import forms
 from .models import MilkTransaction
+# from django.contrib.auth.models import User
+from end_user_management.models import EndUser,Dairy
 
 class MilkTransactionForm(forms.ModelForm):
+
+    def __init__(self, user, *args, **kwargs):
+        super(MilkTransactionForm, self).__init__(*args, **kwargs)
+        self.fields['end_user'].queryset = EndUser.objects.filter(dairy_name__id=user.dairy.id)
+
     class Meta:
         model = MilkTransaction
         fields = '__all__'
+        # exclude = ('dairy',)
         widgets = {
             'end_user': forms.Select(attrs={'class': 'form-control', 'required': 'required'}),
             'society_code': forms.TextInput(attrs={'class': 'form-control', 'required': 'required', 'placeholder': 'Enter Society Code'}),
-            'center_code': forms.TextInput(attrs={'class': 'form-control', 'required': 'required', 'placeholder': 'Enter Center Code'}),
+            'center_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Center Code'}),
             'transaction_type': forms.Select(attrs={'class': 'form-control', 'required': 'required', 'placeholder': 'Enter Type'}),
             'transaction_subtype': forms.NumberInput(attrs={'class': 'form-control', 'required': 'required', 'placeholder': 'Enter Subtype'}),
             'date': forms.DateInput(attrs={'class': 'form-control', 'required': 'required', 'type': 'date', 'placeholder': 'Enter Date'}),
@@ -25,7 +33,6 @@ class MilkTransactionForm(forms.ModelForm):
         }
         error_messages = {
             'society_code': {'required': 'This field is required.'},
-            'center_code': {'required': 'This field is required.'},
             'transaction_type': {'required': 'This field is required.'},
             'transaction_shift': {'required': 'This field is required.'},
             'transaction_producer': {'required': 'This field is required.'},

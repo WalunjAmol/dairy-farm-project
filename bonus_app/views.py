@@ -1,22 +1,88 @@
+#django Imports
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy,reverse
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.db.models import Sum
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+
+
+
+from .models import EndUser
+from .forms import BonusForm
+
+#Local Import
 from .models import Bonus
 
-class BonusListView(ListView):
-    model = Bonus
-    template_name = 'bonus/bonus_list.html'  # Change this to your template path
-    context_object_name = 'bonuses'
+@method_decorator(login_required, name='dispatch')
+class BonusEndUserListView(ListView):
+    model = EndUser
+    template_name = 'bonus_app/bonus_enduser_list.html'
+    context_object_name = 'users'
 
+    def get_queryset(self):
+        user_dairy_role = self.request.user.dairy.role
+        if self.request.user.is_superuser:
+            queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
+        else:
+            queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
+
+        queryset = queryset.annotate(total_bonus=Sum('bonuses__bonus_amount'))
+
+        return queryset
+
+
+@method_decorator(login_required, name='dispatch')
 class BonusDetailView(DetailView):
-    model = Bonus
-    template_name = 'bonus/bonus_detail.html'  # Change this to your template path
-    context_object_name = 'bonus'
+    model = EndUser
+    template_name = 'bonus_app/bonus_details.html'
+    context_object_name = 'user'
+
+    def get_queryset(self):
+        user_dairy_role = self.request.user.dairy.role
+        if self.request.user.is_superuser:
+            queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
+        else:
+            queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.get_object()
+        total_bonus = Bonus.objects.filter(user=user).aggregate(total_bonus=Sum('bonus_amount'))['total_bonus']
+        context['total_bonus'] = total_bonus
+        context['transactions'] = Bonus.objects.filter(user=user)
+        return context
 
 class BonusCreateView(CreateView):
     model = Bonus
-    template_name = 'bonus/bonus_form.html'  # Change this to your template path
-    fields = ['user', 'bonus_date', 'bonus_amount', 'description', 'is_approved', 'is_paid', 'payment_date', 'payment_method']
+    form_class = BonusForm
+    template_name = 'bonus_app/bonus_form.html'  # Change this to your template path
+
+    def get(self, request, *args, **kwargs):
+        form = BonusForm(user = self.request.user)
+        return render(request, self.template_name, {'form':form})
+    
+    def post(self, request, *args, **kwargs):
+        data =  request.POST
+        print("assadsd",data)
+        form = BonusForm(data=data,user=request.user)
+
+        if not form.is_valid():
+            return render(request, self.template_name, {'form':form})
+
+        if form.is_valid():
+            form.save()
+            messages.success(self.request, 'Bonus Record Created Successfully.')
+            
+        return HttpResponseRedirect(reverse('bonus:bonus-detail', args=[ request.POST.get('user')]))
+
+class BonusListView(ListView):
+    model = Bonus
+    template_name = 'bonus_app/bonus_list.html'  # Change this to your template path
+    context_object_name = 'bonuses'
 
 class BonusUpdateView(UpdateView):
     model = Bonus

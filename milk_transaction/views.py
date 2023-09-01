@@ -1,44 +1,95 @@
+#Django Import
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
+#Python Imports
 from datetime import datetime
 from decimal import Decimal
 
 #Local Import
-from .models import EndUser, MilkTransaction, ImportTransaction
+from .models import EndUser, MilkTransaction, ImportTransaction,Dairy
 from .forms import MilkTransactionForm
 
-
+@method_decorator(login_required, name='dispatch')
 class MilkTransactionListView(ListView):
     model = MilkTransaction
     template_name = 'milk_transaction/transaction_list.html'
     context_object_name = 'transactions'
 
+    def get_queryset(self):
+        user_dairy_role = self.request.user.dairy.role
+        if self.request.user.is_superuser:
+            queryset = self.model.objects.filter(end_user__dairy_name__role=user_dairy_role)
+        else:
+            queryset = self.model.objects.filter(end_user__dairy_name__role=user_dairy_role)
+        return queryset
+
+@method_decorator(login_required, name='dispatch')
 class MilkTransactionCreateView(CreateView):
     model = MilkTransaction
     form_class = MilkTransactionForm
     template_name = 'milk_transaction/transaction_create.html'
     success_url = reverse_lazy('milk_transaction:milk-transaction-list')
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Record Created Successfully.')
-        return super().form_valid(form)
+    def get(self, request, *args, **kwargs):
+        form = MilkTransactionForm(user=request.user)
+        return render(request, self.template_name, {'form':form})
+    
+    def post(self, request, *args, **kwargs):
+        data = request.POST
+        form = MilkTransactionForm(data=data,user=request.user)
 
+        if not form.is_valid():
+            return render(request, self.template_name, {'form':form})
+
+        if form.is_valid():
+            form.save()
+            messages.success(self.request, 'Record Created Successfully.')
+            
+            return redirect('milk_transaction:milk-transaction-list')
+
+    # def form_valid(self, form):
+    #     form.instance.dairy = self.request.user.dairy
+    #     messages.success(self.request, 'Record Created Successfully.')
+    #     return super().form_valid(form)
+    
+    # def form_invalid(self,form):
+    #     print('form',form.errors)
+    
+@method_decorator(login_required, name='dispatch')
 class MilkTransactionUpdateView(UpdateView):
     model = MilkTransaction
     form_class = MilkTransactionForm
     template_name = 'milk_transaction/transaction_update.html'
     success_url = reverse_lazy('milk_transaction:milk-transaction-list')
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Record Updated Successfully.')
-        return super().form_valid(form)
+    def get(self, request, *args, **kwargs):
+        form = MilkTransactionForm(instance = self.model.objects.filter(id=kwargs['pk']).last(),user=request.user)
+        return render(request, self.template_name, {'form':form})
+    
+    def post(self, request, *args, **kwargs):
+        data = request.POST
+        form = MilkTransactionForm(data=data,user=request.user)
 
+        if not form.is_valid():
+            return render(request, self.template_name, {'form':form})
+
+        if form.is_valid():
+            form.save()
+            messages.success(self.request, 'Record Updated Successfully.')
+            
+            return redirect('milk_transaction:milk-transaction-list')
+
+    
+
+@method_decorator(login_required, name='dispatch')
 class MilkTransactionDeleteView(DeleteView):
     model = MilkTransaction
     template_name = 'milktransaction_confirm_delete.html'
@@ -48,7 +99,7 @@ class MilkTransactionDeleteView(DeleteView):
 @csrf_exempt
 def import_transactions(request):
     if request.method == 'GET':
-        transactions = ImportTransaction.objects.all().order_by('-id').values()
+        transactions = ImportTransaction.objects.filter(dairy=request.user.dairy).order_by('-id').values()
 
         context = {
             'import_transactions': transactions
@@ -73,9 +124,10 @@ def import_transactions(request):
 
                     date = datetime.strptime(date_str, '%d/%m/%y').date()
                     time = datetime.strptime(time_str, '%H:%M').time()
-
                     try:
-                        end_user = EndUser.objects.get(custom_id=int(transaction_producer))
+                        end_user = EndUser.objects.get(dairy_name=request.user.dairy.id, custom_id=int(transaction_producer))
+                        dairy_id = request.user.dairy.id
+                        dairy = Dairy.objects.get(id=dairy_id)
                     except EndUser.DoesNotExist:
                         failed_records.append({
                             'Reason': f"Customer with customer_id {transaction_producer} not found",
@@ -92,6 +144,7 @@ def import_transactions(request):
 
                     # Check if a similar transaction already exists
                     existing_transaction = MilkTransaction.objects.filter(
+                        dairy=dairy,
                         end_user=end_user,
                         society_code=society_code,
                         center_code=center_code,
@@ -131,6 +184,7 @@ def import_transactions(request):
                     try:
                         with transaction.atomic():
                             transaction_obj = MilkTransaction.objects.create(
+                                dairy=dairy,
                                 end_user=end_user,
                                 society_code=society_code,
                                 center_code=center_code,
@@ -194,6 +248,7 @@ def import_transactions(request):
 
             # Create and save an ImportTransaction instance
             import_transaction = ImportTransaction.objects.create(
+                dairy=dairy,
                 imported_transaction_name=f'Import_{timestamp}',
                 success_records=len(success_records),
                 success_csv=success_filename,
@@ -205,7 +260,7 @@ def import_transactions(request):
             failed_message = f'{len(failed_records)} records failed to import.'
             
             # Fetch the updated list of transactions
-            updated_transactions = list(ImportTransaction.objects.all().order_by('id').values())
+            updated_transactions = list(ImportTransaction.objects.filter(dairy=request.user.dairy).order_by('id').values())
             response_data = {
                 'message': success_message,
                 'failed_message': failed_message,

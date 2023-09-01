@@ -1,5 +1,5 @@
 from django.db import models
-from end_user_management.models import EndUser
+from end_user_management.models import EndUser,Dairy
 from django.utils.translation import gettext_lazy as _  # Import _ for translation
 
 # Use Enums or Constants for transaction_type
@@ -13,6 +13,7 @@ class TransactionShift(models.TextChoices):
     EVENING = 'E', _('Evening')
 
 class ImportTransaction(models.Model):
+    dairy = models.ForeignKey(Dairy, on_delete=models.CASCADE, related_name='import_transactions',default=None)
     imported_transaction_name = models.CharField(max_length=255,blank=True,null= True)
     success_records = models.PositiveIntegerField(default=0)  # Default value for success_records
     success_csv = models.FileField(upload_to='media/imported_csv/success/')
@@ -25,10 +26,11 @@ class ImportTransaction(models.Model):
 
 
 class MilkTransaction(models.Model):
+    dairy = models.ForeignKey(Dairy, on_delete=models.CASCADE, related_name='dairy_milk_transactions',default=None)
     # import_transaction_id = models.ForeignKey(ImportTransaction,on_delete=models.CASCADE,blank=True,null=True)
     end_user = models.ForeignKey(EndUser, on_delete=models.CASCADE, related_name='milk_transactions')
     society_code = models.CharField(max_length=10,blank=True,null=True)
-    center_code = models.CharField(max_length=10,)
+    center_code = models.CharField(max_length=10,blank=True,null=True)
     transaction_type = models.CharField(
         max_length=1, choices=TransactionType.choices,blank=True,null=True
     )     
