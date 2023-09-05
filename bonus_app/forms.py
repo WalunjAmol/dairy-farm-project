@@ -40,6 +40,11 @@ class BonusForm(forms.ModelForm):
                 "class":"form-control"
             }
         )
+        self.fields["transaction_type"].widget.attrs.update(
+            {      
+                "class":"form-control"
+            }
+        )
     
     class Meta:
         model = Bonus
@@ -48,4 +53,5 @@ class BonusForm(forms.ModelForm):
             'bonus_date',
             'bonus_amount',
             'description',
+            'transaction_type',
         ]

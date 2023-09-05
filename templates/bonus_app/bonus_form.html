@@ -80,6 +80,21 @@ input[type=number] {
                                     {% endif %}
                                 </div>
                                 <div class="col-sm-6 position-relative mb-3">
+                                    <label for="transaction_type" class="form-label">
+                                        Bonus Transaction Type <span class=""></span>
+                                    </label>
+                                    <div class="input-group">{{ form.transaction_type }}</div>
+                                    {% if form.transaction_type.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.transaction_type.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6 position-relative mb-3">
                                     <label for="description" class="form-label">
                                         Bonus Description <span class=""></span>
                                     </label>

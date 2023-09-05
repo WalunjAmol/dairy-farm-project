@@ -28,6 +28,86 @@
     .uil-phone-volume{
         color: var(--brand-gold);
     }
+            /* Custom styles for this template */
+            .user-profile {
+                background-color: #f8f9fa;
+                padding: 20px;
+            }
+    
+            .user-profile h1 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+    
+            .user-profile p {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+    
+            .transaction-history h2 {
+                font-size: 24px;
+                margin-top: 40px;
+                margin-bottom: 20px;
+            }
+    
+            .transaction-history table {
+                width: 100%;
+            }
+    
+            .transaction-history th {
+                background-color: #343a40;
+                color: white;
+                font-size: 12px; /* Adjust header font size */
+                padding: 8px; /* Adjust header padding */
+            }
+    
+            .transaction-history td {
+                text-align: center;
+                font-size: 12px; /* Adjust body font size */
+                padding: 6px; /* Adjust body padding */
+            }
+    
+            /* Style for the total bonus in the right corner */
+            .total-bonus {
+                float: right;
+            }
+            .table th {
+                text-align: center;
+            }
+            /* Style for the bonus section */
+            /* Style for the bonus section */
+            .total-bonus {
+                font-weight: bold;
+                color: #FF4500; /* Change the text color to a shade of orange red */
+                margin-left: 10px;
+                display: inline-block;
+                transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
+                padding: 4px 8px;
+                border-radius: 5px;
+            }
+    
+            /* Style for the bonus amount */
+            .bonus-amount {
+                color: #9932CC; /* Change the color to a shade of dark orchid */
+            }
+    
+            /* Style for the currency symbol */
+            .currency {
+                font-size: 15px;
+                vertical-align: middle;
+            }
+    
+            /* Add a unique animation on hover for the total-bonus element */
+            .total-bonus:hover {
+                color: #228B22; /* Change the text color to a shade of forest green on hover */
+                transform: translateY(-2px); /* Add a slight vertical movement on hover */
+                opacity: 0.8; /* Reduce opacity on hover for a subtle fade effect */
+                transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, vertical movement, and opacity on hover */
+            }
+            .back-button {
+                margin-top: 10px;
+                text-align: right;
+            }
     </style>
     <div class="container-fluid">
         <!-- start page title -->
@@ -147,7 +227,7 @@
                                             <td>{{ transaction.transaction_fat }}</td>
                                             <td>{{ transaction.transaction_snf }}</td>
                                             <td>{{ transaction.transaction_rate }}</td>
-                                            <td>{{ transaction.transaction_amount }}</td>
+                                            <td class="bonus-amount">{{ transaction.transaction_amount }} <span class="currency">&#8377;</span></td>
                                             <td>{{ transaction.date }}</td>
                                             <td>{{ transaction.time }}</td>
                                             <td>

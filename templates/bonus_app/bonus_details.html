@@ -71,7 +71,7 @@
 
         /* Style for the currency symbol */
         .currency {
-            font-size: 20px;
+            font-size: 15px;
             vertical-align: middle;
         }
 
@@ -109,10 +109,12 @@
                 <thead class="table-dark">
                     <tr>
                         <th>Date</th>
+                        <th>Time</th>
                         <th>Bonus Amount</th>
+                        <th>Transaction Type</th>
+                        {% comment %} <th>Approved</th> {% endcomment %}
+                         <th>Paid</th> 
                         <th>Description</th>
-                        <th>Approved</th>
-                        <th>Paid</th>
                         <!-- Add more columns as needed -->
                     </tr>
                 </thead>
@@ -120,10 +122,14 @@
                     {% for transaction in transactions %}
                         <tr>
                             <td>{{ transaction.bonus_date }}</td>
-                            <td>{{ transaction.bonus_amount }}</td>
-                            <td>{{ transaction.description }}</td>
-                            <td>{% if transaction.is_approved %}Yes{% else %}No{% endif %}</td>
+                            <td>{{ transaction.bonus_time }}</td>
+                            <td class="bonus-amount"> {{ transaction.bonus_amount }} <span class="currency">&#8377;</span></td>
+                            <td>{% if transaction.transaction_type == 'bonus_added' %} Deposite {% else %} Withdrawl {% endif %}</td>
+                            {% comment %} <td>{{ transaction.transaction_source }}</td> {% endcomment %}
+                            {% comment %} <td>{% if transaction.is_approved %}Yes{% else %}No{% endif %}</td> {% endcomment %}
                             <td>{% if transaction.is_paid %}Yes{% else %}No{% endif %}</td>
+                            <td>{{ transaction.description }}</td>
+
                             <!-- Add more columns as needed -->
                         </tr>
                     {% endfor %}
@@ -131,7 +137,7 @@
             </table>
         </div>
         <div class="back-button">
-            <a href="{{request.META.HTTP_REFFER}}" class="btn btn-secondary">Back</a>
+            <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Back</a>
         </div>
         {% endblock %}
     </div>

@@ -10,6 +10,7 @@ from end_user_management.models import EndUser
 class Bonus(models.Model):
     user = models.ForeignKey(EndUser, on_delete=models.CASCADE, related_name='bonuses')
     bonus_date = models.DateField(default=timezone.now)
+    bonus_time = models.TimeField(default=timezone.now)
     bonus_amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(blank=True, null=True)
     is_approved = models.BooleanField(default=False)
@@ -17,6 +18,14 @@ class Bonus(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     payment_date = models.DateField(blank=True, null=True)
     payment_method = models.CharField(max_length=50, blank=True, null=True)
+    transaction_type = models.CharField(max_length=20, choices=[
+        ('bonus_added', 'Bonus Added'),
+        ('withdrawal', 'Withdrawal'),
+    ], blank=True, null=True)
+    transaction_source = models.CharField(max_length=20, choices=[
+        ('import', 'Import Transaction'),
+        ('create', 'Create Transaction'),
+    ], blank=True, null=True)
     
     def __str__(self):
         return f"{self.user} - {self.bonus_date}"

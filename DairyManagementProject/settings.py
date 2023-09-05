@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'dairy_management',
     'end_user_management',
     'milk_transaction',
-    'bonus_app'
+    'bonus_app',
+    'advance_payments',
 ]
 
 MIDDLEWARE = [

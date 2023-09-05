@@ -15,6 +15,7 @@ from decimal import Decimal
 
 #Local Import
 from .models import EndUser, MilkTransaction, ImportTransaction,Dairy
+from  bonus_app.models import Bonus
 from .forms import MilkTransactionForm
 
 @method_decorator(login_required, name='dispatch')
@@ -217,6 +218,16 @@ def import_transactions(request):
                                 'Date': date_str,
                                 'Time': time_str,
                             })
+
+                            bonus_obj=Bonus.objects.create(
+                                user=end_user,
+                                bonus_date=date,
+                                bonus_time=time,
+                                bonus_amount=Decimal(transaction_liters),
+                                description="Record added from the import transaction",
+                                transaction_type='bonus_added',
+                                transaction_source='import'
+                            )
                     except Exception as e:
                         failed_records.append({
                             'Reason': str(e),
