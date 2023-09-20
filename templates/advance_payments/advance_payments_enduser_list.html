@@ -117,8 +117,8 @@
                             </div>
                             <div class="col-xl-4">
                                 <div class="text-xl-end mt-xl-0 mt-2">
-                                    <a href="{% url 'bonus:bonus-create' %}">
-                                        <button type="button" class="btn btn-danger mb-2 me-2">Add Bonus</button>
+                                    <a href="{% url 'advance_payments:advance-payyment-create' %}">
+                                        <button type="button" class="btn btn-danger mb-2 me-2">Add Advance Payments</button>
                                     </a> 
                                     <button type="button" class="btn btn-light mb-2 me-1" id="display_input">Search</button>
                                 </div>
@@ -144,7 +144,7 @@
                                         <th>Customer ID</th>
                                         <th>Customer Name</th>
                                         <th>Mobile Number</th>
-                                        <th>Total Bonus</th>
+                                        <th>Total Advance Payments</th>
                                         <th style="width: 125px;">Action</th>
                                     </tr>
                                 </thead>
@@ -170,14 +170,14 @@
                                         <tr>
                                             <td>{{ user.custom_id }}</td>
                                             <td>
-                                                <a href="{% url 'bonus:bonus-detail' user.id %}" class="text-body fw-bold">{{ user.first_name }} {{ user.last_name }}</a>
+                                                <a href="{% url 'advance_payments:advance-payment-detail' user.id %}" class="text-body fw-bold">{{ user.first_name }} {{ user.last_name }}</a>
                                             </td>
                                             <td>{{ user.mobile_number }}</td>
                                             <td>
-                                                <a class="highlight-bonus" href="{% url 'bonus:bonus-detail' user.id %}">{{ user.total_bonus|default:0 }}</a>
+                                                <a class="highlight-bonus" href="{% url 'advance_payments:advance-payment-detail' user.id %}">{{ user.total_advance|default:0 }}</a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'bonus:bonus-detail' user.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a>
+                                                <a href="{% url 'advance_payments:advance-payment-detail' user.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}

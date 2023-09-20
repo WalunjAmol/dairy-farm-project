@@ -8,12 +8,9 @@ from django.db.models import Sum
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 
-
-
+#Local Import
 from .models import EndUser
 from .forms import BonusForm
-
-#Local Import
 from .models import Bonus
 
 @method_decorator(login_required, name='dispatch')

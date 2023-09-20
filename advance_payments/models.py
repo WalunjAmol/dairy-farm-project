@@ -14,8 +14,8 @@ class AdvancePayment(models.Model):
     transaction_type = models.CharField(
         max_length=20,
         choices=[
-            ('deduct', 'deduct'),
-            ('withdrawal', 'Withdrawal'),
+            ('deduct', 'Deduct'),
+            ('withdrawal', 'Paid'),
         ],
         blank=True,
         null=True

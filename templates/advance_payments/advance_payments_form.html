@@ -1,0 +1,192 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% load static %}
+{% load static i18n %}
+{% block content %}
+<style>
+#id_phone_number_0{
+    /* width: 500px; */
+    height: calc(2.0625rem + 5px);
+    }     
+#id_phone_number_1{
+    width: 230px;
+}   
+.bootstrap-select .dropdown-menu a {
+color: #000000;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+
+input[type=number] {
+-moz-appearance: textfield;
+}
+.red-text {
+    color:goldenrod;
+    font-weight: bold;
+  }
+    </style>
+    <h3 class="text-center mt-3 mb-3 ">Fill Bonus Details</h3>
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="tab-content">
+                    <div class="tab-pane show active" id="tooltips-validation-preview">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-dismissible alert-danger form-group text-center ">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        <form action="" method="post" novalidate>
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-sm-4 position-relative mb-3">
+                                    <label for="enduser" class="form-label">
+                                        Customer Name <span class="required-field"></span>
+                                    </label>
+                                    {{ form.enduser }}
+                                    {% if form.enduser.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.enduser.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-4 position-relative mb-3">
+                                    <label for="payment_date" class="form-label">
+                                        Payment Date <span class="required-field"></span>
+                                    </label>
+                                    {{ form.payment_date }}
+                                    {% if form.payment_date.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.payment_date.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-4 position-relative mb-3">
+                                    <label for="payment_time" class="form-label">
+                                        Payment Time <span class="required-field"></span>
+                                    </label>
+                                    {{ form.payment_time }}
+                                    {% if form.payment_time.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.payment_time.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6 position-relative mb-3">
+                                    <label for="{{ form.payment_amount.id_for_label }}" class="form-label">
+                                        Advance Payment Amount <span class="required-field"></span>
+                                    </label>
+                                    <div class="input-group">{{ form.payment_amount }}</div>
+                                    <div id="total_withdrawal_amount" class="red-text"></div> <!-- Add the "red-text" class here -->
+
+                                    {% if form.payment_amount.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.payment_amount.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-6 position-relative mb-3">
+                                    <label for="transaction_type" class="form-label">
+                                        Advance Payment Transaction Type <span class=""></span>
+                                    </label>
+                                    <div class="input-group">{{ form.transaction_type }}</div>
+                                    {% if form.transaction_type.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.transaction_type.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 position-relative mb-2">
+                                    <label for="description" class="form-label">
+                                        Advance Payment Description <span class=""></span>
+                                    </label>
+                                    <div class="input-group">{{ form.description }}</div>
+                                    {% if form.description.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.description.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <input type='hidden' name='dairy' value='{{request.user.dairy.id}}'>
+                            </div>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-primary offset-8" type="submit">
+                                <i class="mdi mdi-account-circle"></i>
+                                Save
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-secondary"
+                               href="{% url 'advance_payments:advance-payment-user-list' %}">Cancel</a>
+                        </form>
+                        <!-- end preview-->
+                    </div>
+                    <!-- end card-->
+                </div>
+                <!-- end col-->
+            </pre>
+            <!-- end highlight-->
+        </div>
+        <!-- end preview code-->
+    </div>
+    <!-- end tab-content-->
+</div>
+<!-- end card-body-->
+</div>
+<!-- end card-->
+</div>
+<!-- end col-->>
+<!-- end tab-content-->
+</div>
+<!-- end card-body-->
+</div>
+<!-- end card-->
+</div>
+<!-- end col-->
+{% endblock %}
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+      $('#{{ form.enduser.id_for_label }}').on('change', function() {
+        var selectedEndUserId = $(this).val();
+        $.ajax({
+          type: 'GET',
+          url: '{% url "advance_payments:get_total_withdrawal_amount" %}',
+          data: {'enduser_id': selectedEndUserId},
+          dataType: 'json',
+          success: function(data) {
+            if (data.total_withdrawal_amount !== undefined) {
+             // $('#{{ form.payment_amount.id_for_label }}').val(data.total_withdrawal_amount);
+              $('#total_withdrawal_amount').text('Advance Amount Remaining: ' + data.total_withdrawal_amount);
+
+            }
+          },
+          error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %} 
