@@ -438,8 +438,8 @@ def import_transactions(request):
                         # Get the 'Line' list from the record, or use an empty list if it doesn't exist
                         line_data = record.get('Line', [])
                         try:
-                            custom_id = line_data[7] if len(line_data) > 7 else 1
-                            print('user id',custom_id)
+                            custom_id = line_data[7] if len(line_data) > 7 else '0'
+                            # print('user id',custom_id)
                             end_user_obj = EndUser.objects.get(custom_id=custom_id)
                             customer_name = f"{end_user_obj.first_name} {end_user_obj.last_name}"
                         except EndUser.DoesNotExist:
