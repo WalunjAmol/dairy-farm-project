@@ -1,619 +1,232 @@
 {% extends 'dairy_owner_dashboard/base.html' %}
 {% load static %}{% load static i18n %}
 {% block content %}
-<style>
+    <title>Coming Soon Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+        }
+
+        .container h1 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .container p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+      
+        .graph {
+            width: 100%;
+            max-width: 550px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .half-screen {
+            width: 50%;
+            float: left;
+            box-sizing: border-box;
+            padding: 0 10px;
+        }
+        .header-text {
+            font-size: 36px !important;
+            color: #4CAF50 !important; /* Green color */
+            margin-bottom: 20px !important;
+            animation: fadeInUp 1s ease-in-out !important;
+        }
+        
+        .sub-text {
+            font-size: 18px !important;
+            color: #FFC107 !important; /* Yellow color */
+            margin-bottom: 30px !important;
+            animation: fadeInUp 1s ease-in-out !important;
+            animation-delay: 0.5s !important; /* Delay the animation */
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+    </style>
+    <div class="container">
+        <h1 class="header-text">Coming Soon Dashboard</h1>
+        <p class="sub-text">We're working on something great. Stay tuned for updates!</p>
+        <div class="half-screen">
+            <canvas id="milkProductionGraph" class="graph"></canvas>
+        </div>
+        <div class="half-screen">
+            <canvas id="salesGraph" class="graph"></canvas>
+        </div>
+        <div class="half-screen">
+            <canvas id="anotherGraph1" class="graph"></canvas>
+        </div>
+        <div class="half-screen">
+            <canvas id="anotherGraph2" class="graph"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sample data for the milk production graph
+        const milkProductionData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                label: 'Milk Production (in liters)',
+                data: [500, 620, 480, 550, 600, 520],
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const milkProductionConfig = {
+            type: 'bar',
+            data: milkProductionData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        };
+
+        const milkProductionCtx = document.getElementById('milkProductionGraph').getContext('2d');
+        const milkProductionChart = new Chart(milkProductionCtx, milkProductionConfig);
+
+        // Sample data for the sales graph
+        const salesData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                label: 'Sales (in USD)',
+                data: [1200, 1500, 1300, 1400, 1600, 1550],
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const salesConfig = {
+            type: 'line',
+            data: salesData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        };
+
+        const salesCtx = document.getElementById('salesGraph').getContext('2d');
+        const salesChart = new Chart(salesCtx, salesConfig);
+        const anotherGraph1Data = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                label: 'Data 1',
+                data: [300, 350, 400, 420, 380, 450],
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const anotherGraph1Config = {
+            type: 'bar',
+            data: anotherGraph1Data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        };
+
+        const anotherGraph1Ctx = document.getElementById('anotherGraph1').getContext('2d');
+        const anotherGraph1Chart = new Chart(anotherGraph1Ctx, anotherGraph1Config);
+
+        const anotherGraph2Data = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                label: 'Data 2',
+                data: [200, 250, 270, 300, 280, 320],
+                backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const anotherGraph2Config = {
+            type: 'line',
+            data: anotherGraph2Data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        };
+
+        const anotherGraph2Ctx = document.getElementById('anotherGraph2').getContext('2d');
+        const anotherGraph2Chart = new Chart(anotherGraph2Ctx, anotherGraph2Config);
     
-@media (min-width: 1200px) and (max-width: 1500px){
-.widget-flat i.widget-icon {
-    display: block !important;
-}
-}
-.d-row .card-body{
-    display: flex;
-    align-items: center;
-    min-height: 135px;
-}
-.widget-flat i.widget-icon {
-    color: var(--brand-gold);
-    display: block !important;
-}
-.d-row .card-body h4{color: var(--brand-grey);}
-.d-row .card-body .float-end{
-    margin-right: 10px;
-}
-.img-w {
-    width: 40px;
-    background: var(--brand-gold);
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    border-radius: 3px;
-}
-.img-w img {
-    width: 30px !important;
-}
-</style>
-<div class="row mt-5 d-row">
-    <div class="col-xl-6 col-lg-6">
+    </script>
 
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <div class="img-w">
-                            <img src="/static/img/admin-user.png" width="16px">
-                        </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Number of Customers"></h5> -->
-                        {% comment %} <a href="{% url 'admin-user-list' %}"><h4 class="mt-3 mb-3">Manage Admin Users</h4></a> {% endcomment %}
-                        
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-success me-2"></span>
-                            <span class="text-nowrap"></span>  
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
 
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <!-- <i class="mdi mdi-cart-plus widget-icon"></i> -->
-                            <div class="img-w">
-                                <img src="/static/img/job-seeker.png" width="16px">
-                            </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Number of Orders"></h5> -->
-                        {% comment %} <a href="{% url 'job_seeker_list' %}"><h4 class="mt-3 mb-3">Manage Job Seekers</h4></a> {% endcomment %}
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-danger me-2"></span>
-                            <span class="text-nowrap"></span>
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-        </div> <!-- end row -->
-
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <!-- <i class="mdi mdi-currency-usd widget-icon"></i> -->
-                            <div class="img-w">
-                                <img src="/static/img/testimonails.png" width="16px">
-                            </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Average Revenue"></h5> -->
-                        {% comment %} <a href="{% url 'testimonial_list' %}"><h4 class="mt-3 mb-3">Manage Testimonials</h4></a> {% endcomment %}
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-danger me-2"></span>
-                            <span class="text-nowrap"></span>
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <!-- <i class="mdi mdi-pulse widget-icon"></i> -->
-                            <div class="img-w">
-                                <img src="/static/img/jobs-management.png" width="16px">
-                            </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Growth"></h5> -->
-                        {% comment %} <a href="{% url 'managejobs' %}"><h4 class="mt-3 mb-3">Manage Job Attributes</h4></a> {% endcomment %}
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-success me-2"></span>
-                            <span class="text-nowrap"></span>
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-        </div> <!-- end row -->
-
-    </div> <!-- end col -->
-    <div class="col-xl-6 col-lg-6">
-
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <!-- <i class="mdi mdi-account-multiple widget-icon"></i> -->
-                            <div class="img-w">
-                                <img src="/static/img/employers.png" width="16px">
-                            </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Number of Customers"></h5> -->
-                        {% comment %} <a href="{% url 'employer_list' %}"><h4 class="mt-3 mb-3">Manage Employers</h4></a> {% endcomment %}
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-success me-2"></span>
-                            <span class="text-nowrap"></span>  
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <!-- <i class="mdi mdi-cart-plus widget-icon"></i> -->
-                            <div class="img-w">
-                                <img src="/static/img/training-provider.png" width="16px">
-                            </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Number of Orders"></h5> -->
-                        {% comment %} <a href="{% url 'training_provider_list'%}"><h4 class="mt-3 mb-3">Manage Partners</h4></a> {% endcomment %}
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-danger me-2"></span>
-                            <span class="text-nowrap"></span>
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-        </div> <!-- end row -->
-
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <!-- <i class="mdi mdi-currency-usd widget-icon"></i> -->
-                            <div class="img-w">
-                                <img src="/static/img/training-cources.png" width="16px">
-                            </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Average Revenue"></h5> -->
-                       {% comment %} <a href="{% url 'adminlistcourse' %}"> <h4 class="mt-3 mb-3">Manage Training Courses</h4></a> {% endcomment %}
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-danger me-2"></span>
-                            <span class="text-nowrap"></span>
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <!-- <i class="mdi mdi-pulse widget-icon"></i> -->
-                            <div class="img-w">
-                                <img src="/static/img/masters.png" width="16px">
-                            </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Growth"></h5> -->
-                        <a href=""><h4 class="mt-3 mb-3">Manage Masters</h4></a>
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-success me-2"></span>
-                        </p>
-                        <p class="mb-0 text-muted">
-                            <span class="text-success me-2"></span>
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-        </div> <!-- end row -->
-    </div> <!-- end col -->
-    <div class="col-xl-6 col-lg-6">
-
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <div class="img-w">
-                            <img src="/static/img/admin-user.png" width="16px">
-                        </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Number of Customers"></h5> -->
-                        {% comment %} <a href="{% url 'dashbord-employer-list' %}"><h4 class="mt-3 mb-3">Employer's Performance Graph</h4></a> {% endcomment %}
-                        
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-success me-2"></span>
-                            <span class="text-nowrap"></span>  
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-
-            <div class="col-lg-6">
-                <div class="card widget-flat">
-                    <div class="card-body">
-                        <div class="float-end">
-                            <!-- <i class="mdi mdi-cart-plus widget-icon"></i> -->
-                            <div class="img-w">
-                                <img src="/static/img/job-seeker.png" width="16px">
-                            </div>
-                        </div>
-                        <!-- <h5 class="text-muted fw-normal mt-0" title="Number of Orders"></h5> -->
-                        {% comment %} <a href="{% url 'dashbord-partner-list' %}"><h4 class="mt-3 mb-3">Partner's Performance Graph</h4></a> {% endcomment %}
-                        <!-- <p class="mb-0 text-muted">
-                            <span class="text-danger me-2"></span>
-                            <span class="text-nowrap"></span>
-                        </p> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-        </div> <!-- end row -->
-    </div> <!-- end col -->
-</div>
-<!-- end row -->
-
-<!-- <div class="row">
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-body">
-                <div class="dropdown float-end">
-                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="mdi mdi-dots-vertical"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Action</a>
-                    </div>
-                </div>
-                <h4 class="header-title mb-3">Revenue</h4>
-
-                <div class="chart-content-bg">
-                    <div class="row text-center">
-                        <div class="col-md-6">
-                            <p class="text-muted mb-0 mt-3">Current Week</p>
-                            <h2 class="fw-normal mb-3">
-                                <small class="mdi mdi-checkbox-blank-circle text-primary align-middle me-1"></small>
-                                <span>$58,254</span>
-                            </h2>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="text-muted mb-0 mt-3">Previous Week</p>
-                            <h2 class="fw-normal mb-3">
-                                <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small>
-                                <span>$69,524</span>
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dash-item-overlay d-none d-md-block" dir="ltr">
-                    <h5>Today's Earning: $2,562.30</h5>
-                    <p class="text-muted font-13 mb-3 mt-2">Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui.
-                        Etiam rhoncus...</p>
-                    <a href="javascript: void(0);" class="btn btn-outline-primary">View Statements
-                        <i class="mdi mdi-arrow-right ms-2"></i>
-                    </a>
-                </div>
-                <div dir="ltr">
-                    <div id="revenue-chart" class="apex-charts mt-3" data-colors="#727cf5,#0acf97"></div>
-                </div>
-            </div>
-        </div> 
-    </div> 
-
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="dropdown float-end">
-                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="mdi mdi-dots-vertical"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Action</a>
-                    </div>
-                </div>
-                <h4 class="header-title">Revenue By Location</h4>
-                <div class="mb-4 mt-4">
-                    <div id="world-map-markers" style="height: 224px"></div>
-                </div>
-
-                <h5 class="mb-1 mt-0 fw-normal">New York</h5>
-                <div class="progress-w-percent">
-                    <span class="progress-value fw-bold">72k </span>
-                    <div class="progress progress-sm">
-                        <div class="progress-bar" role="progressbar" style="width: 72%;" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-
-                <h5 class="mb-1 mt-0 fw-normal">San Francisco</h5>
-                <div class="progress-w-percent">
-                    <span class="progress-value fw-bold">39k </span>
-                    <div class="progress progress-sm">
-                        <div class="progress-bar" role="progressbar" style="width: 39%;" aria-valuenow="39" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-
-                <h5 class="mb-1 mt-0 fw-normal">Sydney</h5>
-                <div class="progress-w-percent">
-                    <span class="progress-value fw-bold">25k </span>
-                    <div class="progress progress-sm">
-                        <div class="progress-bar" role="progressbar" style="width: 39%;" aria-valuenow="39" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-
-                <h5 class="mb-1 mt-0 fw-normal">Singapore</h5>
-                <div class="progress-w-percent mb-0">
-                    <span class="progress-value fw-bold">61k </span>
-                    <div class="progress progress-sm">
-                        <div class="progress-bar" role="progressbar" style="width: 61%;" aria-valuenow="61" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-            </div> 
-        </div>
-    </div> 
-</div> -->
-<!-- end row -->
-
-<!-- 
-<div class="row">
-    <div class="col-xl-6 col-lg-12 order-lg-2 order-xl-1">
-        <div class="card">
-            <div class="card-body">
-                <a href="" class="btn btn-sm btn-link float-end">Export
-                    <i class="mdi mdi-download ms-1"></i>
-                </a>
-                <h4 class="header-title mt-2 mb-3">Top Selling Products</h4>
-
-                <div class="table-responsive">
-                    <table class="table table-centered table-nowrap table-hover mb-0">
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">ASOS Ridley High Waist</h5>
-                                    <span class="text-muted font-13">07 April 2018</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$79.49</h5>
-                                    <span class="text-muted font-13">Price</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">82</h5>
-                                    <span class="text-muted font-13">Quantity</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$6,518.18</h5>
-                                    <span class="text-muted font-13">Amount</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">Marco Lightweight Shirt</h5>
-                                    <span class="text-muted font-13">25 March 2018</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$128.50</h5>
-                                    <span class="text-muted font-13">Price</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">37</h5>
-                                    <span class="text-muted font-13">Quantity</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$4,754.50</h5>
-                                    <span class="text-muted font-13">Amount</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">Half Sleeve Shirt</h5>
-                                    <span class="text-muted font-13">17 March 2018</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$39.99</h5>
-                                    <span class="text-muted font-13">Price</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">64</h5>
-                                    <span class="text-muted font-13">Quantity</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$2,559.36</h5>
-                                    <span class="text-muted font-13">Amount</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">Lightweight Jacket</h5>
-                                    <span class="text-muted font-13">12 March 2018</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$20.00</h5>
-                                    <span class="text-muted font-13">Price</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">184</h5>
-                                    <span class="text-muted font-13">Quantity</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$3,680.00</h5>
-                                    <span class="text-muted font-13">Amount</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">Marco Shoes</h5>
-                                    <span class="text-muted font-13">05 March 2018</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$28.49</h5>
-                                    <span class="text-muted font-13">Price</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">69</h5>
-                                    <span class="text-muted font-13">Quantity</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 fw-normal">$1,965.81</h5>
-                                    <span class="text-muted font-13">Amount</span>
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div> 
-            </div> 
-        </div>
-    </div> 
-
-    <div class="col-xl-3 col-lg-6 order-lg-1">
-        <div class="card">
-            <div class="card-body">
-                <div class="dropdown float-end">
-                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="mdi mdi-dots-vertical"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Action</a>
-                    </div>
-                </div>
-                <h4 class="header-title">Total Sales</h4>
-
-                <div id="average-sales" class="apex-charts mb-4 mt-4"
-                    data-colors="#727cf5,#0acf97,#fa5c7c,#ffbc00"></div>
-               
-
-                <div class="chart-widget-list">
-                    <p>
-                        <i class="mdi mdi-square text-primary"></i> Direct
-                        <span class="float-end">$300.56</span>
-                    </p>
-                    <p>
-                        <i class="mdi mdi-square text-danger"></i> Affilliate
-                        <span class="float-end">$135.18</span>
-                    </p>
-                    <p>
-                        <i class="mdi mdi-square text-success"></i> Sponsored
-                        <span class="float-end">$48.96</span>
-                    </p>
-                    <p class="mb-0">
-                        <i class="mdi mdi-square text-warning"></i> E-mail
-                        <span class="float-end">$154.02</span>
-                    </p>
-                </div>
-            </div> 
-        </div> 
-    </div>
-    <div class="col-xl-3 col-lg-6 order-lg-1">
-        <div class="card">
-            <div class="card-body">
-                <div class="dropdown float-end">
-                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="mdi mdi-dots-vertical"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                        <a href="javascript:void(0);" class="dropdown-item">Action</a>
-                    </div>
-                </div>
-                <h4 class="header-title mb-2">Recent Activity</h4>
-
-                <div data-simplebar style="max-height: 419px;"> 
-                    <div class="timeline-alt pb-0">
-                        <div class="timeline-item">
-                            <i class="mdi mdi-upload bg-info-lighten text-info timeline-icon"></i>
-                            <div class="timeline-item-info">
-                                <a href="#" class="text-info fw-bold mb-1 d-block">You sold an item</a>
-                                <small>Paul Burgess just purchased “Hyper - Admin Dashboard”!</small>
-                                <p class="mb-0 pb-2">
-                                    <small class="text-muted">5 minutes ago</small>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <i class="mdi mdi-airplane bg-primary-lighten text-primary timeline-icon"></i>
-                            <div class="timeline-item-info">
-                                <a href="#" class="text-primary fw-bold mb-1 d-block">Product on the Bootstrap Market</a>
-                                <small>Dave Gamache added
-                                    <span class="fw-bold">Admin Dashboard</span>
-                                </small>
-                                <p class="mb-0 pb-2">
-                                    <small class="text-muted">30 minutes ago</small>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <i class="mdi mdi-microphone bg-info-lighten text-info timeline-icon"></i>
-                            <div class="timeline-item-info">
-                                <a href="#" class="text-info fw-bold mb-1 d-block">Robert Delaney</a>
-                                <small>Send you message
-                                    <span class="fw-bold">"Are you there?"</span>
-                                </small>
-                                <p class="mb-0 pb-2">
-                                    <small class="text-muted">2 hours ago</small>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <i class="mdi mdi-upload bg-primary-lighten text-primary timeline-icon"></i>
-                            <div class="timeline-item-info">
-                                <a href="#" class="text-primary fw-bold mb-1 d-block">Audrey Tobey</a>
-                                <small>Uploaded a photo
-                                    <span class="fw-bold">"Error.jpg"</span>
-                                </small>
-                                <p class="mb-0 pb-2">
-                                    <small class="text-muted">14 hours ago</small>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <i class="mdi mdi-upload bg-info-lighten text-info timeline-icon"></i>
-                            <div class="timeline-item-info">
-                                <a href="#" class="text-info fw-bold mb-1 d-block">You sold an item</a>
-                                <small>Paul Burgess just purchased “Hyper - Admin Dashboard”!</small>
-                                <p class="mb-0 pb-2">
-                                    <small class="text-muted">16 hours ago</small>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <i class="mdi mdi-airplane bg-primary-lighten text-primary timeline-icon"></i>
-                            <div class="timeline-item-info">
-                                <a href="#" class="text-primary fw-bold mb-1 d-block">Product on the Bootstrap Market</a>
-                                <small>Dave Gamache added
-                                    <span class="fw-bold">Admin Dashboard</span>
-                                </small>
-                                <p class="mb-0 pb-2">
-                                    <small class="text-muted">22 hours ago</small>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <i class="mdi mdi-microphone bg-info-lighten text-info timeline-icon"></i>
-                            <div class="timeline-item-info">
-                                <a href="#" class="text-info fw-bold mb-1 d-block">Robert Delaney</a>
-                                <small>Send you message
-                                    <span class="fw-bold">"Are you there?"</span>
-                                </small>
-                                <p class="mb-0 pb-2">
-                                    <small class="text-muted">2 days ago</small>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div> 
-            </div>
-        </div>
-    </div>
-</div> -->
 {% endblock content %}

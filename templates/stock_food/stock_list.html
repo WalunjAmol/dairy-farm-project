@@ -1,0 +1,356 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% load static %}
+
+{% block stylesheets %}
+    <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}" rel="stylesheet" type="text/css">
+    <style>
+        /* Custom styles for improved look and feel */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container-fluid {
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .btn-add-customer {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            font-size: 16px;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .btn-search {
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            color: #333;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-search:hover {
+            background-color: #e2e6ea;
+        }
+
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #212529;
+            background-color: #fff;
+            border-collapse: collapse;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .table tbody+tbody {
+            border-top: 2px solid #dee2e6;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination .page-item .page-link {
+            color: #333;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            margin: 0 2px;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: #e2e6ea;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #dc3545;
+            color: #fff;
+            border: 1px solid #dc3545;
+        }
+        .no-data-row {
+            text-align: center;
+            font-weight: bold;
+            color: red; /* Adjust the color as needed */
+        }
+        
+        .no-data-message {
+            padding: 10px;
+            background-color: #f9f9f9; /* Adjust the background color as needed */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+    
+       
+        
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page title -->
+    
+    <!-- End page title -->
+
+    <!-- Customer list actions -->
+    <div class="row">
+        <div class="col-xl-8">
+            <form class="row gy-2 gx-2 align-items-center justify-content-xl-start justify-content-between">
+                <!-- Your form content goes here -->
+            </form>
+        </div>
+        <div class="col-xl-4">
+            <div class="text-xl-end mt-xl-0 mt-2">
+                <a href="{% url 'stock_food_management:stock-create' %}">
+                    <button type="button" class="btn btn-add-customer">Add Stock</button>
+                </a>
+                <button type="button" class="btn btn-search btn-add-customer" id="display_input">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Display messages -->
+    <div>
+        <div>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success form-group text-center" role="alert">
+                        <strong>{{ message }}</strong>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Table of customers -->
+    <div class="table-responsive">
+        
+        <table class="table table-centered table-sm mb-0">
+            <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Date</th>
+                    <th class="highlight-columns">Feed Name</th>
+                    <th class="highlight-columns">Quantity</th>
+                    <th>Original Price</th>
+                    <th>Selling Price</th>
+                    <th>Symbol</th>
+                    <th style="width: 125px;">Action</th>
+
+
+                    <!-- <th>Description</th> -->
+                </tr>
+            </thead>
+            <tfoot class="click-hide">
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
+                    <th scope="col"></th>
+                </tr>
+            </tfoot>
+            <tbody>
+                {% for stock in object_list %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ stock.date_added }}</td>
+                        <td class="highlight-column">{{ stock.name }}</td>
+                        <td class="highlight-column">{{ stock.quantity }}</td>
+                        <td>{{ stock.original_price }}</td>
+                        <td>{{ stock.selling_price }}</td>
+                        <td>{{ stock.symbol }}</td>
+                        <td>
+                            <a href="{% url 'stock_food_management:stock-update' stock.id %}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                        </td>    
+                        <!-- <td>{{ stock.description }}</td> -->
+                    </tr>
+                {% empty %}
+                <tr class="no-data-row">
+                    <td colspan="6">
+                        <div class="no-data-message">
+                            No data available.
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link">&laquo;</a>
+                        </li>
+                    {% endif %}
+                    {% for i in page_obj.paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active">
+                                <a class="page-link">{{ i }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a href="?page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link">&raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+<!-- End container -->
+</div>
+<!-- End content -->
+{% endblock %}
+
+{% block javascripts %}
+    <!-- Datatables js -->
+    <script src="{% static 'saas/assets/js/vendor/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'saas/assets/js/vendor/dataTables.bootstrap5.js' %}"></script>
+    <script src="{% static 'saas/assets/js/vendor/dataTables.responsive.min.js' %}"></script>
+    <script>
+    $(document).ready(function() {
+        $("#employer-list-table").dataTable({
+            "ordering": true,
+            "bPaginate": true,
+            "searching": true,
+            "bInfo": false,
+            "order": [],
+            aoColumnDefs: [
+                { "aTargets": [ 0 ], "bSortable": false },
+                { "aTargets": [ 1 ], "bSortable": true },
+                { "aTargets": [ 2 ], "bSortable": true },
+                { "aTargets": [ 3 ], "bSortable": true },
+                { "aTargets": [ 4 ], "bSortable": false },
+                { "aTargets": [ 5 ], "bSortable": true },
+                { "aTargets": [ 6 ], "bSortable": false },
+                { "aTargets": [ 7 ], "bSortable": true },
+            ],
+            initComplete: function () {
+                // Apply the search
+                this.api().columns().every( function () {
+                    var that = this;
+                    $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value).draw();
+                        }
+                    });
+                });
+            }
+        })
+        $("#employer-list-table_length").hide();
+        $("#employer-list-table_filter").hide();
+    });
+    function delete_record(id, page_label){
+        $('.single_delete_h4').html(page_label);
+        $('.single_delete_p').html(''+page_label.toLowerCase()+'');
+        $('#single-record-id').val(id);
+        $('#delete-single-modal').modal('show');
+    }
+
+        function remove_confirm(delete_url){
+            var id = $('#single-record-id').val();
+            var url = delete_url + id;
+            window.open(url,"_self")
+        }
+
+
+    </script>
+    <script>
+    $(document).ready(function(){
+        $("button").click(function(){
+            $("tfoot").toggleClass("click-hide");
+        });
+    })
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.form-control').on('keyup', function() {
+            var inputIndex = $(this).closest('th').index();
+            var inputValue = $(this).val().toLowerCase();
+            var table = $(this).closest('table');
+            table.find('tbody tr').each(function() {
+                var td = $(this).find('td').eq(inputIndex);
+                if (td) {
+                    var text = td.text().toLowerCase();
+                    if (text.indexOf(inputValue) !== -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

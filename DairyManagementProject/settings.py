@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'milk_transaction',
     'bonus_app',
     'advance_payments',
+    'stock_food',
+    'bill_management',
 ]
 
 MIDDLEWARE = [

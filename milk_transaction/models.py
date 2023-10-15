@@ -55,4 +55,7 @@ class MilkTransaction(models.Model):
     
     def __str__(self):
         return f"{self.transaction_producer}-{self.end_user.first_name} {self.end_user.last_name}"
+    
+    def get_month_name(self):
+        return self.date.strftime('%B')
 

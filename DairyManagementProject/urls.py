@@ -28,7 +28,8 @@ urlpatterns = [
     path('bonus-management/',include('bonus_app.urls')),
     path('advance-payment-mgt/',include('advance_payments.urls')),
     path('',HomeView.as_view(), name='dashboard'),
-
+    path('stock/',include('stock_food.urls')),
+    path('bill-mgt/',include('bill_management.urls'))
 
 ]
 if settings.DEBUG:

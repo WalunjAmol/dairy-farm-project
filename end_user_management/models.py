@@ -1,11 +1,12 @@
 #Django Imports
 from django.db import models
 from django.utils import timezone
-from admin_management.models import CustomUser
 from django.contrib.auth.hashers import make_password
 
 #Internal Imports
 from dairy_management.models import Dairy
+from admin_management.models import CustomUser
+
 
 # Create your models here.
 
