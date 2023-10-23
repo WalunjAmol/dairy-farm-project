@@ -1,0 +1,801 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% load static %}
+{% comment %} {% load core %}  {% endcomment %}
+{% comment %} {% load static i18n %}  {% endcomment %}
+{% block stylesheets %}
+    <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}"
+          rel="stylesheet"
+          type="text/css" />
+    <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}"
+          rel="stylesheet"
+          type="text/css" />
+{% endblock %}
+{% block content %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+        }
+        .bill-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            width:100%;
+            background-color: #fff;
+        }
+        .bill-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .bill-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .bill-table th, .bill-table td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        .bill-table th {
+            background-color: #f0f0f0;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            max-width: 222px;
+            max-height: 100px;
+        }
+        .dairy-details {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .current-date {
+            text-align: right;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .bonus-deduction-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        .bonus-deduction-section h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .bonus-deduction-section p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        /* Styles for the form */
+        .deduction-form {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .deduction-form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .deduction-form input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .deduction-form button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .deduction-form button:hover {
+            background-color: #2980b9;
+        }
+
+        .popup button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup button:hover {
+            background-color: #2980b9;
+        }
+
+        .deduction-button {
+            padding: 2px 6px;
+            background-color: #a10af9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .deduction-button:hover {
+            background-color: #c0392b;
+        }
+        .print-button {
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            float: right;
+        }
+
+        /* Add styles for the popup */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: beige;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .popup h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .popup label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .popup input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .popup .close-btn {
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+        }
+
+        .popup .close-btn:hover {
+            color: #e74c3c;
+        }
+        .total-column {
+            text-align: right;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 12px;
+            color: #333; /* Dark text color */
+            font-family: 'Arial', sans-serif; /* Font choice */
+        }
+
+        #totals-row {
+            background-color: #f5f5f5; /* Subtle background color */
+            border-top: 2px solid #ccc; /* Border color */
+        }
+        #print-button {
+                padding: 8px 24px;
+                font-size: 14px;
+                background-color: #4CAF50; /* Green */
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+        #print-button:hover {
+                background-color: #45a049; /* Darker green on hover */
+            }
+            .bonus-deduction-row {
+                display: flex;
+                justify-content: space-between;
+            }
+        
+            .bonus-deduction-section {
+                position: relative;
+                width: 48%; /* Adjust the width as needed */
+            }
+        
+            
+            /* Existing styles for the left logo container */
+            .logo-container.left-logo {
+                text-align: left;
+                float: left; /* Align to the left */
+            }
+
+            /* Additional styles for the right logo container */
+            .logo-container.right-logo {
+                text-align: right;
+                float: right; /* Align to the right */
+            }
+
+            /* Existing styles for the table */
+            .bill-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+
+            /* Updated styles for table headers and data cells */
+            .bill-table th, .bill-table td {
+                font-size: 10px; /* Adjust the font size as needed */
+                padding: 6px; /* Reduce padding to make the table more compact */
+                border: 1px solid #ccc;
+                text-align: left;
+            }
+
+            /* Adjust the table width to fit within the page */
+            .bill-table {
+                width: 100%; /* 100% width ensures it fits within the bill container */
+                margin-bottom: 0;
+            }
+
+            /* Styles for the total row */
+            #totals-row {
+                background-color: #f5f5f5;
+                border-top: 2px solid #ccc;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 10px;
+            }
+        
+            th, td {
+                border: 1px solid #ddd;
+                font-size: 10px; /* Adjust the font size as needed */
+                padding: 6px; /* Reduce padding to make the table more compact */
+                border: 1px solid #ccc;
+                text-align: left;
+
+            }
+        
+            th {
+                background-color: #f2f2f2;
+            }
+        
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+            .table-outer-div{
+                display: flex;
+                column-gap: 10px;
+            }
+            .table-outer-div .table-div{
+                width: 100%;
+            }
+            .table-outer-div table{
+                width: 100%;
+            }
+
+            .details-div{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+            .details-div .first-block{
+                display: flex;
+                justify-content: space-between;
+                column-gap: 40px;
+            }
+            .total-sale{
+                display: flex;
+                justify-content: end;
+                margin-top: 12px;
+            }
+            .total-sale >div{
+                display: flex;
+                align-items: center;
+                column-gap: 12px;
+                border: 1px solid #777;
+                padding: 0 12px;
+            }
+            .watermark {
+                bottom: 30px; /* Adjust the distance from the bottom as needed */
+                left: 0;
+                width: 100%;
+                text-align: center;
+                font-family: Arial, sans-serif;
+                font-size: 10px;
+                color: rgba(0, 0, 0, 0.5); /* Adjust the color and opacity as needed */
+                margin-top: 9px;
+            }
+    
+            .watermark-content {
+                display: inline-block;
+                padding: 10px;
+                background-color: rgba(255, 255, 255, 0.7); /* Adjust the background color and opacity as needed */
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
+    
+            .contact-text {
+                margin: 0;
+                font-weight: bold;
+            }
+    
+            .contact-text a {
+                text-decoration: none;
+                color: #3498db; /* Adjust the link color as needed */
+            }
+    
+            .contact-details {
+                margin: 0;
+                font-style: italic;
+            }
+           
+
+            @media print{
+                @page {
+                margin: 16px 0;
+                }
+                p{
+                    margin: 0;
+                }
+                span{
+                    margin: 0;
+                }
+                h5{
+                    margin-top: 0;
+                    font-size: 12px;
+                }
+                .dairy-details {
+                    margin-bottom: 10px;
+                }
+
+                table th, table td{
+                    padding:  2px 4px;
+                }
+                .bill-table {
+                    margin-bottom: 0;
+                }
+                .bill-table th, .bill-table td{
+                    padding: 2px 4px;
+                }
+                .deduction-button{
+                    display: none;
+                }
+                .print-button{
+                    display: none;
+                }
+                .bonus-deduction-section h5{
+                    margin-top: 0;
+                }
+                .bonus-deduction-section{
+                    margin-top: 16px;
+                }
+                .table-div h5{
+                    font-size: 12px;
+                }
+                .total-sale h5{
+                    margin: 0;
+                }
+                
+            }
+                
+    </style>
+    <body>
+        <div class="bill-container">
+            <div class="logo-container right-logo">
+                <img src="/media/media/dairy_logos/ganpati_bappa.jpg" alt="Dairy Logo">
+            </div>
+            <div class="logo-container left-logo">
+                <img src="/media/media/dairy_logos/logo-ganpati.jpeg" alt="Dairy Logo">
+            </div>
+            <div class="dairy-details">
+                <h2>{{request.user.dairy}}</h2>
+                <p>पत्ता : {{ request.user.address }}</p>
+                <p>मोबाइल नंबर : {{ request.user.mobile_number }}</p>
+               
+            </div>
+            <div class="bill-header">
+                <h5>बिलाचा कालावधी : {{ cycle_name.from_date|date:"d-m-Y" }} to {{ cycle_name.to_date|date:"d-m-Y" }}</h5>
+            </div>
+            <div class="details-div">
+                <div class="first-block">
+                    <div class="user-details">
+                        <strong>गवळी क्रमांक:</strong> {{ user_info.custom_id }}
+                    </div>
+                    {% if user_info.marathi_name %}
+                    <div class="user-details">
+                        <strong>गवळ्याचे नाव:</strong> {{ user_info.marathi_name }}
+                    </div>
+                    {% else %}
+                    <div class="user-details">
+                        <strong>गवळ्याचे नाव:</strong> {{ user_info.first_name|capfirst }} {{ user_info.last_name|capfirst }}
+                    </div>
+                    {% endif %}
+                    <div><strong>मोबाइल नंबर:</strong> <span class="mobile-number">{{ user_info.mobile_number }}</span></div>
+                </div>
+                <div class="user-details second-block">
+                    <div><span><strong>बिलाची तारीख:</strong> {{ current_date|date:"d-m-Y" }}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 table-outer-div">
+                    {% if milk_transation_amount_sum_morning != 0 %}
+                    <div class="table-div">
+                        <h5 class="title">सकाळ:</h5>
+                        <table class="bill-table">
+                            <thead>
+                                <tr>
+                                    {% comment %} <th>Date</th>
+                                    <!-- <th>Shift</th> -->
+                                    <th>Liters</th>
+                                    <th>Fat (%)</th>
+                                    <th>Lacto (%)</th>
+                                    <th>SNF (%)</th>
+                                    <th>Rate (Rs)</th>
+                                    <th>Amount (Rs)</th> {% endcomment %}
+                                    <!-- Add other transaction details as needed -->
+                                    <th>दिनांक</th>
+                                    <th>लिटर</th>
+                                    <th>फॅट (%)</th>
+                                    <th>लॅक्टो (%)</th>
+                                    <th>एसएनएफ (%)</th>
+                                    <th>दर (रुपये)</th>
+                                    <th>रक्कम (रुपये)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                {% if transaction.transaction_shift == 'M'  %}
+                                    <tr>
+                                        <td style="white-space: nowrap;">{{ transaction.date |date:'d-m-y' }}</td>
+                                        <!-- {% if transaction.transaction_shift == 'M' %}
+                                            <td>Morning</td>
+                                        {% elif transaction.transaction_shift == 'E' %}
+                                            <td>Evening</td>
+                                        {% else %}
+                                            <td>-</td>
+                                        {% endif %} -->
+                                        <td>{{ transaction.transaction_liters }}</td>
+                                        <td>{{ transaction.transaction_fat }}</td>
+                                        <td>{{ transaction.transaction_lacto }}</td>
+                                        <td>{{ transaction.transaction_snf }}</td>
+                                        <td>{{ transaction.transaction_rate }}</td>
+                                        <td>{{ transaction.transaction_amount }}</td>
+                                        <!-- Add other transaction details as needed -->
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                <tr id="totals-row">
+                                    <td colspan="1" class="total-column">एकूण</td>
+                                    <td class="total-column">{{ milk_transation_liter_sum_morning }}</td>
+                                    <td colspan="4"></td>
+                                    <td class="total-column">{{ milk_transation_amount_sum_morning }} रु.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+
+                    {% if milk_transation_amount_sum_evening != 0 %}
+                        <div class="table-div">
+                            <h5 class="title">संध्याकाळ:</h5>
+                            <table class="bill-table">
+                                <thead>
+                                    <tr>
+                                        <th>दिनांक</th>
+                                        <th>लिटर</th>
+                                        <th>फॅट (%)</th>
+                                        <th>लॅक्टो (%)</th>
+                                        <th>एसएनएफ (%)</th>
+                                        <th>दर (रुपये)</th>
+                                        <th>रक्कम (रुपये)</th>
+                                        {% comment %} <th>Date</th>
+                                        <!-- <th>Shift</th> -->
+                                        <th>Liters</th>
+                                        <th>Fat (%)</th>
+                                        <th>Lacto (%)</th>
+                                        <th>SNF (%)</th>
+                                        <th>Rate (Rs)</th>
+                                        <th>Amount (Rs)</th> {% endcomment %}
+                                        <!-- Add other transaction details as needed -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in transactions %}
+                                    {% if transaction.transaction_shift == 'E'  %}
+
+                                        <tr>
+                                            <td style="white-space: nowrap;">{{ transaction.date | date:"d-m-y"}}</td>
+                                            <!-- {% if transaction.transaction_shift == 'M' %}
+                                                <td>Morning</td>
+                                            {% elif transaction.transaction_shift == 'E' %}
+                                                <td>Evening</td>
+                                            {% else %}
+                                                <td>-</td>
+                                            {% endif %} -->
+                                            <td>{{ transaction.transaction_liters }}</td>
+                                            <td>{{ transaction.transaction_fat }}</td>
+                                            <td>{{ transaction.transaction_lacto }}</td>
+                                            <td>{{ transaction.transaction_snf }}</td>
+                                            <td>{{ transaction.transaction_rate }}</td>
+                                            <td>{{ transaction.transaction_amount }}</td>
+                                            <!-- Add other transaction details as needed -->
+                                        </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <tr id="totals-row">
+                                        <td colspan="1" class="total-column">एकूण</td>
+                                        <td class="total-column">{{ milk_transation_liter_sum_evening }}</td>
+                                        <td colspan="4"></td>
+                                        <td class="total-column">{{ milk_transation_amount_sum_evening }} रु.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {%endif%}
+                </div>
+                <div class="col-md-12">
+                    <div class="total-sale">
+                        <div class="total-ltr">
+                            <span><h5>एकूण लिटर:</h5></span>
+                            <span>{{milk_transation_liter_sum}} लिटर</span>
+                        </div>
+                        <div class="total-amt">
+                            <span><h5>एकूण रक्कम:</h5></span>
+                            <span>{{milk_transation_sum}} रुपये</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        <div class="bonus-deduction-row">
+            <div class="bonus-deduction-section">
+                <h5>बोनस तपशील</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>श्रेणीचे नाव</th>
+                            <th>रक्कम (रुपये)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>एकूण बोनस संग्रहित</td>
+                            <td>{{ total_bonus }}</td>
+                        </tr>
+                        <tr>
+                            <td>बोनस कपात</td>
+                            <td>{{ last_cycle_bonus_deduct }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="bonus-deduction-section">
+                <h5>ऍडव्हान्स तपशील
+                <span><button  class="deduction-button" onclick="showDeductionPopup()">Deduct Amount</button></span></h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>श्रेणीचे नाव</th>
+                            <th>रक्कम (रुपये)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>एकूण ऍडव्हान्स रक्कम</td>
+                            <td>{{ total_advanced_amount | default:'0' }}</td>
+                        </tr>
+                        <tr>
+                            <td>उर्वरित ऍडव्हान्स रक्कम</td>
+                            <td><span id="remaining_amount">{{ remaining_amount | default:'0' }}</span></td>
+                        </tr>
+                        <tr>
+                            <td>रक्कम वजा</td>
+                            <td><span id="last_deduction_amount">{{ last_deduction_amount | default:'0' }}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- <div>
+            <button  class="deduction-button" onclick="showDeductionPopup()">Deduct Amount</button>
+        </div> -->
+        <div class="bonus-deduction-row">
+            <div class="bonus-deduction-section">
+                <h5>पशुखाद्य तपशील</h5>
+                <table class="bill-table">
+                    <thead>
+                        <tr>
+                            <th>दिनांक</th>
+                            <th>नाव</th>
+                            <th>नग</th>
+                            <th>दर</th>
+                            <th>रक्कम</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for feed in feed_purchase %}
+                            <tr>
+                                <td style="white-space: nowrap;">{{ feed.date_created|date:"d-m-Y" }}</td>
+                                {% if feed.stock.marathit_name %}
+                                    <td>{{ feed.stock.marathit_name }}</td>
+                                {% else %}
+                                     <td>{{ feed.stock.name }}</td>
+                                {% endif %}
+
+                                <td>{{ feed.quantity_taken }}</td>
+                                <td>{{ feed.purchase_amount }}</td>
+                                <td>{{ feed.total_purchase_amount }}</td>
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td colspan="1" class="total-column">एकूण</td>
+                            <td colspan="2" class="total-column">{{total_feed_quantity}} पोती</td>
+                            <td class="total-column">
+                                {{ total_Purchase_amount }} रुपये
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="bonus-deduction-section final-amount-section">
+                <h5>बिल तपशील</h5>
+                <table>
+                    <tr>
+                        <th>श्रेणीचे नाव</th>
+                        <th>रक्कम (रुपये)</th>
+                    </tr>
+                    <tbody>
+                        <tr>
+                            <td>एकूण बिल रक्कम</td>
+                            <td>{{ milk_transation_sum | default:'0' }} रुपये.</td>
+                        </tr>
+                        <tr>
+                            <td>बोनस कपात</td>
+                            <td>{{ last_cycle_bonus_deduct | default:'0' }} रुपये.</td>
+                        </tr>
+                        <tr>
+                            <td>ऍडव्हान्स कपात</td>
+                            <td><span id="last_deduction_amount">{{ last_deduction_amount | default:'0' }} रुपये.</span></td>
+                        </tr>
+                        <tr>
+                            <td>पशुखाद्य कपात</td>
+                            <td>{{ total_Purchase_amount | default:'0' }} रुपये.</td>
+                        </tr>
+                        <tr>
+                            <td  style="font-size: 15px; font-weight: bold;">निव्वळ शिलक</td>
+                            <td><span id="finale_amount" style="font-size: 15px; font-weight: bold;">{{ finale_amount | default:'0' }} रुपये.</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+        
+    <button style="float:right" class="print-button" onclick="triggerPrint()">Print</button>
+</div>
+<div id="deduction-popup" class="popup">
+    <button class="close-btn" onclick="hideDeductionPopup()">&times;</button>
+    <h3>Deduct Amount</h3>
+    <label for="deduction-amount">Deduction Amount (Rs.):</label>
+    <input type="number"
+           id="deduction-amount"
+           min="0"
+           placeholder="Enter the deduction amount">
+    <button onclick="deductAmount()">Deduct</button>
+</div>
+
+<!-- Add this code before the closing </body> tag in your template -->
+<div class="watermark">
+    <div class="watermark-content">
+        <p class="contact-text">
+            For Website Registration, Contact Us:
+            <a href="https://milkywave.in">https://milkywave.in</a>
+        </p>
+        <p class="contact-details">
+            Amol Walunj | 9168424611
+        </p>
+    </div>
+</div>
+
+<script>
+        function showDeductionPopup() {
+            const deductionPopup = document.getElementById('deduction-popup');
+            deductionPopup.style.display = 'block';
+        }
+
+        function hideDeductionPopup() {
+            const deductionPopup = document.getElementById('deduction-popup');
+            deductionPopup.style.display = 'none';
+        }
+
+        function deductAmount() {
+            const deductionAmount = parseFloat(document.getElementById('deduction-amount').value);
+
+            // Assuming you have a user_id variable containing the ID of the user
+            const cycle_id = {{ cycle_name.id }};
+            const user_id = {{ user_info.id }};
+
+            // Assuming you have an advance_payment_id variable containing the ID of the AdvancePayment instance to deduct from
+            const advance_payment_id = 1;
+
+            if (!isNaN(deductionAmount) && deductionAmount > 0) {
+
+                const formData = new FormData();
+                formData.append('deduction_amount', deductionAmount);
+                formData.append('advance_payment_id', advance_payment_id);
+                formData.append('user_id', user_id);
+                formData.append('cycle_id',cycle_id)
+                fetch('/bill-mgt/deduct_amount/', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the displayed values without refreshing the page
+                        document.getElementById('last_deduction_amount').innerText = data.last_deduction_amount;
+                        document.getElementById('remaining_amount').innerText = data.remaining_amount;
+
+                       
+                        document.getElementById('finale_amount').innerText = data.finale_amount;
+
+                        alert('Deduction successful.');
+                        // Close the popup after the alert is closed
+                        hideDeductionPopup();
+                    } else {
+                        alert('Deduction failed: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deducting amount:', error);
+                });
+            } else {
+                alert('Invalid deduction amount. Please enter a valid amount.');
+            }
+        }
+</script>
+<script>
+        function triggerPrint() {
+            window.print();  // This will trigger the print dialog for the browser
+        }
+</script>
+</body>
+{% endblock %}

@@ -15,4 +15,4 @@ class GeneratedCycle(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return f'{self.dairy_name}:- {self.name}'

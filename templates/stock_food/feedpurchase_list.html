@@ -115,12 +115,6 @@
             border-radius: 5px;
             display: inline-block;
         }
-        tbody, td, tfoot, th, thead, tr {
-            border-color: inherit;
-            border-style: solid;
-            border-width: 2px;
-            text-align: center;
-        }
     
        
         
@@ -142,8 +136,8 @@
         </div>
         <div class="col-xl-4">
             <div class="text-xl-end mt-xl-0 mt-2">
-                <a href="{% url 'stock_food_management:stock-create' %}">
-                    <button type="button" class="btn btn-add-customer">Add Stock</button>
+                <a href="{% url 'stock_food_management:feedpurchase-create' %}">
+                    <button type="button" class="btn btn-add-customer">Purchase</button>
                 </a>
                 <button type="button" class="btn btn-search btn-add-customer" id="display_input">Search</button>
             </div>
@@ -170,21 +164,37 @@
             <thead>
                 <tr>
                     <th>Sr No</th>
-                    <!-- <th>Date</th> -->
-                    <!-- <th class="highlight-columns">Feed Name</th> -->
-                    <th>पशुखाद्याच नाव</th>
-                    <th class="highlight-columns">Quantity</th>
-                    <!-- <th>Original Price</th>
-                    <th>Selling Price</th> -->
+                    <th>Date</th>
+                    <th class="highlight-columns">Customer Name</th>
+                    <th class="highlight-columns">Feed Name</th>
+                    <th>Quantity</th>
+                    <th>Purchase Amount</th>
+                    <th>Total Amount</th>
+                    <th>Paid / Unpaid</th>
                     <th style="width: 125px;">Action</th>
+
+
+                    <!-- <th>Description</th> -->
                 </tr>
             </thead>
             <tfoot class="click-hide">
                 <tr>
                     <th scope="col"></th>
-                    <!-- <th scope="col">
+                    <th scope="col">
                         <input type="text" class="form-control">
-                    </th> -->
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control">
+                    </th>
                     <th scope="col">
                         <input type="text" class="form-control">
                     </th>
@@ -195,17 +205,25 @@
                 </tr>
             </tfoot>
             <tbody>
-                {% for stock in object_list %}
+                {% for feed_purchase in feed_purchases %}
                     <tr>
                         <td>{{forloop.counter}}</td>
-                        <!-- <td>{{ stock.date_added | date:"d-m-y" }}</td> -->
-                        <!-- <td class="highlight-column">{{ stock.name | default:"-" }}</td> -->
-                        <td class="highlight-column">{{ stock.marathit_name | default:"-" }}</td>
-                        <td class="highlight-column">{{ stock.quantity | default:"-"}}</td>
-                        <!-- <td>{{ stock.original_price | default:"-" }}</td>
-                        <td>{{ stock.selling_price | default:"-" }}</td> -->
+                        <td>{{ feed_purchase.date_created | date:"d-m-y" }}</td>
+                        <td class="highlight-column">{{ feed_purchase.taken_user }}</td>
+                        <td class="highlight-column">{{ feed_purchase.stock }}</td>
+                        <td class="highlight-column">{{ feed_purchase.quantity_taken }}</td>
+                        <td>{{ feed_purchase.purchase_amount }}</td>
+                        <td>{{ feed_purchase.total_purchase_amount }}</td>
+                        <td class="payment-status">
+                            {% if feed_purchase.is_paid == True %}
+                              Paid
+                            {% else %}
+                              Unpaid
+                            {% endif %}
+                          </td>
+                          
                         <td>
-                            <a href="{% url 'stock_food_management:stock-update' stock.id %}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                            <a href="{% url 'stock_food_management:feedpurchase-update' feed_purchase.id %}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
                         </td>    
                         <!-- <td>{{ stock.description }}</td> -->
                     </tr>

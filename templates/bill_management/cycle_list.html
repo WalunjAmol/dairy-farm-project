@@ -168,7 +168,7 @@
                     <th class="highlight-columns">Cycle Name</th>
                     <th>From Date</th>
                     <th>To Date</th>
-                    <th style="width: 125px;">Action</th>
+                    <th style="width: 125px;">View Details</th>
                 </tr>
             </thead>
             <tfoot class="click-hide">
@@ -187,11 +187,14 @@
                 {% for cycle in cycles %}
                     <tr>
                         <td>{{forloop.counter}}</td>
-                        <td class="highlight-column">{{ cycle.name }}</td>
+                        <td class="highlight-column">
+                            <a href="{% url 'bill_management:user-bill-mgt-list' cycle.id %}">{{ cycle.name }}</a>
+                        </td>
+                                                
                         <td>{{ cycle.from_date }}</td>
                         <td>{{ cycle.to_date }}</td>
                         <td>
-                            {% comment %} <a href="{% url 'stock_food_management:stock-update' stock.id %}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a> {% endcomment %}
+                            <a href="{% url 'bill_management:user-bill-mgt-list' cycle.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a> 
                         </td>    
                     </tr>
                 {% empty %}

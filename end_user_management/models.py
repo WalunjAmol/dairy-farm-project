@@ -16,6 +16,7 @@ class EndUser(models.Model):
     custom_id = models.PositiveIntegerField(blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
+    marathi_name = models.CharField(max_length=255,blank=True,null=True)
     password = models.CharField(max_length=128, default=make_password("User@123"))
     birth_date = models.DateField(blank=True, null=True)
     mobile_number = models.CharField(

@@ -66,9 +66,9 @@ input[type=number] {
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-6 position-relative mb-3">
+                                <div class="col-sm-4 position-relative mb-3">
                                     <label for="original_price" class="form-label">
-                                        Original Price <span class="required-field"></span>
+                                        Original Price <span class=""></span>
                                     </label>
                                     <div class="input-group">{{ form.original_price }}</div>
                                     {% if form.original_price.errors %}
@@ -79,15 +79,27 @@ input[type=number] {
                                         </div>
                                     {% endif %}
                                 </div>
-                                <div class="col-sm-6 position-relative mb-3">
+                                <div class="col-sm-4 position-relative mb-3">
                                     <label for="email" class="form-label">
-                                        Selling Price <span class="required-field"></span>
+                                        Selling Price <span class=""></span>
                                     </label>
                                     <div class="input-group">{{ form.selling_price }}</div>
                                     {% if form.selling_price.errors %}
                                         <div class="error-red alert-dismissable">
                                             <div class="errorlist">
                                                 <small>{{ form.selling_price.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div><div class="col-sm-4 position-relative mb-3">
+                                    <label for="marathit_name" class="form-label">
+                                        पशुखाद्याच नाव<span class="required-field"></span>
+                                    </label>
+                                    <div class="input-group">{{ form.marathit_name }}</div>
+                                    {% if form.marathit_name.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.marathit_name.errors|escape }}</small>
                                             </div>
                                         </div>
                                     {% endif %}

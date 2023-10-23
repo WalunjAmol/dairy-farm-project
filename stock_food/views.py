@@ -1,9 +1,11 @@
 from django.shortcuts import render
-from django.views.generic import ListView,CreateView,UpdateView
+from django.views.generic import ListView,CreateView,UpdateView,DeleteView
 from django.urls import reverse_lazy
 
 from .models import Stock
 from .forms import StockForm, StockUpdateForm
+from .models import FeedPurchase
+from .forms import FeedPurchaseCreateForm,FeedPurchaseUpdateForm
 
 import random
 import string
@@ -58,4 +60,59 @@ class StockUpdateView(UpdateView):
     template_name = 'stock_food/stock_update.html'
     success_url = reverse_lazy('stock_food_management:stock-list')
 
+
+
+class FeedPurchaseCreateView(CreateView):
+    model = FeedPurchase
+    form_class = FeedPurchaseCreateForm
+    template_name = 'stock_food/feedpurchase_create_form.html'
+    success_url = reverse_lazy('stock_food_management:feedpurchase-list')
+    success_message = "Feed Purchased Successfully"
+
+
+    def form_valid(self, form):
+        print("**********",form.data.get('stock'))
+        stock_obj = Stock.objects.get(id=form.data.get('stock'))
+        stock_qty = stock_obj.quantity-int(form.data.get('quantity_taken'))
+        stock_obj.quantity = stock_qty
+        stock_obj.save()
+        form.instance.dairy = self.request.user.dairy 
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+class FeedPurchaseListView(ListView):
+    model = FeedPurchase
+    template_name = 'stock_food/feedpurchase_list.html'
+    context_object_name = 'feed_purchases'
+
+class FeedPurchaseUpdateView(UpdateView):
+    model = FeedPurchase
+    form_class = FeedPurchaseUpdateForm
+    template_name = 'stock_food/feedpurchase_update_form.html'
+    success_url = reverse_lazy('stock_food_management:feedpurchase-list')
+    success_message = "Feed Updated Successfully"
+
+    def form_valid(self, form):
+        # Retrieve the original feed purchase object
+        original_feed_purchase = self.get_object()
+        
+        # Calculate the difference in quantity taken
+        quantity_difference = form.cleaned_data['quantity_taken'] - original_feed_purchase.quantity_taken
+        print('quantity_taken',form.cleaned_data['quantity_taken'])
+        print('original_feed_purchase.quantity_taken',original_feed_purchase.quantity_taken)
+        print('quantity_difference',quantity_difference)
+
+        # Update the stock quantity
+        stock_obj = original_feed_purchase.stock
+        stock_obj.quantity -= quantity_difference
+        stock_obj.save()
+
+        return super().form_valid(form)
+
+
+class FeedPurchaseDeleteView(DeleteView):
+    model = FeedPurchase
+    template_name = 'stock_food/feedpurchase_confirm_delete.html'
+    success_url = reverse_lazy('stock_food_management:feedpurchase-list')
+    success_message = "Feed Deleted Successfully"
 

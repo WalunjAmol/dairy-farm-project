@@ -66,7 +66,7 @@ input[type=number] {
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-6 position-relative mb-3">
+                                <div class="col-sm-4 position-relative mb-3">
                                     <label for="phone_number" class="form-label">
                                         Customer ID <span class="required-field"></span>
                                     </label>
@@ -79,7 +79,20 @@ input[type=number] {
                                         </div>
                                     {% endif %}
                                 </div>
-                                <div class="col-sm-6 position-relative mb-3">
+                                <div class="col-sm-4 position-relative mb-3">
+                                    <label for="marathi_name" class="form-label">
+                                        नाव टाका<span class="required-field"></span>
+                                    </label>
+                                    <div class="input-group">{{ form.marathi_name }}</div>
+                                    {% if form.marathi_name.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.marathi_name.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-4 position-relative mb-3">
                                     <label for="email" class="form-label">
                                         Birth Date <span class=""></span>
                                     </label>

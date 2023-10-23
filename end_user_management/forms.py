@@ -31,13 +31,15 @@ class EndUserForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"placeholder": "Enter Custom ID", "class": "form-control"}),
         error_messages={"required": "Custom ID cannot be empty."},
     )
-
-    
     mobile_number = forms.CharField(
         label="Mobile Number",
         required=True,
         widget=forms.TextInput(attrs={"placeholder": "Enter Mobile Number", "class": "form-control"}),
         error_messages={"required": "Mobile number cannot be empty."},
+    )
+    marathi_name = forms.CharField(
+        required=True,
+        error_messages={"required": "Marathi name cannot be empty."},
     )
 
     def __init__(self, *args, **kwargs):
@@ -79,12 +81,12 @@ class EndUserForm(forms.ModelForm):
                 'class':'form-control'
             }
         )
-        self.fields["email"].widget.attrs.update(
-            {
-                "placeholder": "Enter Email Address",
-                'class':'form-control'
-            }
-        )
+        self.fields["marathi_name"].widget.attrs.update(
+                {      
+                    "placeholder": "मराठीत नाव टाका.",
+                    "class":"form-control"
+                }
+            )
  
     def clean_mobile_number(self):
         mobile_number = self.cleaned_data.get('mobile_number')
@@ -99,6 +101,7 @@ class EndUserForm(forms.ModelForm):
             'custom_id',
             'first_name',
             'last_name',
+            'marathi_name',
             'birth_date',
             'mobile_number',
             'email',
