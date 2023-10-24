@@ -70,6 +70,27 @@ class AdvancePaymentCreateView(CreateView):
             
         return redirect(self.success_url)
 
+class AdvancePaymentUpdateView(UpdateView):
+    model = AdvancePayment
+    form_class = AdvancePaymentForm
+    template_name = 'advance_payments/advance_payments_form.html'
+    success_url = reverse_lazy('advance_payments:advance-payment-user-list')
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = AdvancePaymentForm(user=request.user, instance=self.object)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = AdvancePaymentForm(request.user, data=request.POST, instance=self.object)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Advance Payment updated successfully.')
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 def get_total_withdrawal_amount(request):

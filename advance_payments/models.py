@@ -1,10 +1,17 @@
 from django.db import models
 from end_user_management.models import EndUser, Dairy
+from bill_management.models import GeneratedCycle
 from django.utils import timezone
 
 class AdvancePayment(models.Model):
     enduser = models.ForeignKey(EndUser, on_delete=models.CASCADE, related_name='advance_payments')
     dairy = models.ForeignKey(Dairy, on_delete=models.CASCADE, related_name='dairy_advance_payments')
+    advance_taken_cycle = models.ForeignKey(
+        GeneratedCycle,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="cycles_with_advance"
+    )
     payment_date = models.DateField(default=timezone.now)
     payment_time = models.TimeField(default=timezone.now)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2)

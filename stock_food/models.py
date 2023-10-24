@@ -33,9 +33,9 @@ class Stock(MasterModel):
 class FeedPurchase(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.SET_NULL, null=True, related_name='feed_purchases_stock')
     taken_user = models.ForeignKey(EndUser, on_delete=models.SET_NULL, null=True, related_name='feed_purchases_user')
-    quantity_taken = models.PositiveBigIntegerField(blank=True, null=True)
-    purchase_amount = models.PositiveBigIntegerField(blank=True, null=True)
-    total_purchase_amount = models.PositiveBigIntegerField(blank=True, null=True)
+    quantity_taken = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    purchase_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_purchase_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     is_paid = models.BooleanField(default=False)

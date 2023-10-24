@@ -468,11 +468,11 @@
                                     <!-- Add other transaction details as needed -->
                                     <th>दिनांक</th>
                                     <th>लिटर</th>
-                                    <th>फॅट (%)</th>
-                                    <th>लॅक्टो (%)</th>
-                                    <th>एसएनएफ (%)</th>
-                                    <th>दर (रुपये)</th>
-                                    <th>रक्कम (रुपये)</th>
+                                    <th>फॅट</th>
+                                    <th>लॅक्टो</th>
+                                    <th>एसएनएफ</th>
+                                    <th>दर</th>
+                                    <th>रक्कम</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -516,11 +516,11 @@
                                     <tr>
                                         <th>दिनांक</th>
                                         <th>लिटर</th>
-                                        <th>फॅट (%)</th>
-                                        <th>लॅक्टो (%)</th>
-                                        <th>एसएनएफ (%)</th>
-                                        <th>दर (रुपये)</th>
-                                        <th>रक्कम (रुपये)</th>
+                                        <th>फॅट</th>
+                                        <th>लॅक्टो</th>
+                                        <th>एसएनएफ</th>
+                                        <th>दर</th>
+                                        <th>रक्कम</th>
                                         {% comment %} <th>Date</th>
                                         <!-- <th>Shift</th> -->
                                         <th>Liters</th>
@@ -623,7 +623,7 @@
                             <td><span id="remaining_amount">{{ remaining_amount | default:'0' }}</span></td>
                         </tr>
                         <tr>
-                            <td>रक्कम वजा</td>
+                            <td>रक्कम कपात</td>
                             <td><span id="last_deduction_amount">{{ last_deduction_amount | default:'0' }}</span></td>
                         </tr>
                     </tbody>
@@ -642,8 +642,8 @@
                             <th>दिनांक</th>
                             <th>नाव</th>
                             <th>नग</th>
-                            <th>दर</th>
-                            <th>रक्कम</th>
+                            <th>दर (रुपये)</th>
+                            <th>रक्कम (रुपये)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -669,7 +669,7 @@
                             <td colspan="1" class="total-column">एकूण</td>
                             <td colspan="2" class="total-column">{{total_feed_quantity}} पोती</td>
                             <td class="total-column">
-                                {{ total_Purchase_amount }} रुपये
+                                {{ total_Purchase_amount }}
                             </td>
                         </tr>
                     </tfoot>
@@ -685,23 +685,23 @@
                     <tbody>
                         <tr>
                             <td>एकूण बिल रक्कम</td>
-                            <td>{{ milk_transation_sum | default:'0' }} रुपये.</td>
+                            <td>{{ milk_transation_sum | default:'0' }}</td>
                         </tr>
                         <tr>
                             <td>बोनस कपात</td>
-                            <td>{{ last_cycle_bonus_deduct | default:'0' }} रुपये.</td>
+                            <td>{{ last_cycle_bonus_deduct | default:'0' }}</td>
                         </tr>
                         <tr>
                             <td>ऍडव्हान्स कपात</td>
-                            <td><span id="last_deduction_amount">{{ last_deduction_amount | default:'0' }} रुपये.</span></td>
+                            <td><span id="finale_adv_deduction_amount">{{ last_deduction_amount | default:'0' }}</span></td>
                         </tr>
                         <tr>
                             <td>पशुखाद्य कपात</td>
-                            <td>{{ total_Purchase_amount | default:'0' }} रुपये.</td>
+                            <td>{{ total_Purchase_amount | default:'0' }}</td>
                         </tr>
                         <tr>
                             <td  style="font-size: 15px; font-weight: bold;">निव्वळ शिलक</td>
-                            <td><span id="finale_amount" style="font-size: 15px; font-weight: bold;">{{ finale_amount | default:'0' }} रुपये.</span></td>
+                            <td><span id="finale_amount" style="font-size: 15px; font-weight: bold;">{{ finale_amount | default:'0' }}</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -773,6 +773,8 @@
                         // Update the displayed values without refreshing the page
                         document.getElementById('last_deduction_amount').innerText = data.last_deduction_amount;
                         document.getElementById('remaining_amount').innerText = data.remaining_amount;
+
+                        document.getElementById('finale_adv_deduction_amount').innerText = data.finale_adv_deduction_amount;
 
                        
                         document.getElementById('finale_amount').innerText = data.finale_amount;

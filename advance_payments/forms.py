@@ -49,6 +49,11 @@ class AdvancePaymentForm(forms.ModelForm):
                 "class":"form-control"
             }
         )
+        self.fields["advance_taken_cycle"].widget.attrs.update(
+            {      
+                "class":"form-control"
+            }
+        )
     
     class Meta:
         model = AdvancePayment

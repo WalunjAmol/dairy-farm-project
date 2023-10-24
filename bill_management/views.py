@@ -173,13 +173,16 @@ class GenerateBill(ListView):
                 )
             )
         ).values('total_advance').first()
+
+
         last_deduction_amount = AdvancePayment.objects.filter(
                     enduser=user_info,
-                    transaction_type='deduct'
+                    transaction_type='deduct',
+                    advance_taken_cycle=cycle_object,
                 ).exclude(payment_date__gt=timezone.now().date(), payment_time__gt=timezone.now().time()).order_by(
                     F('payment_date').desc(), F('payment_time').desc()
                 ).values('payment_amount').first()
-
+        print('last_deduction_amountlast_deduction_amountlast_deduction_amountlast_deduction_amount',last_deduction_amount)
         if last_deduction_amount:
             last_deduction_amount = last_deduction_amount['payment_amount']
         else:
@@ -274,7 +277,7 @@ def deduct_amount_view(request):
             print('deduction_amount',deduction_amount)
             print('total_advance_payment',total_advance_payment)
             if total_advance_payment > deduction_amount:
-                AdvancePayment.objects.create(enduser=user,dairy=request.user.dairy,payment_amount=deduction_amount,description=f'Amount is dedcuted from the bill and bill date {current_date}',transaction_type='deduct') or 0
+                AdvancePayment.objects.create(enduser=user,dairy=request.user.dairy,advance_taken_cycle=cycle_object, payment_amount=deduction_amount,description=f'Amount is dedcuted from the bill and bill date {current_date}',transaction_type='deduct') or 0
                 # return JsonResponse({'success': True, 'message': 'Deduction successful.'})
                 total_advance_payment_taken= AdvancePayment.objects.filter(enduser=user, transaction_type='withdrawal').aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus'] or 0
                 total_remaining_amount = EndUser.objects.filter(id=user.id).annotate(
@@ -322,6 +325,7 @@ def deduct_amount_view(request):
                 'message': 'Deduction successful.',
                 'total_advance_payment_taken':total_advance_payment_taken,
                 'last_deduction_amount': last_deduction_amount,  # Add this line to include the updated total amount deduction
+                'finale_adv_deduction_amount': last_deduction_amount,  # Add this line to include the updated total amount deduction
                 'remaining_amount': total_remaining_amount.get('total_advance'),  # Add this line to include the updated remaining amount
 
                 'milk_transation_amount_sum':milk_transation_amount_sum,

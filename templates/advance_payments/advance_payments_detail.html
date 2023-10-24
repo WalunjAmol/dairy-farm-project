@@ -117,28 +117,27 @@
                 <thead class="table-dark">
                     <tr>
                         <th>Date</th>
-                        <th>Time</th>
                         <th>Advance Payment Amount</th>
                         <th>Transaction Type</th>
+                        <th>Advance Cycle</th>
                         {% comment %} <th>Approved</th> {% endcomment %}
                          {% comment %} <th>Paid</th>  {% endcomment %}
                         <th>Description</th>
-                        <!-- Add more columns as needed -->
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for transaction in transactions %}
                         <tr>
                             <td>{{ transaction.payment_date }}</td>
-                            <td>{{ transaction.payment_time }}</td>
                             <td class="bonus-amount"> {{ transaction.payment_amount }} <span class="currency">&#8377;</span></td>
-                            <td>{% if transaction.transaction_type == 'deduct' %} Amount Deduct {% else %} Amount Paid {% endif %}</td>
+                            <td>{% if transaction.transaction_type == 'deduct' %} Amount Received from {{ user.first_name }} {{ user.last_name }}{% else %} Amount Paid to {{ user.first_name }} {{ user.last_name }} {% endif %}</td>
                             {% comment %} <td>{{ transaction.transaction_source }}</td> {% endcomment %}
                             {% comment %} <td>{% if transaction.is_approved %}Yes{% else %}No{% endif %}</td> {% endcomment %}
                             {% comment %} <td>{% if transaction.is_paid %}Yes{% else %}No{% endif %}</td> {% endcomment %}
+                            <td>{{ transaction.advance_taken_cycle | default:'-' }}</td>
                             <td>{{ transaction.description }}</td>
-
-                            <!-- Add more columns as needed -->
+                            <td><a href="{% url 'advance_payments:advance-payyment-update' transaction.id %}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
