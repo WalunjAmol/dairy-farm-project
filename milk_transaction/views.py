@@ -24,36 +24,11 @@ class MilkTransactionListView(ListView):
     model = MilkTransaction
     template_name = 'milk_transaction/transaction_list.html'
     context_object_name = 'transactions'
-    paginate_by = 10  # Set the number of records per page
-
 
     def get_queryset(self):
         user = self.request.user
         queryset = MilkTransaction.objects.filter(end_user__dairy_name__role=user.dairy.role)
         return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        paginator = context['paginator']
-        page_numbers_range = 200  # Set the number of pagination numbers to display
-
-        # Ensure we have enough pages to show
-        if paginator.num_pages > page_numbers_range:
-            page = context['page_obj']
-            current_page = page.number
-            start_page = max(current_page - (page_numbers_range // 2), 1)
-            end_page = min(current_page + (page_numbers_range // 2), paginator.num_pages)
-
-            if start_page == 1:
-                end_page = page_numbers_range
-            if end_page == paginator.num_pages:
-                start_page = paginator.num_pages - page_numbers_range + 1
-
-            page_range = range(start_page, end_page + 1)
-            context['page_range'] = page_range
-
-        return context
-
 
 
 @method_decorator(login_required, name='dispatch')
