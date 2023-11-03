@@ -9,6 +9,8 @@ urlpatterns = [
     path('user-bill-mgt/<int:pk>', BillMgtUserListView.as_view(), name='user-bill-mgt-list'),
     path('generate-bill/<int:user_id>/<int:cycle_id>',GenerateBill.as_view(),name='generate_bills'),
     path('deduct_amount/', deduct_amount_view, name='deduct_amount'),
+    path('save-data/', save_data, name='save-data'),
+
 
 
     # Other URL patterns for your application...
