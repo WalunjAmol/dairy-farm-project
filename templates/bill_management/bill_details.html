@@ -708,8 +708,8 @@
             </div>
             
         </div>
-    {% comment %} <button class="save-button" onclick="saveData()">Save</button> {% endcomment %}
-    <button class="print-button" disabled onclick="triggerPrint()">Print</button>
+        
+    <button style="float:right" class="print-button" onclick="triggerPrint()">Print</button>
 </div>
 <div id="deduction-popup" class="popup">
     <button class="close-btn" onclick="hideDeductionPopup()">&times;</button>
@@ -799,38 +799,5 @@
             window.print();  // This will trigger the print dialog for the browser
         }
 </script>
-<script>
-    function saveData() {
-        // Create an array to store the feed_purchase IDs
-        var feedPurchaseIds = [];
-    
-        // Loop through feed_purchase data and collect IDs
-        {% for feed in feed_purchase %}
-            feedPurchaseIds.push({{ feed.id }});
-        {% endfor %}
-    
-        // Make an AJAX call to the backend to save the data
-        $.ajax({
-            type: "POST",
-            url: "{% url 'bill_management:save-data' %}",  // Use the URL name defined in urls.py
-            data: { feed_purchase_ids: feedPurchaseIds },
-            success: function(data) {
-                // If the data is successfully saved, activate the "Print" button
-                document.querySelector(".print-button").disabled = false;
-            },
-            error: function(error) {
-                console.error("Error saving data: " + error);
-            }
-        });
-    }
-    </script>
-    <script>
-        document.addEventListener("keydown", function (e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === "p") {
-                e.preventDefault();
-            }
-        });
-        </script>
-    
 </body>
 {% endblock %}
