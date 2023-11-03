@@ -137,120 +137,143 @@ class BillMgtUserListView(ListView):
         
         return context
 
-@method_decorator(login_required, name='dispatch')
+
 class GenerateBill(ListView):
     model = MilkTransaction
     template_name = 'bill_management/bill_details.html'
     context_object_name = 'transactions'
 
+    def get_queryset(self):
+        # Fetch relevant parameters from URL
+        cycle_id = self.kwargs.get('cycle_id')
+        user_id = self.kwargs.get('user_id')
+        
+        # Fetch the cycle object
+        cycle_object = GeneratedCycle.objects.get(id=cycle_id)
+        
+        # Filter MilkTransaction objects for the specified user and date range
+        queryset = self.model.objects.filter(
+            end_user=user_id,
+            date__range=(cycle_object.from_date, cycle_object.to_date)
+        ).order_by('date')
+        
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        
+        # Fetch relevant parameters from URL
         cycle_id = self.kwargs.get('cycle_id')
-        cycle_object = GeneratedCycle.objects.get(id=cycle_id)
-
+        user_id = self.kwargs.get('user_id')
         
-        user_id =self.kwargs.get('user_id')
+        # Fetch the cycle object and user info
+        cycle_object = GeneratedCycle.objects.get(id=cycle_id)
         user_info = EndUser.objects.get(id=user_id)
-        current_date = date.today()
 
-        total_advance_payment = AdvancePayment.objects.filter(enduser=user_info, transaction_type='withdrawal').aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus']
-        # total_recovered_payment = AdvancePayment.objects.filter(enduser=user_info, transaction_type='deduct').aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus']
+        # Fetch total advance payments
+        total_advance_payment = AdvancePayment.objects.filter(
+            enduser=user_info,
+            transaction_type='withdrawal'
+        ).aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus']
+
+        # Fetch last deduction amount
+        last_deduction_amount = AdvancePayment.objects.filter(
+            enduser=user_info,
+            transaction_type='deduct',
+            advance_taken_cycle=cycle_object,
+        ).exclude(payment_date__gt=timezone.now().date(), payment_time__gt=timezone.now().time()
+        ).order_by(F('payment_date').desc(), F('payment_time').desc()
+        ).values('payment_amount').first()
+
+        last_deduction_amount = last_deduction_amount['payment_amount'] if last_deduction_amount else 0
+
+        # Calculate total remaining amount
         total_remaining_amount = EndUser.objects.filter(id=user_info.id).annotate(
-        total_advance=Sum(
+            total_advance=Sum(
                 Case(
-                    When(
-                        advance_payments__transaction_type='withdrawal',
-                        then=F('advance_payments__payment_amount')
-                    ),
-                    When(
-                        advance_payments__transaction_type='deduct',
-                        then=-F('advance_payments__payment_amount')
-                    ),
+                    When(advance_payments__transaction_type='withdrawal', then=F('advance_payments__payment_amount')),
+                    When(advance_payments__transaction_type='deduct', then=-F('advance_payments__payment_amount')),
                     default=Value(0),
                     output_field=DecimalField(max_digits=10, decimal_places=2)
                 )
             )
         ).values('total_advance').first()
-
-
-        last_deduction_amount = AdvancePayment.objects.filter(
-                    enduser=user_info,
-                    transaction_type='deduct',
-                    advance_taken_cycle=cycle_object,
-                ).exclude(payment_date__gt=timezone.now().date(), payment_time__gt=timezone.now().time()).order_by(
-                    F('payment_date').desc(), F('payment_time').desc()
-                ).values('payment_amount').first()
-        print('last_deduction_amountlast_deduction_amountlast_deduction_amountlast_deduction_amount',last_deduction_amount)
-        if last_deduction_amount:
-            last_deduction_amount = last_deduction_amount['payment_amount']
-        else:
-            last_deduction_amount = 0
-    
-        # Extract the total withdrawal amount from the queryset
+        
         total_remaining_amount = total_remaining_amount['total_advance'] if total_remaining_amount else 0.00
 
-        
+        # Calculate bonus-related values
         from_date = cycle_object.from_date
         to_date = cycle_object.to_date
-        bonus_sum = Bonus.objects.filter(user_id=user_id, transaction_type='bonus_added').aggregate(Sum('bonus_amount')).get('bonus_amount__sum') or 0
-        last_cycle_bonus_deduct = Bonus.objects.filter(user_id=user_id, transaction_type='bonus_added',bonus_date__range=(from_date,to_date)).aggregate(Sum('bonus_amount')).get('bonus_amount__sum') or 0
+        bonus_sum = Bonus.objects.filter(
+            user_id=user_id,
+            transaction_type='bonus_added'
+        ).aggregate(Sum('bonus_amount')).get('bonus_amount__sum') or 0
+        last_cycle_bonus_deduct = Bonus.objects.filter(
+            user_id=user_id,
+            transaction_type='bonus_added',
+            bonus_date__range=(from_date, to_date)
+        ).aggregate(Sum('bonus_amount')).get('bonus_amount__sum') or 0
 
-        
-        milk_transation_amount_sum_morning = MilkTransaction.objects.filter(end_user=user_info,date__range=(from_date,to_date),transaction_shift='M').aggregate(Sum('transaction_amount')).get('transaction_amount__sum') or 0
-        milk_transation_amount_sum_evening = MilkTransaction.objects.filter(end_user=user_info,date__range=(from_date,to_date),transaction_shift='E').aggregate(Sum('transaction_amount')).get('transaction_amount__sum') or 0
-        milk_transation_amount_sum=milk_transation_amount_sum_morning+milk_transation_amount_sum_evening
-        
-        milk_transation_liter_sum_morning = MilkTransaction.objects.filter(end_user=user_info,date__range=(from_date,to_date),transaction_shift='M').aggregate(Sum('transaction_liters')).get('transaction_liters__sum') or 0
-        milk_transation_liter_sum_evening = MilkTransaction.objects.filter(end_user=user_info,date__range=(from_date,to_date),transaction_shift='E').aggregate(Sum('transaction_liters')).get('transaction_liters__sum') or 0
-        milk_transation_liter_sum=milk_transation_liter_sum_morning+milk_transation_liter_sum_evening
+        # Calculate milk transaction amounts and liters
+        milk_transation_amount_sum_morning = MilkTransaction.objects.filter(
+            end_user=user_info,
+            date__range=(from_date, to_date),
+            transaction_shift='M'
+        ).aggregate(Sum('transaction_amount')).get('transaction_amount__sum') or 0
+        milk_transation_amount_sum_evening = MilkTransaction.objects.filter(
+            end_user=user_info,
+            date__range=(from_date, to_date),
+            transaction_shift='E'
+        ).aggregate(Sum('transaction_amount')).get('transaction_amount__sum') or 0
 
-        # feed_purchase =  FeedPurchase.objects.filter(taken_user=user_info,date_created__range=(from_date,to_date))
-        feed_purchase =  FeedPurchase.objects.filter(taken_user=user_info,is_paid=False)
-        total_feed_quantity = FeedPurchase.objects.filter(taken_user=user_info,is_paid=False).aggregate(Sum('quantity_taken')).get('quantity_taken__sum') or 0
-        total_Purchase_amount = FeedPurchase.objects.filter(taken_user=user_info,is_paid=False).aggregate(Sum('total_purchase_amount')).get('total_purchase_amount__sum') or 0
+        milk_transation_liter_sum_morning = MilkTransaction.objects.filter(
+            end_user=user_info,
+            date__range=(from_date, to_date),
+            transaction_shift='M'
+        ).aggregate(Sum('transaction_liters')).get('transaction_liters__sum') or 0
+        milk_transation_liter_sum_evening = MilkTransaction.objects.filter(
+            end_user=user_info,
+            date__range=(from_date, to_date),
+            transaction_shift='E'
+        ).aggregate(Sum('transaction_liters')).get('transaction_liters__sum') or 0
 
-        
-        print('milk_transation_amount_sum',milk_transation_amount_sum)
-        print('last_cycle_bonus_deduct',last_cycle_bonus_deduct)
-        print('last_deduction_amount',last_deduction_amount)
-        print('total_Purchase_amount',total_Purchase_amount)
-        finale_amount = (milk_transation_amount_sum-last_cycle_bonus_deduct-last_deduction_amount-total_Purchase_amount)
-        
-        context['milk_transation_amount_sum_morning'] = milk_transation_amount_sum_morning
-        context['milk_transation_amount_sum_evening'] = milk_transation_amount_sum_evening
-        context['milk_transation_liter_sum_morning'] = milk_transation_liter_sum_morning
-        context['milk_transation_liter_sum_evening'] = milk_transation_liter_sum_evening
+        milk_transation_amount_sum = milk_transation_amount_sum_morning + milk_transation_amount_sum_evening
+        milk_transation_liter_sum = milk_transation_liter_sum_morning + milk_transation_liter_sum_evening
 
-        context['finale_amount'] = finale_amount
+        # Fetch feed purchases
+        feed_purchase = FeedPurchase.objects.filter(
+            taken_user=user_info,
+            is_paid=False,
+            date_created__range=(from_date, to_date),
+        )
+        total_feed_quantity = feed_purchase.aggregate(Sum('quantity_taken')).get('quantity_taken__sum') or 0
+        total_purchase_amount = feed_purchase.aggregate(Sum('total_purchase_amount')).get('total_purchase_amount__sum') or 0
 
-        context['feed_purchase'] = feed_purchase
-        context['total_feed_quantity'] = total_feed_quantity
-        context['total_Purchase_amount'] = total_Purchase_amount
+        # Calculate the final amount
+        finale_amount = (milk_transation_amount_sum - last_cycle_bonus_deduct - last_deduction_amount - total_purchase_amount)
 
-        context['milk_transation_liter_sum'] = milk_transation_liter_sum
-        context['milk_transation_sum'] = milk_transation_amount_sum
-        
-        context['last_cycle_bonus_deduct'] = last_cycle_bonus_deduct
-        context['total_bonus'] =bonus_sum
-        
-        context['total_advanced_amount'] = total_advance_payment
-        context['last_deduction_amount'] = last_deduction_amount
-        context['remaining_amount'] = total_remaining_amount
-        # context['transactions'] = AdvancePayment.objects.filter(enduser=user_info)
+        context.update({
+            'milk_transation_amount_sum_morning': milk_transation_amount_sum_morning,
+            'milk_transation_amount_sum_evening': milk_transation_amount_sum_evening,
+            'milk_transation_liter_sum_morning': milk_transation_liter_sum_morning,
+            'milk_transation_liter_sum_evening': milk_transation_liter_sum_evening,
+            'finale_amount': finale_amount,
+            'feed_purchase': feed_purchase,
+            'total_feed_quantity': total_feed_quantity,
+            'total_Purchase_amount': total_purchase_amount,
+            'milk_transation_liter_sum': milk_transation_liter_sum,
+            'milk_transation_sum': milk_transation_amount_sum,
+            'last_cycle_bonus_deduct': last_cycle_bonus_deduct,
+            'total_bonus': bonus_sum,
+            'total_advanced_amount': total_advance_payment,
+            'last_deduction_amount': last_deduction_amount,
+            'remaining_amount': total_remaining_amount,
+            'current_date': date.today(),
+            'cycle_name': cycle_object,
+            'user_info': user_info
+        })
 
-        context['current_date'] = current_date
-        context['cycle_name'] = cycle_object
-        context['user_info'] = user_info
         return context
-
-    def get_queryset(self):
-        cycle_id = self.kwargs.get('cycle_id')
-        user_id =self.kwargs.get('user_id')
-        cycle_object = GeneratedCycle.objects.get(id=cycle_id)
-        queryset = self.model.objects.filter(end_user=user_id,date__range=(cycle_object.from_date, cycle_object.to_date))
-        return queryset
     
 import json
 from django.http import JsonResponse
@@ -341,3 +364,20 @@ def deduct_amount_view(request):
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+
+
+def save_data(request):
+    if request.method == 'POST':
+        feed_purchase_ids = request.POST.getlist('feed_purchase_ids[]')
+        print("***************"*1000)
+        print('feed_purchase_ids',feed_purchase_ids)
+
+        # Implement your data-saving logic here, e.g., saving to the database
+
+        # Return a JSON response to indicate success
+        return JsonResponse({'success': True})
+
+    # Handle other HTTP methods or errors if needed
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
