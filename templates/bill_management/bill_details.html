@@ -147,6 +147,16 @@
             margin-top: 10px;
             float: right;
         }
+        .back-button {
+            padding: 10px 20px;
+            background-color: #5c636a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            float: right;
+        }
 
         /* Add styles for the popup */
         .popup {
@@ -394,6 +404,9 @@
                     display: none;
                 }
                 .print-button{
+                    display: none;
+                }
+                .back-button{
                     display: none;
                 }
                 .bonus-deduction-section h5{
@@ -708,7 +721,7 @@
             </div>
             
         </div>
-        
+    <a class="back-button" style="float:left" href="{% url 'bill_management:user-bill-mgt-list' cycle_name.id %}">Back</a>
     <button style="float:right" class="print-button" onclick="triggerPrint()">Print</button>
 </div>
 <div id="deduction-popup" class="popup">
