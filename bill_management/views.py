@@ -241,9 +241,13 @@ class GenerateBill(ListView):
         milk_transation_liter_sum = milk_transation_liter_sum_morning + milk_transation_liter_sum_evening
 
         # Fetch feed purchases
+        # feed_purchase = FeedPurchase.objects.filter(
+        #     taken_user=user_info,
+        #     is_paid=False,
+        #     date_created__range=(from_date, to_date),
+        # )
         feed_purchase = FeedPurchase.objects.filter(
             taken_user=user_info,
-            is_paid=False,
             date_created__range=(from_date, to_date),
         )
         total_feed_quantity = feed_purchase.aggregate(Sum('quantity_taken')).get('quantity_taken__sum') or 0
