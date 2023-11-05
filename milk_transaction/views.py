@@ -63,6 +63,7 @@ class MilkTransactionCreateView(CreateView):
     # def form_invalid(self,form):
     #     print('form',form.errors)
     
+
 @method_decorator(login_required, name='dispatch')
 class MilkTransactionUpdateView(UpdateView):
     model = MilkTransaction
@@ -71,21 +72,22 @@ class MilkTransactionUpdateView(UpdateView):
     success_url = reverse_lazy('milk_transaction:milk-transaction-list')
 
     def get(self, request, *args, **kwargs):
-        form = MilkTransactionForm(instance = self.model.objects.filter(id=kwargs['pk']).last(),user=request.user)
-        return render(request, self.template_name, {'form':form})
-    
-    def post(self, request, *args, **kwargs):
-        data = request.POST
-        form = MilkTransactionForm(data=data,user=request.user)
+        instance = self.get_object()  # Use the get_object() method to retrieve the object
+        form = MilkTransactionForm(instance=instance, user=request.user)
+        return render(request, self.template_name, {'form': form})
 
-        if not form.is_valid():
-            return render(request, self.template_name, {'form':form})
+    def post(self, request, *args, **kwargs):
+        instance = self.get_object()  # Use the get_object() method to retrieve the object
+        form = MilkTransactionForm(data=request.POST, instance=instance, user=request.user)
 
         if form.is_valid():
             form.save()
             messages.success(self.request, 'Record Updated Successfully.')
-            
             return redirect('milk_transaction:milk-transaction-list')
+        else:
+            messages.error(self.request, 'Error in the form. Please check the data.')
+            return render(request, self.template_name, {'form': form})
+
 
     
 

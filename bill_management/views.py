@@ -253,6 +253,21 @@ class GenerateBill(ListView):
         total_feed_quantity = feed_purchase.aggregate(Sum('quantity_taken')).get('quantity_taken__sum') or 0
         total_purchase_amount = feed_purchase.aggregate(Sum('total_purchase_amount')).get('total_purchase_amount__sum') or 0
 
+        bill_total_purchase_amount = total_purchase_amount
+        if total_purchase_amount > (milk_transation_amount_sum-last_cycle_bonus_deduct):
+            amt_forward_next_month = total_purchase_amount - (milk_transation_amount_sum-last_cycle_bonus_deduct)
+           
+            feed_purchase_instance, created = FeedPurchase.objects.get_or_create(
+                taken_user=user_info,
+                quantity_taken='1',
+                purchase_amount=amt_forward_next_month,
+                total_purchase_amount=amt_forward_next_month,
+                created_by=self.request.user,
+                dairy=self.request.user.dairy,
+                extra_field="उर्वरित रक्कम"
+            )
+            total_purchase_amount=total_purchase_amount-amt_forward_next_month
+
         # Calculate the final amount
         finale_amount = (milk_transation_amount_sum - last_cycle_bonus_deduct - last_deduction_amount - total_purchase_amount)
 
@@ -274,7 +289,8 @@ class GenerateBill(ListView):
             'remaining_amount': total_remaining_amount,
             'current_date': date.today(),
             'cycle_name': cycle_object,
-            'user_info': user_info
+            'user_info': user_info,
+            'bill_total_purchase_amount':bill_total_purchase_amount,
         })
 
         return context
@@ -301,8 +317,8 @@ def deduct_amount_view(request):
             # Assuming you have a specific AdvancePayment instance to deduct from
             total_advance_payment = AdvancePayment.objects.filter(enduser=user, transaction_type='withdrawal').aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus'] or 0
             current_date = date.today()
-            print('deduction_amount',deduction_amount)
-            print('total_advance_payment',total_advance_payment)
+            # print('deduction_amount',deduction_amount)
+            # print('total_advance_payment',total_advance_payment)
             if total_advance_payment > deduction_amount:
                 AdvancePayment.objects.create(enduser=user,dairy=request.user.dairy,advance_taken_cycle=cycle_object, payment_amount=deduction_amount,description=f'Amount is dedcuted from the bill and bill date {current_date}',transaction_type='deduct') or 0
                 # return JsonResponse({'success': True, 'message': 'Deduction successful.'})
@@ -339,13 +355,16 @@ def deduct_amount_view(request):
 
                 milk_transation_amount_sum = MilkTransaction.objects.filter(end_user=user,date__range=(from_date,to_date)).aggregate(Sum('transaction_amount')).get('transaction_amount__sum') or 0
                 last_cycle_bonus_deduct = Bonus.objects.filter(user_id=user, transaction_type='bonus_added',bonus_date__range=(from_date,to_date)).aggregate(Sum('bonus_amount')).get('bonus_amount__sum') or 0
-                total_Purchase_amount = FeedPurchase.objects.filter(taken_user=user,is_paid=False).aggregate(Sum('total_purchase_amount')).get('total_purchase_amount__sum') or 0
+                total_Purchase_amount = FeedPurchase.objects.filter(taken_user=user,date_created__range=(from_date,to_date)).aggregate(Sum('total_purchase_amount')).get('total_purchase_amount__sum') or 0
                 finale_amount = (milk_transation_amount_sum-last_cycle_bonus_deduct-last_deduction_amount-total_Purchase_amount) or 0
                 
-                
-                print('remaining_amount',total_remaining_amount.get('total_advance'))
-                print('deduction_amount',deduction_amount)
+                print('milk_transation_amount_sum',milk_transation_amount_sum)
+                print('last_cycle_bonus_deduct',last_cycle_bonus_deduct)
                 print('last_deduction_amount',last_deduction_amount)
+                print('total_Purchase_amount',total_Purchase_amount)
+                # print('remaining_amount',total_remaining_amount.get('total_advance'))
+                # print('deduction_amount',deduction_amount)
+                # print('last_deduction_amount',last_deduction_amount)
                 
                 return JsonResponse({
                 'success': True,

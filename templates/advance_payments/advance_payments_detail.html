@@ -42,7 +42,7 @@
         .transaction-history td {
             text-align: center;
             font-size: 12px; /* Adjust body font size */
-            padding: 6px; /* Adjust body padding */
+            padding: 5px; /* Adjust body padding */
         }
 
         /* Style for the total bonus in the right corner */
@@ -86,6 +86,17 @@
             margin-top: 10px;
             text-align: right;
         }
+        .received {
+            background-color: green;
+            color: white; /* Optional, to change text color */
+            padding: 4px; /* Optional, to add padding for better visual appeal */
+          }
+        
+          .paid {
+            background-color: red;
+            color: white; /* Optional, to change text color */
+            padding: 4px; /* Optional, to add padding for better visual appeal */
+          }
     </style>
 {% endblock %}
 {% block content %}
@@ -117,7 +128,8 @@
                 <thead class="table-dark">
                     <tr>
                         <th>Date</th>
-                        <th>Advance Payment Amount</th>
+                        <th>Advance Amount Paid</th>
+                        <th>Advance Amount Received</th>
                         <th>Transaction Type</th>
                         <th>Advance Cycle</th>
                         {% comment %} <th>Approved</th> {% endcomment %}
@@ -130,9 +142,24 @@
                     {% for transaction in transactions %}
                         <tr>
                             <td>{{ transaction.payment_date }}</td>
+                            {% if transaction.transaction_type == 'withdrawal' %}
                             <td class="bonus-amount"> {{ transaction.payment_amount }} <span class="currency">&#8377;</span></td>
-                            <td>{% if transaction.transaction_type == 'deduct' %} Amount Received from {{ user.first_name }} {{ user.last_name }}{% else %} Amount Paid to {{ user.first_name }} {{ user.last_name }} {% endif %}</td>
-                            {% comment %} <td>{{ transaction.transaction_source }}</td> {% endcomment %}
+                            {% else %}
+                            <td>-</td>
+                            {% endif %}
+
+                            {% if transaction.transaction_type == 'deduct' %}
+                            <td class="bonus-amount"> {{ transaction.payment_amount }} <span class="currency">&#8377;</span></td>
+                            {% else %}
+                            <td>-</td>
+                            {% endif %}
+                            <td>
+                                {% if transaction.transaction_type == 'deduct' %}
+                                  <span class="received">Amount Received</span>
+                                {% else %}
+                                  <span class="paid">Amount Paid</span>
+                                {% endif %}
+                              </td>
                             {% comment %} <td>{% if transaction.is_approved %}Yes{% else %}No{% endif %}</td> {% endcomment %}
                             {% comment %} <td>{% if transaction.is_paid %}Yes{% else %}No{% endif %}</td> {% endcomment %}
                             <td>{{ transaction.advance_taken_cycle | default:'-' }}</td>
@@ -141,6 +168,16 @@
                         </tr>
                     {% endfor %}
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="total-column" style="font-size: 16px; font-weight: bold;">Total</td>
+                        <td class="total-column" style="font-size: 16px; font-weight: bold;">{{ total_advance_payment|default:0 }} <span class="currency">&#8377;</span></td>
+                        <td class="total-column" style="font-size: 16px; font-weight: bold;">
+                            {{ total_recovered_payment|default:0 }}<span class="currency">&#8377;</span>
+                        </td>
+                    </tr>
+                    
+                </tfoot>
             </table>
         </div>
         <div class="back-button">

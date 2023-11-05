@@ -40,6 +40,7 @@ class FeedPurchase(models.Model):
     update_date = models.DateTimeField(auto_now=True)
     is_paid = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
+    extra_field = models.CharField(max_length=255,blank=True,null=True)
 
     created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='feed_purchases_created_by')
     dairy = models.ForeignKey(Dairy, on_delete=models.SET_NULL, null=True, related_name='feed_purchases_dairy')

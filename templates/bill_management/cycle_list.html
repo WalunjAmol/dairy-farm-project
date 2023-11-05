@@ -2,8 +2,11 @@
 {% load static %}
 
 {% block stylesheets %}
-    <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}" rel="stylesheet" type="text/css">
+   
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+
     <style>
         /* Custom styles for improved look and feel */
         body {
@@ -188,14 +191,23 @@
                     <tr>
                         <td>{{forloop.counter}}</td>
                         <td class="highlight-column">
-                            <a href="{% url 'bill_management:user-bill-mgt-list' cycle.id %}">{{ cycle.name }}</a>
+                            {% if current_date >= cycle.to_date %}
+                                <a href="{% url 'bill_management:user-bill-mgt-list' cycle.id %}">{{ cycle.name }}</a>
+                            {% else %}
+                                <a href="#" onclick="showAlert('{{ cycle.to_date }}')">{{ cycle.name }}</a>
+                            {% endif %}
                         </td>
                                                 
                         <td>{{ cycle.from_date }}</td>
                         <td>{{ cycle.to_date }}</td>
                         <td>
-                            <a href="{% url 'bill_management:user-bill-mgt-list' cycle.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a> 
-                        </td>    
+                            {% if current_date >= cycle.to_date %}
+                                <a href="{% url 'bill_management:user-bill-mgt-list' cycle.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a>
+                            {% else %}
+                                <a href="#" class="action-icon" onclick="showAlert('{{ cycle.to_date }}')"> <i class="mdi mdi-eye"></i></a>
+                            {% endif %}
+                        </td>
+                            
                     </tr>
                 {% empty %}
                 <tr class="no-data-row">
@@ -208,43 +220,22 @@
                 {% endfor %}
             </tbody>
         </table>
-
-        <!-- Pagination -->
-        {% if is_paginated %}
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo;</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link">&laquo;</a>
-                        </li>
-                    {% endif %}
-                    {% for i in page_obj.paginator.page_range %}
-                        {% if page_obj.number == i %}
-                            <li class="page-item active">
-                                <a class="page-link">{{ i }}</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item">
-                                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a href="?page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link">&raquo;</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
+        <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="infoModalLabel">Information</h5>
+                        <button type="button" class="close" onclick=hideModal() data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="modalMessage"></div>
+                    <div class="modal-footer">
+                        <button type="button" onclick=hideModal() class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!-- End container -->
@@ -253,66 +244,9 @@
 {% endblock %}
 
 {% block javascripts %}
-    <!-- Datatables js -->
-    <script src="{% static 'saas/assets/js/vendor/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'saas/assets/js/vendor/dataTables.bootstrap5.js' %}"></script>
-    <script src="{% static 'saas/assets/js/vendor/dataTables.responsive.min.js' %}"></script>
-    <script>
-    $(document).ready(function() {
-        $("#employer-list-table").dataTable({
-            "ordering": true,
-            "bPaginate": true,
-            "searching": true,
-            "bInfo": false,
-            "order": [],
-            aoColumnDefs: [
-                { "aTargets": [ 0 ], "bSortable": false },
-                { "aTargets": [ 1 ], "bSortable": true },
-                { "aTargets": [ 2 ], "bSortable": true },
-                { "aTargets": [ 3 ], "bSortable": true },
-                { "aTargets": [ 4 ], "bSortable": false },
-                { "aTargets": [ 5 ], "bSortable": true },
-                { "aTargets": [ 6 ], "bSortable": false },
-                { "aTargets": [ 7 ], "bSortable": true },
-            ],
-            initComplete: function () {
-                // Apply the search
-                this.api().columns().every( function () {
-                    var that = this;
-                    $('input', this.footer()).on('keyup change clear', function () {
-                        if (that.search() !== this.value) {
-                            that.search(this.value).draw();
-                        }
-                    });
-                });
-            }
-        })
-        $("#employer-list-table_length").hide();
-        $("#employer-list-table_filter").hide();
-    });
-    function delete_record(id, page_label){
-        $('.single_delete_h4').html(page_label);
-        $('.single_delete_p').html(''+page_label.toLowerCase()+'');
-        $('#single-record-id').val(id);
-        $('#delete-single-modal').modal('show');
-    }
-
-        function remove_confirm(delete_url){
-            var id = $('#single-record-id').val();
-            var url = delete_url + id;
-            window.open(url,"_self")
-        }
-
-
-    </script>
-    <script>
-    $(document).ready(function(){
-        $("button").click(function(){
-            $("tfoot").toggleClass("click-hide");
-        });
-    })
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function() {
         $('.form-control').on('keyup', function() {
@@ -333,5 +267,24 @@
         });
     });
 </script>
-
+<script>
+    $(document).ready(function() {
+        // Initialize Bootstrap modal
+        $('#infoModal').modal();
+    });
+    
+    function showAlert(toDate) {
+        // Set the message in the modal
+        document.getElementById('modalMessage').innerHTML = `This billing cycle is not available before ${toDate}. Please wait for the end of this cycle. हे बिलिंग सायकल ${toDate} पूर्वी उपलब्ध नाही. कृपया या बिलिंग सायकलच्या समाप्तीची प्रतीक्षा करा.`;
+    
+        // Show the Bootstrap modal
+        $('#infoModal').modal('show');
+    }
+    </script>
+    <script>
+        function hideModal() {
+            $('#infoModal').modal('hide');
+        }
+    </script>
+    
 {% endblock %}

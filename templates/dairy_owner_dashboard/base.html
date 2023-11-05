@@ -15,6 +15,7 @@
         <!-- third party css -->
         <link href="{% static 'saas/assets/css/vendor/jquery-jvectormap-1.2.2.css'%}" rel="stylesheet" type="text/css" />
         <!-- third party css end -->
+        {% comment %} <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> {% endcomment %}
 
         <!-- App css -->
         <link rel="stylesheet" href="{% static 'css/custom.css' %}">
@@ -88,10 +89,6 @@
             <div class="rightbar-content h-100" data-simplebar>
 
                 <div class="p-3">
-                    <!-- <div class="alert alert-warning" role="alert">
-                        <strong>Customize </strong> the overall color scheme, sidebar menu, etc.
-                    </div> -->
-
                     <!-- Settings -->
                     <h5 class="mt-3">Color Scheme</h5>
                     <hr class="mt-1" />
@@ -156,9 +153,6 @@
 
                     <div class="d-grid mt-4">
                         <button class="btn btn-primary" id="resetBtn">Reset to Default</button>
-<!--             
-                        <a href="https://themes.getbootstrap.com/product/hyper-responsive-admin-dashboard-template/"
-                            class="btn btn-danger mt-3" target="_blank"><i class="mdi mdi-basket me-1"></i> Purchase Now</a> -->
                     </div>
                 </div> <!-- end padding-->
 
@@ -182,102 +176,7 @@
         <script src="{% static 'saas/assets/js/pages/demo.dashboard.js'%}"></script>
         <!-- end demo js-->
 
-        <!-- Scripts For Notifications  -->
-        <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-messaging.js"></script>
-
-         <script>
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAd2z_JSrM10jyn_vqWiVBckfO0QEvgahQ",
-            authDomain: "fcm-baxy-1.firebaseapp.com",
-            projectId: "fcm-baxy-1",
-            storageBucket: "fcm-baxy-1.appspot.com",
-            messagingSenderId: "100243017216",
-            appId: "1:100243017216:web:0c429636ab7f84b7e7d2e5",
-            measurementId: "G-F7GTDHFFFH",
-            databaseURL: "https://fcm-baxy-1.firebaseio.com"
-        };
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@')
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@')
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@')
-        firebase.initializeApp(firebaseConfig);
-            const messaging=firebase.messaging();
-            getStartToken();
-            messaging.onMessage(function(payload){
-                var obj;
-                if(payload.data){
-                    obj = payload.data;
-                    var obj = payload.data;
-                }
-                else{
-                    obj = payload.notification;
-                    var obj = payload.notification;
-                }
-                const notificationTitle = obj.title;
-                const notificationOptions = {
-                    body: obj.body,
-                    data: { url:obj.url}
-                };
-
-                var notification = new Notification(notificationTitle, notificationOptions);
-                notification.onclick = function(event) {
-                    event.preventDefault();
-                    window.open(obj.url , '_blank');
-                    notification.close();
-                }
-
-                var id = String("'"+payload.fcmMessageId+"'");
-                $('#noti-cards').append('<div class="toast show fade  notification" id="'+payload.fcmMessageId+'" role="alert" aria-live="assertive" aria-atomic="true" data-toggle="toast"><div class="toast-header"><strong class="mr-auto">'+obj.title+'</strong><button type="button" onclick="close_notification('+id+')" class="ml-2 mb-1 btn-close toast-close-btn" data-dismiss="toast" aria-label="Close"></button></div><div class="toast-body">'+obj.body+'</div></div>')
-                setTimeout(function(){$('#noti-cards').hide();$('#noti-cards').empty()}, 5000);
-                $('#noti-cards').show();
-            });
-
-            function getStartToken(){
-                    console.log('22222222222222')
-                messaging.getToken().then((currentToken) => {
-                    console.log(currentToken, '@@@@@@@@@@@')
-                if (currentToken) {
-                    sendTokenToServer(currentToken);
-                }
-                else {
-                }
-                }).catch((err) => {
-                    //setTokenSentToServer(false);
-                });
-            }
-            function sendTokenToServer(token){
-                var data = {
-                    'token': token
-                }
-                $.ajax({
-                    type: "POST",
-                    url: "/add-fcm-user/",
-                    data: data,
-                    success: function(output) {},
-                    error: function() {}
-                });
-            }
-
-         function close_notification(id){
-             $('#'+id).hide();
-         }
-        $(".theme-select").click(function() {
-            var themeId = $(this).find("[name=theme-id]").first().val();
-            $.ajax({
-                type: "POST",
-                url: "/set-theme/",
-                data: { "theme": themeId, },
-                success: function() { window.location.reload(); },
-                error: function() { window.location.reload(); }
-            })
-        });
-    </script>
-    <script>
-        $('#display_input').click(function(){
-            $('tfoot').toggleClass('tfoot-new');
-        });
-    </script>
+       
 
         {% block javascripts %} {% endblock %}
     </body>

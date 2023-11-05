@@ -23,7 +23,7 @@ class AdvancePaymentEndUserListView(ListView):
         if self.request.user.is_superuser:
             queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
         else:
-            queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
+            queryset = self.model.objects.filter(dairy_name__role=user_dairy_role).order_by('custom_id')
 
                 # Calculate the total withdrawal amount for each end user
         queryset = queryset.annotate(
@@ -162,5 +162,5 @@ class AdvancePaymentDetailViewView(DetailView):
         context['total_advance_payment'] = total_advance_payment
         context['total_recovered_payment'] = total_recovered_payment
         context['total_remaining_amount'] = total_remaining_amount
-        context['transactions'] = AdvancePayment.objects.filter(enduser=user)
+        context['transactions'] = AdvancePayment.objects.filter(enduser=user).order_by('-payment_date')
         return context

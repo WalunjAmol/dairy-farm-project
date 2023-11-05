@@ -1,0 +1,162 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% load static %}
+{% load static i18n %}
+{% block content %}
+    <style></style>
+    <h3 class="text-center mt-3 mb-3 ">Feed Update</h3>
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="tab-content">
+                    <div class="tab-pane show active" id="tooltips-validation-preview">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-dismissible alert-danger form-group text-center ">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        <form action="" method="post" novalidate>
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-sm-6 position-relative mb-3">
+                                    <label for="stock" class="form-label">Feed Name <span class="required-field"></span></label>
+                                    {{ form.stock }}
+                                    {% if form.stock.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.stock.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-6 position-relative mb-3">
+                                    <label for="form.taken_user" class="form-label">Customer Name <span class="required-field"></span></label>
+                                    <div class="input-group">{{ form.taken_user }}</div>
+                                    {% if form.taken_user.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.taken_user.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 position-relative mb-3">
+                                    <label for="quantity_taken" class="form-label">
+                                        Bags Quantity <span class="required-field"></span>
+                                    </label>
+                                    <div class="input-group">{{ form.quantity_taken }}</div>
+                                    {% if form.quantity_taken.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.quantity_taken.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-4 position-relative mb-3">
+                                    <label for="purchase_amount" class="form-label">
+                                        Bag Amount<span class="required-field"></span>
+                                    </label>
+                                    <div class="input-group">{{ form.purchase_amount }}</div>
+                                    {% if form.purchase_amount.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.purchase_amount.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-4 position-relative mb-3">
+                                    <label for="total_purchase_amount" class="form-label">
+                                        Total Amount<span class="required-field"></span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="text" id="total_purchase_amount" name="total_purchase_amount" class="form-control" readonly>
+                                    </div>
+                                    {% if form.total_purchase_amount.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.total_purchase_amount.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6 position-relative mb-3">
+                                    <label for="is_paid" class="form-label">Is Paid <span class="required-field"></span></label>
+                                    {{ form.is_paid }}
+                                    {% if form.is_paid.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.is_paid.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-primary offset-8" type="submit">
+                                <i class="mdi mdi-account-circle"></i>
+                                Update
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-secondary"
+                            href="{{request.META.HTTP_REFERER}}">Cancel</a>
+                        </form>
+                        <!-- end preview-->
+                    </div>
+                    <!-- end card-->
+                </div>
+                <!-- end col-->
+            </pre>
+            <!-- end highlight-->
+        </div>
+        <!-- end preview code-->
+    </div>
+    <!-- end tab-content-->
+</div>
+<!-- end card-body-->
+</div>
+<!-- end card-->
+</div>
+<!-- end col-->
+<!-- end tab-content-->
+</div>
+<!-- end card-body-->
+</div>
+<!-- end card-->
+</div>
+<!-- end col-->
+{% endblock %}
+{% block javascripts %}
+<script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize Select2 for stock and taken_user fields
+            $('#id_stock').select2();
+            $('#id_taken_user').select2();
+    
+            // Calculate total purchase amount when the page loads and when input fields change
+            function calculateTotalAmount() {
+                var quantityTaken = parseFloat($('#id_quantity_taken').val()) || 0;
+                var purchaseAmount = parseFloat($('#id_purchase_amount').val()) || 0;
+                var totalAmount = quantityTaken * purchaseAmount;
+                $('#total_purchase_amount').val(totalAmount.toFixed(2)); // Format to two decimal places
+            }
+    
+            calculateTotalAmount(); // Calculate on page load
+    
+            $('#id_quantity_taken, #id_purchase_amount').on('input', calculateTotalAmount);
+        });
+    </script>
+    
+</script>
+{% endblock %}

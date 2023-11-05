@@ -103,7 +103,7 @@
                             <li class="breadcrumb-item active">Orders</li> -->
                         </ol>
                     </div>
-                    <h4 style="text-align:center" class="page-title">Bill Details :- {{ cycleinfo.from_date|date:"d-M-Y" }} to {{ cycleinfo.to_date|date:"d-M-Y" }}</h4>
+                    <h4 style="text-align:center" class="page-title">Feed Sales User-Wise Records</h4>
                 </div>
             </div>
         </div>
@@ -146,13 +146,11 @@
                                         <tr>
                                             <td>{{ user.custom_id }}</td>
                                             <td>
-                                                <a href="{% url 'bill_management:generate_bills' user.id cycleinfo.id %}" class="text-body fw-bold">{{ user.first_name }} {{ user.last_name }}</a>
+                                                <a href="#" class="text-body fw-bold">{{ user.first_name }} {{ user.last_name }}</a>
                                             </td>
                                             <td>{{ user.mobile_number }}</td>
                                             <td>
-                                                <a href="{% url 'bill_management:generate_bills' user.id cycleinfo.id %}" class="action-icon">
-                                                    <i class="mdi mdi-file-document custom-icon"></i> View Bill
-                                                </a>
+                                                <a href="{% url 'stock_food_management:user-wise-feed-purchase-details' user.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
