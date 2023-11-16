@@ -130,9 +130,43 @@
             display: inline-block; /* Ensures that the background size is the same for both */
             text-align: center;
         }
-          
-    
-       
+        .user-profile {
+            background-color: #f8f9fa;
+        }
+        
+        .total-bonus {
+            float: right;
+        }
+        /* Style for the bonus section */
+        /* Style for the bonus section */
+        .total-bonus {
+            font-weight: bold;
+            color: #FF4500; /* Change the text color to a shade of orange red */
+            margin-left: 10px;
+            display: inline-block;
+            transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
+            border-radius: 5px;
+        }
+        
+        /* Style for the bonus section */
+        /* Style for the bonus section */
+        .remaining-amount {
+            font-weight: bold;
+            color: #FF4500; /* Change the text color to a shade of orange red */
+            display: inline-block;
+            transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
+            border-radius: 5px;
+            font-size: 16px;
+            padding-top: 16px;
+            margin-left: 400px;
+        }
+        .currency {
+            font-size: 17px;
+            vertical-align: middle;
+        }
+        .bonus-amount {
+            color: #9932CC; /* Change the color to a shade of dark orchid */
+        }
         
     </style>
 {% endblock %}
@@ -150,13 +184,22 @@
                 <!-- Your form content goes here -->
             </form>
         </div>
-        <div class="col-xl-4">
-            <div class="text-xl-end mt-xl-0 mt-2">
-                <a href="{% url 'stock_food_management:feedpurchase-create' %}">
-                    <button type="button" class="btn btn-add-customer">Purchase</button>
-                </a>
-                <button type="button" class="btn btn-search btn-add-customer" id="display_input">Search</button>
-            </div>
+        <div class="user-profile">
+            <h1>{{ user_detail.first_name }} {{ user_detail.last_name }}</h1>
+            <p>
+               
+                <span class="total-bonus">
+                    <button type="button" class="btn btn-search btn-add-customer" id="display_input">Search</button>
+                </span>  
+                <span class="total-bonus">
+                    <a href="{% url 'stock_food_management:feedpurchase-create' %}">
+                        <button type="button" class="btn btn-add-customer">Purchase</button>
+                    </a>                
+                </span> 
+                <span class="remaining-amount">
+                    Remaining Amount: <span class="bonus-amount">{{ total_feed_reamining_amount|default:0 }}</span> <span class="currency">&#8377;</span>
+                </span> 
+             </p>
         </div>
     </div>
 

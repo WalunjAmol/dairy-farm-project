@@ -93,7 +93,15 @@ class FeedPurchaseListView(ListView):
     context_object_name = 'feed_purchases'
     ordering = ['-date_created']  # This orders records by the 'date_created' field in descending order
 
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_feed_reamining_amount = self.model.objects.filter(
+            created_by=self.request.user,
+            is_paid=False,
+            ).aggregate(total_purchase_amount=Sum('total_purchase_amount')).get('total_purchase_amount')
+        context['total_feed_reamining_amount'] = total_feed_reamining_amount
+        return context
+    
 class FeedPurchaseUpdateView(UpdateView):
     model = FeedPurchase
     form_class = FeedPurchaseUpdateForm

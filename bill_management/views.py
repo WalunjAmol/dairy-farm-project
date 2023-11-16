@@ -250,6 +250,10 @@ class GenerateBill(ListView):
             taken_user=user_info,
             date_created__range=(from_date, to_date),
         )
+        for feed in feed_purchase:
+            feed.is_paid = True
+            feed.save()
+
         total_feed_quantity = feed_purchase.aggregate(Sum('quantity_taken')).get('quantity_taken__sum') or 0
         total_purchase_amount = feed_purchase.aggregate(Sum('total_purchase_amount')).get('total_purchase_amount__sum') or 0
 
@@ -259,7 +263,7 @@ class GenerateBill(ListView):
            
             feed_purchase_instance, created = FeedPurchase.objects.get_or_create(
                 taken_user=user_info,
-                quantity_taken='1',
+                quantity_taken='0',
                 purchase_amount=amt_forward_next_month,
                 total_purchase_amount=amt_forward_next_month,
                 created_by=self.request.user,
@@ -303,7 +307,6 @@ from django.views.decorators.csrf import csrf_exempt
 def deduct_amount_view(request):
     if request.method == 'POST':
         try:
-            print('*************************')
             deduction_amount = float(request.POST.get('deduction_amount', 0))
             user_id = request.POST.get('user_id')
             cycle_id = request.POST.get('cycle_id')
@@ -404,3 +407,19 @@ def save_data(request):
     # Handle other HTTP methods or errors if needed
     return JsonResponse({'success': False, 'message': 'Invalid request'})
 
+@method_decorator(login_required, name='dispatch')
+class GeneratedCycleListView(ListView):
+    model = GeneratedCycle
+    template_name = 'bill_management/generated_cycles_list.html'
+    context_object_name = 'generated_cycles'
+    ordering = ['-created_at']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_date'] = datetime.now().date()  
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class BillingReports(ListView):
+    pass
