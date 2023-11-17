@@ -319,10 +319,27 @@ def deduct_amount_view(request):
 
             # Assuming you have a specific AdvancePayment instance to deduct from
             total_advance_payment = AdvancePayment.objects.filter(enduser=user, transaction_type='withdrawal').aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus'] or 0
+            total_remaining_amount = EndUser.objects.filter(id=user.id).annotate(
+                                    total_advance=Sum(
+                                            Case(
+                                                When(
+                                                    advance_payments__transaction_type='withdrawal',
+                                                    then=F('advance_payments__payment_amount')
+                                                ),
+                                                When(
+                                                    advance_payments__transaction_type='deduct',
+                                                    then=-F('advance_payments__payment_amount')
+                                                ),
+                                                default=Value(0),
+                                                output_field=DecimalField(max_digits=10, decimal_places=2)
+                                            )
+                                        )
+                                    ).values('total_advance').first() or 0
+            adv_remaining_amount = float(total_remaining_amount.get('total_advance'))
             current_date = date.today()
             # print('deduction_amount',deduction_amount)
             # print('total_advance_payment',total_advance_payment)
-            if total_advance_payment > deduction_amount:
+            if adv_remaining_amount >= deduction_amount:
                 AdvancePayment.objects.create(enduser=user,dairy=request.user.dairy,advance_taken_cycle=cycle_object, payment_amount=deduction_amount,description=f'Amount is dedcuted from the bill and bill date {current_date}',transaction_type='deduct') or 0
                 # return JsonResponse({'success': True, 'message': 'Deduction successful.'})
                 total_advance_payment_taken= AdvancePayment.objects.filter(enduser=user, transaction_type='withdrawal').aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus'] or 0
@@ -361,10 +378,10 @@ def deduct_amount_view(request):
                 total_Purchase_amount = FeedPurchase.objects.filter(taken_user=user,date_created__range=(from_date,to_date)).aggregate(Sum('total_purchase_amount')).get('total_purchase_amount__sum') or 0
                 finale_amount = (milk_transation_amount_sum-last_cycle_bonus_deduct-last_deduction_amount-total_Purchase_amount) or 0
                 
-                print('milk_transation_amount_sum',milk_transation_amount_sum)
-                print('last_cycle_bonus_deduct',last_cycle_bonus_deduct)
-                print('last_deduction_amount',last_deduction_amount)
-                print('total_Purchase_amount',total_Purchase_amount)
+                # print('milk_transation_amount_sum',milk_transation_amount_sum)
+                # print('last_cycle_bonus_deduct',last_cycle_bonus_deduct)
+                # print('last_deduction_amount',last_deduction_amount)
+                # print('total_Purchase_amount',total_Purchase_amount)
                 # print('remaining_amount',total_remaining_amount.get('total_advance'))
                 # print('deduction_amount',deduction_amount)
                 # print('last_deduction_amount',last_deduction_amount)
@@ -385,7 +402,7 @@ def deduct_amount_view(request):
 
             })
             else:
-                return JsonResponse({'success': False, 'message': f'Total Advance Amount is {total_advance_payment} smaller than {deduction_amount}. Please enter the correct amount'}, status=400)
+                return JsonResponse({'success': False, 'message': f'The total advance amount reamining is {adv_remaining_amount} Rs, but the entered amount {deduction_amount} Rs is greater. Please enter the smaller amount than {adv_remaining_amount} Rs.'}, status=400)
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
