@@ -268,7 +268,8 @@ class GenerateBill(ListView):
                 total_purchase_amount=amt_forward_next_month,
                 created_by=self.request.user,
                 dairy=self.request.user.dairy,
-                extra_field="उर्वरित रक्कम"
+                extra_field="उर्वरित रक्कम",
+                description=f'पशुखाद्य रक्कम - (एकुन बिल रक्‍कम-बोनस रक्‍कम) {{total_purchase_amount}} - ({{milk_transation_amount_sum-last_cycle_bonus_deduct}})={{amt_forward_next_month}}, ही रक्कम पुढच्या बिलिंग सायकल मध्‍ये टाकत आहोत. {{amt_forward_next_month}} '
             )
             total_purchase_amount=total_purchase_amount-amt_forward_next_month
 
@@ -437,6 +438,99 @@ class GeneratedCycleListView(ListView):
         return context
 
 
+# Apply the login_required decorator to require user authentication for this view
 @method_decorator(login_required, name='dispatch')
 class BillingReports(ListView):
-    pass
+    # Set the model, template name, context object name, and ordering for the ListView
+    model = EndUser
+    template_name = 'bill_management/billing-report.html'
+    context_object_name = 'enduser_data'
+    ordering = ['custom_id']
+
+    # Override the get_context_data method to customize the context
+    def get_context_data(self, **kwargs):
+        # Call the superclass method to get the default context data
+        context = super().get_context_data(**kwargs)
+        
+        # Get cycle_id from URL parameters
+        cycle_id = self.kwargs.get('cycle_id')
+        cycle_object = GeneratedCycle.objects.get(id=cycle_id)
+        from_date = cycle_object.from_date
+        to_date = cycle_object.to_date
+
+        # Initialize variables for aggregating data
+        enduser_data = []
+        total_liters_all = 0
+        total_amount_all = 0
+        total_advance_deduction_all = 0
+        total_bonus_amount_all = 0
+        total_feed_purchase_amount_all = 0
+        reamining_total_amount_all = 0
+
+        # Loop through enduser_data to calculate and aggregate values
+        for enduser in context['enduser_data']:
+            # Fetch relevant data for the current enduser
+            milk_data = MilkTransaction.objects.filter(
+                end_user=enduser,
+                date__range=[from_date, to_date]
+            )
+            advance_data = AdvancePayment.objects.filter(
+                enduser=enduser,
+                advance_taken_cycle = cycle_object
+            )
+            feed_purchase = FeedPurchase.objects.filter(
+                taken_user=enduser,
+                date_created__range=[from_date, to_date]
+            )
+            bonus_data = Bonus.objects.filter(
+                user=enduser,
+                bonus_date__range=[from_date, to_date]
+            )
+
+            # Calculate various totals and amounts based on fetched data
+            total_liters = milk_data.aggregate(Sum('transaction_liters'))['transaction_liters__sum'] or 0
+            total_amount = milk_data.aggregate(Sum('transaction_amount'))['transaction_amount__sum'] or 0
+            total_advance_deduction = advance_data.aggregate(Sum('payment_amount'))['payment_amount__sum'] or 0
+            total_bonus_amount = bonus_data.aggregate(Sum('bonus_amount'))['bonus_amount__sum'] or 0
+            total_feed_purchase_amount = feed_purchase.aggregate(Sum('total_purchase_amount'))['total_purchase_amount__sum'] or 0
+
+            # Adjust total_feed_purchase_amount if it exceeds the available amount
+            if total_feed_purchase_amount > (total_amount - total_bonus_amount):
+                amt_forward_next_month = total_feed_purchase_amount - (total_amount - total_bonus_amount)
+                total_feed_purchase_amount = total_feed_purchase_amount - amt_forward_next_month
+
+            # Calculate net amount
+            net_amount = total_amount - total_advance_deduction - total_bonus_amount - total_feed_purchase_amount
+            # Aggregate values for all endusers
+            total_liters_all += total_liters
+            total_amount_all += total_amount
+            total_advance_deduction_all += total_advance_deduction
+            total_bonus_amount_all += total_bonus_amount
+            total_feed_purchase_amount_all += total_feed_purchase_amount
+            reamining_total_amount_all += net_amount
+
+            # Append data for the current enduser to the enduser_data list
+            enduser_data.append({
+                'enduser': enduser,
+                'total_liters': total_liters,
+                'total_amount': total_amount,
+                'total_advance_deduction': total_advance_deduction,
+                'feed_purchase_count': feed_purchase,
+                'total_bonus_amount': total_bonus_amount,
+                'total_feed_purchase_amount': total_feed_purchase_amount,
+                'net_amount': net_amount,
+            })
+
+        # Update context with aggregated values
+        context['enduser_data'] = enduser_data
+        context['from_date'] = from_date
+        context['to_date'] = to_date
+        context['total_liters_all'] = total_liters_all
+        context['total_amount_all'] = total_amount_all
+        context['total_advance_deduction_all'] = total_advance_deduction_all
+        context['total_bonus_amount_all'] = total_bonus_amount_all
+        context['total_feed_purchase_amount_all'] = total_feed_purchase_amount_all
+        context['reamining_total_amount_all'] = reamining_total_amount_all
+
+        # Return the updated context
+        return context

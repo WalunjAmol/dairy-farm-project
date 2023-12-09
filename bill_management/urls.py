@@ -11,7 +11,6 @@ urlpatterns = [
     path('deduct_amount/', deduct_amount_view, name='deduct_amount'),
     path('save-data/', save_data, name='save-data'),
 
-
-
-    # Other URL patterns for your application...
+    path('cycles/', GeneratedCycleListView.as_view(), name='generated_cycle_list'),
+    path('bill-report/<int:cycle_id>', BillingReports.as_view(), name='bill-reports'),
 ]

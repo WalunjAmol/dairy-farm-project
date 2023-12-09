@@ -1,0 +1,530 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% load static %}
+{% comment %} {% load core %}  {% endcomment %}
+{% comment %} {% load static i18n %}  {% endcomment %}
+{% block stylesheets %}
+    <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}"
+          rel="stylesheet"
+          type="text/css" />
+    <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}"
+          rel="stylesheet"
+          type="text/css" />
+{% endblock %}
+{% block content %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+        }
+        .bill-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            width:100%;
+            background-color: #fff;
+        }
+        .bill-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .bill-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .bill-table th, .bill-table td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        .bill-table th {
+            background-color: #f0f0f0;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            max-width: 222px;
+            max-height: 100px;
+        }
+        .dairy-details {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .current-date {
+            text-align: right;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .bonus-deduction-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        .bonus-deduction-section h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .bonus-deduction-section p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        /* Styles for the form */
+        .deduction-form {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .deduction-form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .deduction-form input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .deduction-form button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .deduction-form button:hover {
+            background-color: #2980b9;
+        }
+
+        .popup button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup button:hover {
+            background-color: #2980b9;
+        }
+
+        .deduction-button {
+            padding: 2px 6px;
+            background-color: #a10af9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .deduction-button:hover {
+            background-color: #c0392b;
+        }
+        .print-button {
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            float: right;
+        }
+        .back-button {
+            padding: 10px 20px;
+            background-color: #5c636a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            float: right;
+        }
+
+        /* Add styles for the popup */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: beige;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .popup h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .popup label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .popup input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .popup .close-btn {
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+        }
+
+        .popup .close-btn:hover {
+            color: #e74c3c;
+        }
+        .total-column {
+            text-align: right;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 12px;
+            color: #333; /* Dark text color */
+            font-family: 'Arial', sans-serif; /* Font choice */
+        }
+
+        #totals-row {
+            background-color: #f5f5f5; /* Subtle background color */
+            border-top: 2px solid #ccc; /* Border color */
+        }
+        #print-button {
+                padding: 8px 24px;
+                font-size: 14px;
+                background-color: #4CAF50; /* Green */
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+        #print-button:hover {
+                background-color: #45a049; /* Darker green on hover */
+            }
+            .bonus-deduction-row {
+                display: flex;
+                justify-content: space-between;
+            }
+        
+            .bonus-deduction-section {
+                position: relative;
+                width: 48%; /* Adjust the width as needed */
+            }
+        
+            
+            /* Existing styles for the left logo container */
+            .logo-container.left-logo {
+                text-align: left;
+                float: left; /* Align to the left */
+            }
+
+            /* Additional styles for the right logo container */
+            .logo-container.right-logo {
+                text-align: right;
+                float: right; /* Align to the right */
+            }
+
+            /* Existing styles for the table */
+            .bill-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+
+            /* Updated styles for table headers and data cells */
+            .bill-table th, .bill-table td {
+                font-size: 10px; /* Adjust the font size as needed */
+                padding: 6px; /* Reduce padding to make the table more compact */
+                border: 1px solid #ccc;
+                text-align: left;
+            }
+
+            /* Adjust the table width to fit within the page */
+            .bill-table {
+                width: 100%; /* 100% width ensures it fits within the bill container */
+                margin-bottom: 0;
+            }
+
+            /* Styles for the total row */
+            #totals-row {
+                background-color: #f5f5f5;
+                border-top: 2px solid #ccc;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 10px;
+            }
+        
+            th, td {
+                border: 1px solid #ddd;
+                font-size: 10px; /* Adjust the font size as needed */
+                padding: 6px; /* Reduce padding to make the table more compact */
+                border: 1px solid #ccc;
+                text-align: left;
+
+            }
+        
+            th {
+                background-color: #f2f2f2;
+            }
+        
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+            .table-outer-div{
+                display: flex;
+                column-gap: 10px;
+            }
+            .table-outer-div .table-div{
+                width: 100%;
+            }
+            .table-outer-div table{
+                width: 100%;
+            }
+
+            .details-div{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+            .details-div .first-block{
+                display: flex;
+                justify-content: space-between;
+                column-gap: 40px;
+            }
+            .total-sale{
+                display: flex;
+                justify-content: end;
+                margin-top: 12px;
+            }
+            .total-sale >div{
+                display: flex;
+                align-items: center;
+                column-gap: 12px;
+                border: 1px solid #777;
+                padding: 0 12px;
+            }
+            .watermark {
+                bottom: 30px; /* Adjust the distance from the bottom as needed */
+                left: 0;
+                width: 100%;
+                text-align: center;
+                font-family: Arial, sans-serif;
+                font-size: 10px;
+                color: rgba(0, 0, 0, 0.5); /* Adjust the color and opacity as needed */
+                margin-top: 9px;
+            }
+    
+            .watermark-content {
+                display: inline-block;
+                padding: 10px;
+                background-color: rgba(255, 255, 255, 0.7); /* Adjust the background color and opacity as needed */
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
+    
+            .contact-text {
+                margin: 0;
+                font-weight: bold;
+            }
+    
+            .contact-text a {
+                text-decoration: none;
+                color: #3498db; /* Adjust the link color as needed */
+            }
+    
+            .contact-details {
+                margin: 0;
+                font-style: italic;
+            }
+            .currency {
+                font-size: 15px;
+                vertical-align: middle;
+            }
+           
+
+            @media print{
+                @page {
+                margin: 16px 0;
+                }
+                p{
+                    margin: 0;
+                }
+                span{
+                    margin: 0;
+                }
+                h5{
+                    margin-top: 0;
+                    font-size: 12px;
+                }
+                .dairy-details {
+                    margin-bottom: 10px;
+                }
+
+                table th, table td{
+                    padding:  2px 4px;
+                }
+                .bill-table {
+                    margin-bottom: 0;
+                }
+                .bill-table th, .bill-table td{
+                    padding: 2px 4px;
+                }
+                .deduction-button{
+                    display: none;
+                }
+                .print-button{
+                    display: none;
+                }
+                .back-button{
+                    display: none;
+                }
+                .bonus-deduction-section h5{
+                    margin-top: 0;
+                }
+                .bonus-deduction-section{
+                    margin-top: 16px;
+                }
+                .table-div h5{
+                    font-size: 12px;
+                }
+                .total-sale h5{
+                    margin: 0;
+                }
+            }
+                
+    </style>
+    <body>
+        <div class="bill-container">
+            <div class="logo-container right-logo">
+                <img src="/media/media/dairy_logos/ganpati_bappa.jpg" alt="Dairy Logo">
+            </div>
+            <div class="logo-container left-logo">
+                <img src="/media/media/dairy_logos/logo-ganpati.jpeg" alt="Dairy Logo">
+            </div>
+            <div class="dairy-details">
+                <h2>{{request.user.dairy}}</h2>
+                <p>पत्ता : {{ request.user.address }}</p>
+                <p>मोबाइल नंबर : {{ request.user.mobile_number }}</p>
+               
+            </div>
+            <div class="bill-header">
+                <h5>बिलाचा कालावधी : {{ from_date|date:"d-m-Y" }} to {{ to_date|date:"d-m-Y" }}</h5>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 table-outer-div">
+                    <div class="table-div">
+                        <table class="bill-table">
+                            <thead>
+                                <tr>
+                                    <th>गवळी क्रमांक</th>
+                                    <th>गवळ्याचे नाव</th>
+                                    <th>एकूण दूध</th>
+                                    <th>एकूण पगार</th>
+                                    <th>बोनस कपात</th>
+                                    {% comment %} <th>एकूण पशुखाद्य</th> {% endcomment %}
+                                    <th>पशुखाद्य कपात</th>
+                                    <th>ॲडव्हान्स कपात</th>
+                                    <th>उर्वरित पगार</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in enduser_data %}
+                                    <tr>
+                                        <td>{{ data.enduser.custom_id }}</td>
+                                        <td>{{ data.enduser.marathi_name }}</td>
+                                        <td>{{ data.total_liters }} ltr</td>
+                                        <td class="currency">{{ data.total_amount }} </td>
+                                        <td class="currency">{{ data.total_bonus_amount }}</td>
+                                        <td class="currency" >{{ data.total_feed_purchase_amount }}</td>
+                                        <td class="currency">{{ data.total_advance_deduction }}</td>
+                                        <td class="currency">{{ data.net_amount }}</td>
+                                    </tr>
+                                {% endfor %}
+                                <tr id="totals-row">
+                                    <td colspan="2"><b>एकूण:</b></td>
+                                    <td>{{ total_liters_all }} ltr</td>
+                                    <td class="currency">{{ total_amount_all }}</td>
+                                    <td class="currency">{{ total_bonus_amount_all }}</td>
+                                    <td class="currency">{{ total_feed_purchase_amount_all }}</td>
+                                    <td class="currency">{{ total_advance_deduction_all }}</td>
+                                    <td class="currency">{{ reamining_total_amount_all }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="total-sale">
+                        <div class="total-ltr">
+                            <span><h5>एकूण लिटर:</h5></span>
+                            <span>{{total_liters_all}} लिटर</span>
+                        </div>
+                        <div class="total-amt">
+                            <span><h5>एकूण रक्कम:</h5></span>
+                            <span>{{reamining_total_amount_all}} रुपये</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    <a class="back-button" style="float:left" onclick="window.history.back()">Back</a> 
+    <button style="float:right" class="print-button" onclick="triggerPrint()">Print</button>
+</div>
+
+<!-- Add this code before the closing </body> tag in your template -->
+<div class="watermark">
+    <div class="watermark-content">
+        <p class="contact-text">
+            या सॉफ्टवेअरच्या नोंदणीसाठी, आमच्याशी संपर्क साधा
+        </p>
+        <p class="contact-details">
+           <strong> दिपक वाळुंज </strong>| 9890822821
+        </p>
+        <a href="https://milkywave.in">https://milkywave.in</a>
+    </div>
+</div>
+
+<script>
+        function triggerPrint() {
+            window.print();  // This will trigger the print dialog for the browser
+        }
+</script>
+</body>
+{% endblock %}
