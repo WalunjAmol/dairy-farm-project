@@ -476,7 +476,8 @@ class BillingReports(ListView):
             )
             advance_data = AdvancePayment.objects.filter(
                 enduser=enduser,
-                advance_taken_cycle = cycle_object
+                advance_taken_cycle = cycle_object,
+                transaction_type='deduct'
             )
             feed_purchase = FeedPurchase.objects.filter(
                 taken_user=enduser,
