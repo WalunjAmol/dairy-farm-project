@@ -12,6 +12,12 @@ from django.http import JsonResponse,HttpResponseRedirect
 from .models import EndUser,AdvancePayment
 from .forms import AdvancePaymentForm
 
+from django.db.models import Sum, Case, When, F, Value, DecimalField
+from django.views.generic import ListView
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
 @method_decorator(login_required, name='dispatch')
 class AdvancePaymentEndUserListView(ListView):
     model = EndUser
@@ -25,7 +31,7 @@ class AdvancePaymentEndUserListView(ListView):
         else:
             queryset = self.model.objects.filter(dairy_name__role=user_dairy_role).order_by('custom_id')
 
-                # Calculate the total withdrawal amount for each end user
+        # Calculate the total withdrawal amount for each end user
         queryset = queryset.annotate(
             total_advance=Sum(
                 Case(
@@ -43,7 +49,15 @@ class AdvancePaymentEndUserListView(ListView):
             )
         )
 
+        # Calculate the total advance for all users
+        total_advance_all_users = queryset.aggregate(total_advance_all_users=Sum('total_advance'))['total_advance_all_users']
+
+        # Pass the total_advance_all_users to the context
+        self.extra_context = {'total_advance_all_users': total_advance_all_users}
+
         return queryset
+
+    
 
 class AdvancePaymentCreateView(CreateView):
     model = AdvancePayment

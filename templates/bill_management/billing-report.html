@@ -375,6 +375,9 @@
                 font-size: 15px;
                 vertical-align: middle;
             }
+            .highlight-column {
+                font-weight: bold;
+            }
            
 
             @media print{
@@ -460,7 +463,7 @@
                                     {% comment %} <th>एकूण पशुखाद्य</th> {% endcomment %}
                                     <th>पशुखाद्य कपात</th>
                                     <th>ॲडव्हान्स कपात</th>
-                                    <th>उर्वरित पगार</th>
+                                    <th class="highlight-column">उर्वरित पगार</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -468,22 +471,22 @@
                                     <tr>
                                         <td>{{ data.enduser.custom_id }}</td>
                                         <td>{{ data.enduser.marathi_name }}</td>
-                                        <td>{{ data.total_liters }} ltr</td>
-                                        <td class="currency">{{ data.total_amount }} </td>
+                                        <td>{{ data.total_liters }} लिटर</td>
+                                        <td class="currency">{{ data.total_amount }}  </td>
                                         <td class="currency">{{ data.total_bonus_amount }}</td>
                                         <td class="currency" >{{ data.total_feed_purchase_amount }}</td>
                                         <td class="currency">{{ data.total_advance_deduction }}</td>
-                                        <td class="currency">{{ data.net_amount }}</td>
+                                        <td class="currency highlight-column">{{ data.net_amount }} रुपये</td>
                                     </tr>
                                 {% endfor %}
                                 <tr id="totals-row">
                                     <td colspan="2"><b>एकूण:</b></td>
-                                    <td>{{ total_liters_all }} ltr</td>
-                                    <td class="currency">{{ total_amount_all }}</td>
-                                    <td class="currency">{{ total_bonus_amount_all }}</td>
-                                    <td class="currency">{{ total_feed_purchase_amount_all }}</td>
-                                    <td class="currency">{{ total_advance_deduction_all }}</td>
-                                    <td class="currency">{{ reamining_total_amount_all }}</td>
+                                    <td>{{ total_liters_all }} लिटर</td>
+                                    <td class="currency highlight-column">{{ total_amount_all }}</td>
+                                    <td class="currency highlight-column">{{ total_bonus_amount_all }}</td>
+                                    <td class="currency highlight-column">{{ total_feed_purchase_amount_all }}</td>
+                                    <td class="currency highlight-column">{{ total_advance_deduction_all }}</td>
+                                    <td class="currency highlight-column">{{ reamining_total_amount_all }} रुपये</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -491,11 +494,11 @@
                 </div>
                 <div class="col-md-12">
                     <div class="total-sale">
-                        <div class="total-ltr">
+                        <div class="total-ltr highlight-column">
                             <span><h5>एकूण लिटर:</h5></span>
                             <span>{{total_liters_all}} लिटर</span>
                         </div>
-                        <div class="total-amt">
+                        <div class="total-amt highlight-column">
                             <span><h5>एकूण रक्कम:</h5></span>
                             <span>{{reamining_total_amount_all}} रुपये</span>
                         </div>
