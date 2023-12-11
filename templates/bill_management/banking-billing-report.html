@@ -476,12 +476,12 @@
                                         <td>{{ data.enduser.bank_name | default:'-'}} </td>
                                         <td class="currency">{{ data.enduser.account_number | default:'-'}}  </td>
                                         <td class="currency">{{ data.enduser.ifsc_code | default:'-' }}</td>
-                                        <td class="currency highlight-column">{{ data.net_amount | default:'-'}} Rs</td>
+                                        <td class="currency highlight-column">{{ data.net_amount }} Rs</td>
                                     </tr>
                                 {% endfor %}
                                 <tr id="totals-row">
                                     <td colspan="5"><b>Total:</b></td>
-                                    <td class="currency highlight-column">{{ reamining_total_amount_all | default:'-' }} Rs.</td>
+                                    <td class="currency highlight-column">{{ reamining_total_amount_all  }} Rs.</td>
                                 </tr>
                             </tbody>
                         </table>
