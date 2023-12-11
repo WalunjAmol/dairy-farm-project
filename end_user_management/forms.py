@@ -42,6 +42,25 @@ class EndUserForm(forms.ModelForm):
         error_messages={"required": "Marathi name cannot be empty."},
     )
 
+    bank_name = forms.CharField(
+        required=True,
+        error_messages={"required": "Bank name cannot be empty."},
+    )
+
+    account_number = forms.CharField(
+        required=True,
+        error_messages={"required": "Account number cannot be empty."},
+    )
+
+    confirm_account_number = forms.CharField(
+        required=True,
+        error_messages={"required": "Confirm Account number cannot be empty."},
+    )
+    ifsc_code = forms.CharField(
+        required=True,
+        error_messages={"required": "IFSC code cannot be empty."},
+    )
+
     def __init__(self, *args, **kwargs):
         super(EndUserForm, self).__init__(*args, **kwargs)
         self.fields["first_name"].label = "First Name"
@@ -87,6 +106,32 @@ class EndUserForm(forms.ModelForm):
                     "class":"form-control"
                 }
             )
+        
+        self.fields["bank_name"].widget.attrs.update(
+            {
+                "placeholder": "Enter Bank Name",
+                'class': 'form-control'
+            }
+        )
+        self.fields["account_number"].widget.attrs.update(
+            {
+                "placeholder": "Enter Account Number",
+                'class': 'form-control'
+            }
+        )
+        self.fields["confirm_account_number"].widget.attrs.update(
+            {
+                "placeholder": "Confirm Account Number",
+                'class': 'form-control'
+            }
+        )
+        self.fields["ifsc_code"].widget.attrs.update(
+            {
+                "placeholder": "Enter IFSC Code",
+                'class': 'form-control'
+            }
+        )
+
  
     def clean_mobile_number(self):
         mobile_number = self.cleaned_data.get('mobile_number')
@@ -94,6 +139,32 @@ class EndUserForm(forms.ModelForm):
         if not re.match(r'^[789]\d{9}$', mobile_number):
             raise ValidationError("Please enter a valid Indian mobile number.")
         return mobile_number
+
+    def clean_confirm_account_number(self):
+        cleaned_data = super().clean()
+        account_number = cleaned_data.get("account_number")
+        confirm_account_number = cleaned_data.get("confirm_account_number")
+
+        # Check if the account numbers match
+
+        # Check if the length of confirm_account_number is greater than the allowed maximum
+        if confirm_account_number and len(confirm_account_number) > 254:
+            raise forms.ValidationError("Confirm Account Number cannot exceed 254 characters.")
+
+  
+        if account_number and confirm_account_number and account_number != confirm_account_number:
+            raise forms.ValidationError("Account numbers do not match.")
+
+        return cleaned_data
+    
+    def clean_account_number(self):
+        account_number = self.cleaned_data.get('account_number')
+
+        # Check if the account number is exactly 10 digits (modify as needed)
+        if account_number and not account_number.isdigit() or len(account_number) < 10:
+            raise forms.ValidationError('Invalid account number. Please enter at least 10-digit number.')
+
+        return account_number
     
     class Meta:
         model = EndUser
@@ -108,4 +179,8 @@ class EndUserForm(forms.ModelForm):
             'profile_photo',
             'user_status',
             'is_deleted',
+            'bank_name',
+            'account_number',
+            'confirm_account_number',
+            'ifsc_code'
         ]

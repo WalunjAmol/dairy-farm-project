@@ -86,9 +86,9 @@
                                         <th>Full Name</th>
                                         <th>Marathi Name</th>
                                         <th>Mobile Number</th>
-                                        <th>Email Address</th>
-                                        <th>Joining Date</th>
-                                        <th>Dairy Name</th>
+                                        <th>Bank Name</th>
+                                        <th>Account Number</th>
+                                        <th>IFSC Code</th>
                                         <th style="width: 125px;">Action</th>
                                     </tr>
                                 </thead>
@@ -112,7 +112,9 @@
                                         <th scope="col">
                                             <input type="text" class="form-control">
                                         </th>
-                                        <th scope="col"></th>
+                                        <th scope="col">
+                                            <input type="text" class="form-control">
+                                        </th>                                        
                                         <th scope="col"></th>
                                     </tr>
                                 </tfoot>
@@ -129,12 +131,12 @@
                                                 <a href="#" class="text-body fw-bold">{{ user.marathi_name | default:"-" }}</a>
                                             </td>
                                             <td>{{ user.mobile_number | default:"-"}}</td>
-                                            <td>{{ user.email | default:"-" }}</td>
+                                            <td>{{ user.bank_name | default:"-" }}</td>
                                             <td>
-                                                <a>{{ user.created_at }}</a>
+                                                <a>{{ user.account_number | default:"-" }}</a>
                                             </td>
                                             <td>
-                                               {{user.dairy_owner.dairy.name | default:"-" }}
+                                               {{user.ifsc_code| default:"-" }}
                                                 {% comment %} {% if user.mobile_number %}
                                                     <i class="uil uil-phone-volume"  style="font-size: 20px;"></i>
                                                 {% else %}
@@ -252,20 +254,20 @@
     <script>
     $(document).ready(function() {
         $("#employer-list-table").dataTable({
-            "ordering": true,
-            "bPaginate": true,
-            "searching": true,
-            "bInfo": false,
-            "order": [],
+            "pageLength": 20,   // Set the default page length to 20
+            "stateSave": true,  // Enable state saving
+            "responsive": true,  // Enable responsive design
+            
+
             aoColumnDefs: [
-                { "aTargets": [ 0 ], "bSortable": false },
+                { "aTargets": [ 0 ], "bSortable": true },
                 { "aTargets": [ 1 ], "bSortable": true },
                 { "aTargets": [ 2 ], "bSortable": true },
                 { "aTargets": [ 3 ], "bSortable": true },
                 { "aTargets": [ 4 ], "bSortable": false },
-                { "aTargets": [ 5 ], "bSortable": true },
+                { "aTargets": [ 5 ], "bSortable": false },
                 { "aTargets": [ 6 ], "bSortable": false },
-                { "aTargets": [ 7 ], "bSortable": true },
+                { "aTargets": [ 7 ], "bSortable": false },
             ],
             initComplete: function () {
                 // Apply the search

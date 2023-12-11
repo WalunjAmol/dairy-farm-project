@@ -23,6 +23,7 @@ class AdvancePayment(models.Model):
         choices=[
             ('deduct', 'Received'),
             ('withdrawal', 'Paid'),
+            ('online_received', 'Online or Cash Received')
         ],
         blank=True,
         null=True

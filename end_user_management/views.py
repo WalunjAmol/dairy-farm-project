@@ -8,12 +8,12 @@ from django.utils.decorators import method_decorator
 #Internal Imports
 from .models import EndUser
 from .forms import EndUserForm
-
 @method_decorator(login_required, name='dispatch')
 class EndUserListView(ListView):
     model = EndUser
-    template_name = 'enduser_list.html'
+    template_name = 'end_user_management/enduser_list.html'
     context_object_name = 'users'
+    ordering = ['custom_id']
 
     def get_queryset(self):
         user_dairy_role = self.request.user.dairy.role
@@ -21,7 +21,12 @@ class EndUserListView(ListView):
             queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
         else:
             queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
+
+        # Apply ordering here
+        queryset = queryset.order_by(*self.ordering)
+
         return queryset
+
 
 @method_decorator(login_required, name='dispatch')
 class EndUserCreateView(CreateView):

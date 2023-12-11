@@ -38,5 +38,10 @@ class EndUser(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField()
 
+    bank_name = models.CharField(max_length=254, blank=True, null=True)
+    account_number = models.CharField(max_length=600, blank=True, null=True)  
+    confirm_account_number = models.CharField(max_length=600, blank=True, null=True)  
+    ifsc_code = models.CharField(max_length=254, blank=True, null=True)
+
     def __str__(self):
         return f"{self.custom_id}-{self.first_name} {self.last_name}"

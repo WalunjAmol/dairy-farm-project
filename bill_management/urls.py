@@ -12,5 +12,10 @@ urlpatterns = [
     path('save-data/', save_data, name='save-data'),
 
     path('cycles/', GeneratedCycleListView.as_view(), name='generated_cycle_list'),
-    path('bill-report/<int:cycle_id>', BillingReports.as_view(), name='bill-reports'),
+    path('bill-report/<int:cycle_id>/', BillingReports.as_view(), name='bill-reports'),
+    
+    path('bank-report-cycle/', BankBillReportCyccle.as_view(), name='bank-report-cycles'),
+    path('banking-billing-report/<int:cycle_id>/', BankingBillingReports.as_view(), name='banking-billing-reports'),
+
+
 ]
