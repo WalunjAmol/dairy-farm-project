@@ -4,6 +4,7 @@ from django.utils import timezone
 
 #Local Impoets
 from end_user_management.models import EndUser
+from milk_transaction.models import MilkTransaction
 
 # Create your models here.
 
@@ -26,6 +27,9 @@ class Bonus(models.Model):
         ('import', 'Import Transaction'),
         ('create', 'Create Transaction'),
     ], blank=True, null=True)
+    
+    # Add the foreign key relationship to MilkTransaction with a related_name
+    milk_transaction = models.ForeignKey(MilkTransaction, on_delete=models.SET_NULL, blank=True, null=True, related_name='bonus_transactions')
     
     def __str__(self):
         return f"{self.user} - {self.bonus_date}"

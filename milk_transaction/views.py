@@ -414,7 +414,8 @@ def import_transactions(request):
                             bonus_amount=Decimal(transaction_liters),
                             description="Record added from the import transaction",
                             transaction_type='bonus_added',
-                            transaction_source='import'
+                            transaction_source='import',
+                            milk_transaction=transaction_obj,
                         )
                 except Exception as e:
                     failed_records.append({
