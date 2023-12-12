@@ -4,7 +4,8 @@
     <!-- Add your custom CSS or Bootstrap stylesheets here -->
     <link rel="stylesheet" href="{% static 'your-custom-css.css' %}">
     <!-- Bootstrap CSS link (if not already included in your base.html) -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Custom styles for this template */
         .user-profile {
@@ -91,102 +92,113 @@
             color: white; /* Optional, to change text color */
             padding: 4px; /* Optional, to add padding for better visual appeal */
           }
-        
-          .paid {
+        .paid {
             background-color: red;
             color: white; /* Optional, to change text color */
             padding: 4px; /* Optional, to add padding for better visual appeal */
           }
+        .online-received{
+            background-color: blue;
+            color: white; /* Optional, to change text color */
+            padding: 4px; /* Optional, to add padding for better visual appeal */
+        }
     </style>
 {% endblock %}
 {% block content %}
     <!-- Main Content -->
     <div class="container mt-4">
         {% block body %}
-        <!-- User Profile Section -->
-        <div class="user-profile">
-            <h1>{{ user.first_name }} {{ user.last_name }}</h1>
-            <p>
-                <span class="mobile-number">Mobile Number: {{ user.mobile_number }}</span>
-               
-                <span class="total-bonus">
-                    Remaining Amount: <span class="bonus-amount">{{ total_remaining_amount|default:0 }}</span> <span class="currency">&#8377;</span>
-                </span> 
-                <span class="total-bonus">
-                    Recovered Amount: <span class="bonus-amount">{{ total_recovered_payment|default:0 }}</span> <span class="currency">&#8377;</span>
-                </span>  
-                <span class="total-bonus">
-                    Advance Amount: <span class="bonus-amount">{{ total_advance_payment|default:0 }}</span> <span class="currency">&#8377;</span>
-                </span> 
-                       
-             </p>
-        </div>
-
-        <!-- Transaction History Section -->
-        <div class="transaction-history">
-            <table class="table table-striped table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Date</th>
-                        <th>Advance Amount Paid</th>
-                        <th>Advance Amount Received</th>
-                        <th>Transaction Type</th>
-                        <th>Advance Cycle</th>
-                        {% comment %} <th>Approved</th> {% endcomment %}
-                         {% comment %} <th>Paid</th>  {% endcomment %}
-                        <th>Description</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for transaction in transactions %}
+            <!-- User Profile Section -->
+            <div class="user-profile">
+                <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+                <p>
+                    <span class="mobile-number">Mobile Number: {{ user.mobile_number }}</span>
+                    <span class="total-bonus">
+                        Remaining Amount: <span class="bonus-amount">{{ total_remaining_amount|default:0 }}</span> <span class="currency">&#8377;</span>
+                    </span>
+                    <span class="total-bonus">
+                        Recovered Amount: <span class="bonus-amount">{{ total_recovered_payment|default:0 }}</span> <span class="currency">&#8377;</span>
+                    </span>
+                    <span class="total-bonus">
+                        Advance Amount: <span class="bonus-amount">{{ total_advance_payment|default:0 }}</span> <span class="currency">&#8377;</span>
+                    </span>
+                </p>
+            </div>
+            <!-- Transaction History Section -->
+            <div class="transaction-history">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
                         <tr>
-                            <td>{{ transaction.payment_date }}</td>
-                            {% if transaction.transaction_type == 'withdrawal' %}
-                            <td class="bonus-amount"> {{ transaction.payment_amount }} <span class="currency">&#8377;</span></td>
-                            {% else %}
-                            <td>-</td>
-                            {% endif %}
-
-                            {% if transaction.transaction_type == 'deduct' %}
-                            <td class="bonus-amount"> {{ transaction.payment_amount }} <span class="currency">&#8377;</span></td>
-                            {% else %}
-                            <td>-</td>
-                            {% endif %}
-                            <td>
-                                {% if transaction.transaction_type == 'deduct' %}
-                                  <span class="received">Amount Received</span>
-                                {% else %}
-                                  <span class="paid">Amount Paid</span>
-                                {% endif %}
-                              </td>
-                            {% comment %} <td>{% if transaction.is_approved %}Yes{% else %}No{% endif %}</td> {% endcomment %}
-                            {% comment %} <td>{% if transaction.is_paid %}Yes{% else %}No{% endif %}</td> {% endcomment %}
-                            <td>{{ transaction.advance_taken_cycle | default:'-' }}</td>
-                            <td>{{ transaction.description }}</td>
-                            <td><a href="{% url 'advance_payments:advance-payyment-update' transaction.id %}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a></td>
+                            <th>Date</th>
+                            <th>Advance Amount Paid</th>
+                            <th>Advance Amount Received</th>
+                            <th>Transaction Type</th>
+                            <th>Advance Cycle</th>
+                            {% comment %} <th>Approved</th> {% endcomment %}
+                            {% comment %} <th>Paid</th>  {% endcomment %}
+                            <th>Description</th>
+                            <th>Action</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td class="total-column" style="font-size: 16px; font-weight: bold;">Total</td>
-                        <td class="total-column" style="font-size: 16px; font-weight: bold;">{{ total_advance_payment|default:0 }} <span class="currency">&#8377;</span></td>
-                        <td class="total-column" style="font-size: 16px; font-weight: bold;">
-                            {{ total_recovered_payment|default:0 }}<span class="currency">&#8377;</span>
-                        </td>
-                    </tr>
-                    
-                </tfoot>
-            </table>
-        </div>
-        <div class="back-button">
-            <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Back</a>
-        </div>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction.payment_date }}</td>
+                                {% if transaction.transaction_type == 'withdrawal' %}
+                                    <td class="bonus-amount">
+                                        {{ transaction.payment_amount }} <span class="currency">&#8377;</span>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+
+
+                                {% if transaction.transaction_type == 'deduct' or transaction.transaction_type == 'online_received' %}
+                                    <td class="bonus-amount">
+                                        {{ transaction.payment_amount }} <span class="currency">&#8377;</span>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+
+
+                                <td>
+                                    {% if transaction.transaction_type == 'deduct' %}
+                                        <span class="received">Amount Received from Bill</span>
+                                    {% elif transaction.transaction_type == 'online_received' %}
+                                        <span class="online-received">Online / Cash Received</span>
+                                    {% elif transaction.transaction_type == 'withdrawal' %}
+                                        <span class="paid">Amount Paid to Customer</span>
+                                    {% endif %}
+                                </td>
+                                {% comment %} <td>{% if transaction.is_approved %}Yes{% else %}No{% endif %}</td> {% endcomment %}
+                                {% comment %} <td>{% if transaction.is_paid %}Yes{% else %}No{% endif %}</td> {% endcomment %}
+                                <td>{{ transaction.advance_taken_cycle | default:'-' }}</td>
+                                <td>{{ transaction.description }}</td>
+                                <td>
+                                    <a href="{% url 'advance_payments:advance-payyment-update' transaction.id %}"
+                                       class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="total-column" style="font-size: 16px; font-weight: bold;">Total</td>
+                            <td class="total-column" style="font-size: 16px; font-weight: bold;">
+                                {{ total_advance_payment|default:0 }} <span class="currency">&#8377;</span>
+                            </td>
+                            <td class="total-column" style="font-size: 16px; font-weight: bold;">
+                                {{ total_recovered_payment|default:0 }}<span class="currency">&#8377;</span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="back-button">
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Back</a>
+            </div>
         {% endblock %}
     </div>
-
 {% endblock %}
-{% block javascripts %}
-    <!-- Include your JavaScript scripts here -->
-{% endblock %}
+{% block javascripts %}<!-- Include your JavaScript scripts here -->{% endblock %}

@@ -192,7 +192,7 @@ class GenerateBill(ListView):
             total_advance=Sum(
                 Case(
                     When(advance_payments__transaction_type='withdrawal', then=F('advance_payments__payment_amount')),
-                    When(advance_payments__transaction_type='deduct', then=-F('advance_payments__payment_amount')),
+                    When(advance_payments__transaction_type__in=['deduct','online_received'], then=-F('advance_payments__payment_amount')),
                     default=Value(0),
                     output_field=DecimalField(max_digits=10, decimal_places=2)
                 )
@@ -328,7 +328,7 @@ def deduct_amount_view(request):
                                                     then=F('advance_payments__payment_amount')
                                                 ),
                                                 When(
-                                                    advance_payments__transaction_type='deduct',
+                                                    advance_payments__transaction_type__in=['deduct','online_received'],
                                                     then=-F('advance_payments__payment_amount')
                                                 ),
                                                 default=Value(0),
@@ -352,7 +352,7 @@ def deduct_amount_view(request):
                                                     then=F('advance_payments__payment_amount')
                                                 ),
                                                 When(
-                                                    advance_payments__transaction_type='deduct',
+                                                    advance_payments__transaction_type__in=['deduct','online_received'],
                                                     then=-F('advance_payments__payment_amount')
                                                 ),
                                                 default=Value(0),

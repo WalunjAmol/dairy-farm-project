@@ -40,7 +40,7 @@ class AdvancePaymentEndUserListView(ListView):
                         then=F('advance_payments__payment_amount')
                     ),
                     When(
-                        advance_payments__transaction_type='deduct',
+                        advance_payments__transaction_type__in=['deduct','online_received'],
                         then=-F('advance_payments__payment_amount')
                     ),
                     default=Value(0),
@@ -119,7 +119,7 @@ def get_total_withdrawal_amount(request):
                     then=F('advance_payments__payment_amount')
                 ),
                 When(
-                    advance_payments__transaction_type='deduct',
+                    advance_payments__transaction_type__in=['deduct','online_received'],
                     then=-F('advance_payments__payment_amount')
                 ),
                 default=Value(0),
@@ -152,7 +152,8 @@ class AdvancePaymentDetailViewView(DetailView):
         context = super().get_context_data(**kwargs)
         user = self.get_object()
         total_advance_payment = AdvancePayment.objects.filter(enduser=user, transaction_type='withdrawal').aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus']
-        total_recovered_payment = AdvancePayment.objects.filter(enduser=user, transaction_type='deduct').aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus']
+        total_recovered_payment = AdvancePayment.objects.filter(enduser=user, transaction_type__in=['deduct','online_received']).aggregate(total_bonus=Sum(F('payment_amount')))['total_bonus']
+        
         total_remaining_amount = EndUser.objects.filter(id=user.id).annotate(
         total_advance=Sum(
                 Case(
@@ -161,7 +162,7 @@ class AdvancePaymentDetailViewView(DetailView):
                         then=F('advance_payments__payment_amount')
                     ),
                     When(
-                        advance_payments__transaction_type='deduct',
+                        advance_payments__transaction_type__in=['deduct','online_received'],
                         then=-F('advance_payments__payment_amount')
                     ),
                     default=Value(0),
