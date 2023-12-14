@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600&display=swap');
+/* 
+body{
+    font-family: 'Montserrat', sans-serif;
+} */
+
+.navbar-custom .topbar-menu .nav-link{
+    display: flex;
+    align-items: center;
+}
+.logo span.logo-sm,.logo span.logo-lg{
+    display: block;
+}
+.logo span.logo-sm img,
+.logo span.logo-lg img{
+    width: 190px;
+}
+
+.table-responsive{
+    overflow-x: unset;
+}
+.btn-add-customer{
+    color: #fff;
+}
+.btn-add-customer:hover{
+    color: #fff;
+}
+.btn-search{
+    color: #333;
+}
+.btn-search:hover{
+    color: #333;
+}
+.payment-status .unpaid, .payment-status .paid{
+    width: 70px;
+}
+#employer-list-table .action-icon{
+    font-size: 1rem;
+    color: #333;
+    text-decoration: underline;
+}
+
+
+
+
+@media (max-width: 767.98px){
+    .content-page{
+        padding: 65px 10px 90px;
+    }
+    li.paginate_button.next, li.paginate_button.previous {
+        font-size: 1rem;
+    }
+    #import-form .import-trxn{
+        margin-top: 10px;
+    }
+    .user-profile .total-bonus{
+        margin-top: 15px;
+    }
+    .user-profile .remaining-amount{
+        margin-left: 0;
+        margin-top: 15px;
+    }
+    .table-responsive table .highlight-bonus{
+        font-size: 1rem;
+    }
+    .table-responsive div.col-sm-12:has(.table-res){
+        width: 100%;
+        overflow-x: scroll;
+    }    
+    .table-responsive:has(.table-res2){
+        width: 100%;
+        overflow-x: scroll;
+    }
+    .table-responsive .table-res2 td{
+        white-space: nowrap;
+    }
+}
