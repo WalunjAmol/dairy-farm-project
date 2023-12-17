@@ -4,7 +4,9 @@
 {% block content %}
 <style>
 </style>
-<h3 class="text-center mt-3 mb-3 ">Update Customer Transaction Details</h3>
+
+
+<h3 class="text-center mt-3 mb-3 ">Fill Customer Transaction Details</h3>
 <div class="col-lg-12">
     <div class="card">
         <div class="card-body">
@@ -174,11 +176,13 @@
                                     </div>
                                 {% endif %}
                             </div>
-                            <div class="col-sm-6 position-relative mb-3">
+                            <div class="col-sm-4 position-relative mb-3">
                                 <label for="transaction_amount" class="form-label">
-                                    Total Amount <span class="required-field"></span>
+                                    Total Amount<span class="required-field"></span>
                                 </label>
-                                {{ form.transaction_amount }}
+                                <div class="input-group">
+                                    <input type="text" id="id_transaction_amount" name="transaction_amount" class="form-control" readonly>
+                                </div>
                                 {% if form.transaction_amount.errors %}
                                     <div class="error-red alert-dismissable">
                                         <div class="errorlist">
@@ -187,7 +191,14 @@
                                     </div>
                                 {% endif %}
                             </div>
+
+                            <div>
+                                <input type='hidden' name='dairy' value='{{request.user.dairy.id}}'>
                         </div>
+                        </div>
+                        <div>
+                            <input type='hidden' name='dairy' value={{request.user.dairy.id}}>
+                            </div>
                         <div>
                             <input type='hidden' name='dairy' value={{request.user.dairy.id}}>
                         </div>
@@ -216,5 +227,42 @@
 <!-- end card-->
 </div>
 <!-- end col-->
-{% endblock %}
 <!-- Additional scripts if needed -->
+{% block javascrips %}
+   <!-- ... (existing code) ... -->
+
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+       // Get references to relevant form elements
+       var litersInput = document.querySelector('#id_transaction_liters');
+       var rateInput = document.querySelector('#id_transaction_rate');
+       var amountInput = document.querySelector('#id_transaction_amount');
+       var form = document.querySelector('form');
+
+       // Set initial values and disable the amount input
+       {% comment %} amountInput.value = '0.00'; {% endcomment %}
+       {% comment %} amountInput.disabled = true; {% endcomment %}
+
+       // Function to update the total amount based on liters and rate
+       function updateTotalAmount() {
+          var liters = parseFloat(litersInput.value) || 0;
+          var rate = parseFloat(rateInput.value) || 0;
+          var totalAmount = liters * rate;
+          amountInput.value = totalAmount.toFixed(2); // Set the total amount with two decimal places
+       }
+
+       // Enable the amount input before form submission
+       {% comment %} form.addEventListener('submit', function () {
+          amountInput.disabled = false;
+       }); {% endcomment %}
+
+       // Attach event listeners to the liters and rate inputs
+       litersInput.addEventListener('input', updateTotalAmount);
+       rateInput.addEventListener('input', updateTotalAmount);
+    });
+ </script>
+
+   {% endblock %}
+   {% endblock %}
+
+
