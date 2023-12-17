@@ -50,9 +50,24 @@ class MilkTransactionCreateView(CreateView):
             return render(request, self.template_name, {'form':form})
 
         if form.is_valid():
-            form.save()
+            milk_transaction_instance = form.save()  # Save the MilkTransaction and get the instance
+            end_user = form.cleaned_data.get('end_user')
+            date = form.cleaned_data.get('date')
+            time = form.cleaned_data.get('time')
+            transaction_liters = form.cleaned_data.get('transaction_liters')
+
+            Bonus.objects.create(
+                user=end_user,
+                bonus_date=date,
+                bonus_time=time,
+                bonus_amount=Decimal(transaction_liters),
+                description="Record added from the import transaction",
+                transaction_type='bonus_added',
+                transaction_source='manual',
+                milk_transaction=milk_transaction_instance,  # Use the instance, not the ID
+            )
             messages.success(self.request, 'Record Created Successfully.')
-            
+
             return redirect('milk_transaction:milk-transaction-list')
 
     # def form_valid(self, form):
@@ -72,21 +87,30 @@ class MilkTransactionUpdateView(UpdateView):
     success_url = reverse_lazy('milk_transaction:milk-transaction-list')
 
     def get(self, request, *args, **kwargs):
-        instance = self.get_object()  # Use the get_object() method to retrieve the object
-        form = MilkTransactionForm(instance=instance, user=request.user)
-        return render(request, self.template_name, {'form': form})
+        self.object = self.get_object()
+        form = MilkTransactionForm(instance=self.object, user=request.user)
+        return render(request, self.template_name, {'form': form, 'object': self.object})
 
     def post(self, request, *args, **kwargs):
-        instance = self.get_object()  # Use the get_object() method to retrieve the object
-        form = MilkTransactionForm(data=request.POST, instance=instance, user=request.user)
+        self.object = self.get_object()
+        form = MilkTransactionForm(data=request.POST, instance=self.object, user=request.user)
+
+        if not form.is_valid():
+            return render(request, self.template_name, {'form': form, 'object': self.object})
 
         if form.is_valid():
-            form.save()
+            # Save the form to update the MilkTransaction object
+            milk_transaction_instance = form.save()
+
+            # Update the corresponding Bonus object
+            bonus_obj = Bonus.objects.filter(milk_transaction=milk_transaction_instance).first()
+            if bonus_obj:
+                bonus_obj.bonus_amount = Decimal(milk_transaction_instance.transaction_liters)
+                bonus_obj.save()
+
             messages.success(self.request, 'Record Updated Successfully.')
             return redirect('milk_transaction:milk-transaction-list')
-        else:
-            messages.error(self.request, 'Error in the form. Please check the data.')
-            return render(request, self.template_name, {'form': form})
+
 
 
     
