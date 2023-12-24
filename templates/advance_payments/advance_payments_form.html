@@ -143,15 +143,13 @@ input[type=number] {
                             <div>
                                 <input type='hidden' name='dairy' value='{{request.user.dairy.id}}'>
                             </div>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <button class="btn btn-primary offset-8" type="submit">
-                                <i class="mdi mdi-account-circle"></i>
-                                Save
-                            </button>
-                            &nbsp;
-                            <a class="btn btn-secondary"
-                               href="{% url 'advance_payments:advance-payment-user-list' %}">Cancel</a>
+                            <div class="btn-div">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="mdi mdi-account-circle"></i>
+                                    Save
+                                </button>
+                                <a class="btn btn-secondary" href="{% url 'advance_payments:advance-payment-user-list' %}">Cancel</a>
+                            </div>
                         </form>
                         <!-- end preview-->
                     </div>
