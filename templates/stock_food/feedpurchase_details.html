@@ -122,30 +122,16 @@
             display: inline-block; /* Ensures that the background size is the same for both */
             text-align: center;
         }
-        .user-profile {
-            background-color: #f8f9fa;
-            padding: 13px;
-        }
-
         .user-profile h1 {
             font-size: 20px;
-            margin-bottom: 20px;
-        }
-
-        .user-profile p {
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-    
-        .total-bonus {
-            float: right;
+            margin: 10px 0;
         }
         /* Style for the bonus section */
         /* Style for the bonus section */
         .total-bonus {
             font-weight: bold;
             color: #FF4500; /* Change the text color to a shade of orange red */
-            margin-left: 10px;
+            /* margin-left: 10px; */
             display: inline-block;
             transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
             border-radius: 5px;
@@ -156,7 +142,7 @@
         .remaining-amount {
             font-weight: bold;
             color: #FF4500; /* Change the text color to a shade of orange red */
-            margin-left: 170px;
+            /* margin-left: 170px; */
             display: inline-block;
             transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
             border-radius: 5px;
@@ -190,21 +176,23 @@
         
         <div class="user-profile">
             <h1>{{ user_detail.first_name }} {{ user_detail.last_name }}</h1>
-            <p>
-                <span class="mobile-number">Mobile Number: {{ user_detail.mobile_number }}</span>
+            <span class="mobile-number">Mobile Number: {{ user_detail.mobile_number }}</span>
                
-                <span class="total-bonus">
-                    <button type="button" class="btn btn-search btn-add-customer" id="display_input">Search</button>
-                </span>  
+            <div class="user-profile-inner-div">
                 <span class="total-bonus">
                     <a href="{% url 'stock_food_management:user-feedpurchase-create' user_detail.custom_id %}">
                         <button type="button" class="btn btn-add-customer">Purchase</button>
                     </a>                
-                </span> 
-                <span class="remaining-amount">
-                    Remaining Amount: <span class="bonus-amount">{{ feed_amount_remaining|default:0 }}</span> <span class="currency">&#8377;</span>
-                </span> 
-             </p>
+                </span>     
+                <span class="total-bonus">
+                    <button type="button" class="btn btn-search btn-add-customer" id="display_input">Search</button>
+                </span>  
+            </div>
+        </div>
+        <div class="text-center">
+            <span class="remaining-amount mb-2">
+                Remaining Amount: <span class="bonus-amount">{{ feed_amount_remaining|default:0 }}</span> <span class="currency">&#8377;</span>
+            </span>
         </div>
     </div>
 
@@ -400,7 +388,7 @@
     </script>
     <script>
     $(document).ready(function(){
-        $("button").click(function(){
+        $("#display_input").click(function(){
             $("tfoot").toggleClass("click-hide");
         });
     })

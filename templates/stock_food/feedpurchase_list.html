@@ -130,10 +130,6 @@
             display: inline-block; /* Ensures that the background size is the same for both */
             text-align: center;
         }
-        .user-profile {
-            background-color: #f8f9fa;
-        }
-        
         .total-bonus {
             float: right;
         }
@@ -157,8 +153,8 @@
             transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
             border-radius: 5px;
             font-size: 16px;
-            padding-top: 16px;
-            margin-left: 400px;
+            /* padding-top: 16px;
+            margin-left: 400px; */
         }
         .currency {
             font-size: 17px;
@@ -184,22 +180,21 @@
                 <!-- Your form content goes here -->
             </form>
         </div>
-        <div class="user-profile">
+        <div class="user-profile reverse">
             <h1>{{ user_detail.first_name }} {{ user_detail.last_name }}</h1>
-            <p>
-               
-                <span class="total-bonus">
-                    <button type="button" class="btn btn-search btn-add-customer" id="display_input">Search</button>
-                </span>  
+            <span class="remaining-amount">
+                Remaining Amount: <span class="bonus-amount">{{ total_feed_reamining_amount|default:0 }}</span> <span class="currency">&#8377;</span>
+            </span> 
+            <div class="user-profile-inner-div">
                 <span class="total-bonus">
                     <a href="{% url 'stock_food_management:feedpurchase-create' %}">
-                        <button type="button" class="btn btn-add-customer">Purchase</button>
+                        <button type="button" class="btn btn-primary">Purchase</button>
                     </a>                
                 </span> 
-                <span class="remaining-amount">
-                    Remaining Amount: <span class="bonus-amount">{{ total_feed_reamining_amount|default:0 }}</span> <span class="currency">&#8377;</span>
-                </span> 
-             </p>
+                <span class="total-bonus">
+                    <button type="button" class="btn btn-light" id="display_input">Search</button>
+                </span>  
+            </div>
         </div>
     </div>
 
@@ -400,7 +395,7 @@
     </script>
     <script>
     $(document).ready(function(){
-        $("button").click(function(){
+        $("#display_input").click(function(){
             $("tfoot").toggleClass("click-hide");
         });
     })
