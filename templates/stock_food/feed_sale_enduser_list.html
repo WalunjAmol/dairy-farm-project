@@ -61,9 +61,9 @@
         }
 
         .highlight-bonus {
-            font-weight: bold;
+            font-weight: 500;
             color: #B18C32;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             animation: highlight-bonus 1s ease-in-out;
         }
 
@@ -131,7 +131,7 @@
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="custom-table table-centered table table-sm mb-0 nowrap w-100 for-tfoot"
+                            <table class="custom-table table-centered table table-res2 table-sm mb-0 nowrap w-100 for-tfoot"
                                    id="employer-list-table">
                                 <thead class="table-dark">
                                     <tr>
@@ -220,7 +220,7 @@
     </script>
     <script>
     $(document).ready(function(){
-        $("button").click(function(){
+        $("#display_input").click(function(){
             $("tfoot").toggleClass("click-hide");
         });
     })

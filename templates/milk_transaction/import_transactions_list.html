@@ -123,7 +123,7 @@
                                             {% comment %} Choose File <input type="file" class="file-input" id="file-input" accept=".txt" required style="display: none;"> {% endcomment %}
                                             <input class="form-control" type="file"  id="file-input" accept=".txt" required>
                                         </label>
-                                        <button type="submit" class="btn btn-danger ml-3">Import Transaction</button>
+                                        <button type="submit" class="btn btn-danger ml-3 import-trxn">Import Transaction</button>
                                         <button type="reset" hidden id="reset_button">Reset</button>
                                         <div id="upload-spinner" style="margin-top: 10px;" class="d-none">
                                             <p style="font-size: 14px;">
@@ -160,7 +160,7 @@
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-centered table table-sm mb-0 nowrap w-100 for-tfoot"
+                            <table class="table table-centered table table-res table-sm mb-0 nowrap w-100 for-tfoot"
                                    id="employer-list-table">
                                 <thead class="table-dark">
                                     <tr>
@@ -315,7 +315,7 @@
     </script>
     <script>
     $(document).ready(function(){
-        $("button").click(function(){
+        $("#display_input").click(function(){
             $("tfoot").toggleClass("click-hide");
         });
     })

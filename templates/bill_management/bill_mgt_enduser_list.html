@@ -61,9 +61,9 @@
         }
 
         .highlight-bonus {
-            font-weight: bold;
+            font-weight: 500;
             color: #B18C32;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             animation: highlight-bonus 1s ease-in-out;
         }
 
@@ -151,7 +151,7 @@
                                             <td>{{ user.mobile_number }}</td>
                                             <td>
                                                 <a href="{% url 'bill_management:generate_bills' user.id cycleinfo.id %}" class="action-icon">
-                                                    <i class="mdi mdi-file-document custom-icon"></i> View Bill
+                                                    <i class="mdi mdi-file-document custom-icon"></i>View Bill
                                                 </a>
                                             </td>
                                         </tr>
@@ -222,7 +222,7 @@
     </script>
     <script>
     $(document).ready(function(){
-        $("button").click(function(){
+        $("#display_input").click(function(){
             $("tfoot").toggleClass("click-hide");
         });
     })

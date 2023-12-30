@@ -11,24 +11,7 @@
           type="text/css" />
 {% endblock %}
 {% block content %}
-    <!-- <style>
-    #jobseeker-list-table_paginate{
-        text-align: center;
-        margin-right: 275px;
-        margin-top: 10px;
-    }
-    </style> -->
     <style>
-    .text-success{
-        color: var(--brand-gold) !important;
-    }
-    .text-danger{
-        color: var(--brand-grey) !important;
-    }
-    .uil-phone-volume{
-        color: var(--brand-gold);
-    }
- /* Add your CSS styles here */
 
 .table-container {
     max-width: 800px;
@@ -53,19 +36,15 @@
     color: #fff;
 }
 
-.table th {
-    font-weight: bold;
-}
-
 .customer-link {
     text-decoration: none;
     color: #007bff;
 }
 
 .highlight-bonus {
-    font-weight: bold;
+    font-weight: 500;
     color: #B18C32;
-    font-size: 1.2rem; /* Increase the font size */
+    font-size: 1.1rem; /* Increase the font size */
     animation: highlight-bonus 1s ease-in-out; /* Add animation */
 }
 
@@ -77,10 +56,10 @@
 /* Style for the bonus section */
 /* Style for the bonus section */
 .total-bonus {
-    float: right;
+    /* float: right; */
     font-weight: bold;
     color: #FF4500; /* Change the text color to a shade of orange red */
-    margin-left: 10px;
+    /* margin-left: 10px; */
     display: inline-block;
     transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
     border-radius: 5px;
@@ -92,8 +71,8 @@
     transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
     border-radius: 5px;
     font-size: 16px;
-    padding-top: 4px;
-    margin-left: 400px;
+    /* padding-top: 4px; */
+    /* margin-left: 400px; */
 }
 .currency {
     font-size: 17px;
@@ -102,9 +81,7 @@
 .bonus-amount {
     color: #9932CC; /* Change the color to a shade of dark orchid */
 }
-.user-profile {
-    background-color: #f8f9fa;
-}
+
 p {
     margin-top: 17px;
     margin-bottom: 1rem;
@@ -152,21 +129,21 @@ p {
                                 </form>
                             </div>
 
-                            <div class="user-profile">
-                                <p>
-                                   
-                                    <span class="total-bonus">
-                                        <button type="button" class="btn btn-light mb-2 me-1" id="display_input">Search</button>
-                                    </span>  
+                            <div class="user-profile bonus">
+                                <div></div>
+                                <span class="remaining-amount">
+                                    Remaining Amount: <span class="bonus-amount">{{ total_advance_all_users|default:0 }}</span> <span class="currency">&#8377;</span>
+                                </span> 
+                                <div class="total-bonus-div">
                                     <span class="total-bonus">
                                         <a href="{% url 'advance_payments:advance-payyment-create' %}">
-                                            <button type="button" class="btn btn-danger mb-2 me-2">Add Advance Payments</button>
+                                            <button type="button" class="btn btn-danger">Add Advance Payments</button>
                                         </a>               
-                                    </span> 
-                                    <span class="remaining-amount">
-                                        Remaining Amount: <span class="bonus-amount">{{ total_advance_all_users|default:0 }}</span> <span class="currency">&#8377;</span>
-                                    </span> 
-                                 </p>
+                                    </span>
+                                    <span class="total-bonus">
+                                        <button type="button" class="btn btn-light" id="display_input">Search</button>
+                                    </span>  
+                                </div> 
                             </div>
 
 
@@ -192,7 +169,7 @@ p {
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-centered table table-sm mb-0 nowrap w-100 for-tfoot"
+                            <table class="table table-centered table table-res table-sm mb-0 nowrap w-100 for-tfoot"
                                    id="employer-list-table">
                                 <thead class="table-dark">
                                     <tr>
@@ -345,7 +322,7 @@ p {
     </script>
     <script>
     $(document).ready(function(){
-        $("button").click(function(){
+        $("#display_input").click(function(){
             $("tfoot").toggleClass("click-hide");
         });
     })

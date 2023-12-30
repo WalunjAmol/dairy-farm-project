@@ -7,14 +7,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Custom styles for this template */
-        .user-profile {
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-
         .user-profile h1 {
             font-size: 20px;
-            margin-bottom: 20px;
+            margin: 0;
         }
 
         .user-profile p {
@@ -95,17 +90,15 @@
         <!-- User Profile Section -->
         <div class="user-profile">
             <h1>{{ user.first_name }} {{ user.last_name }}</h1>
-            <p>
-                <span class="mobile-number">Mobile Number: {{ user.mobile_number }}</span>
-                <span class="total-bonus">
-                    Total Bonus: <span class="bonus-amount">{{ total_bonus|default:0 }}</span> <span class="currency">&#8377;</span>
-                </span>           
-             </p>
+            <span class="mobile-number">Mobile Number: {{ user.mobile_number }}</span>
+            <span class="total-bonus">
+                Total Bonus: <span class="bonus-amount">{{ total_bonus|default:0 }}</span> <span class="currency">&#8377;</span>
+            </span>
         </div>
 
         <!-- Transaction History Section -->
-        <div class="transaction-history">
-            <table class="table table-striped table-bordered">
+        <div class="transaction-history table-responsive">
+            <table class="table table-striped table-bordered table-res2">
                 <thead class="table-dark">
                     <tr>
                         <th>Date</th>

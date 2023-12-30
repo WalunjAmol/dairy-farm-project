@@ -78,7 +78,7 @@
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-centered table table-sm mb-0 nowrap w-100 for-tfoot"
+                            <table class="table table-centered table table-sm mb-0 nowrap w-100 for-tfoot table-res"
                                    id="employer-list-table">
                                 <thead class="table-dark">
                                     <tr>
@@ -256,7 +256,7 @@
         $("#employer-list-table").dataTable({
             "pageLength": 20,   // Set the default page length to 20
             "stateSave": true,  // Enable state saving
-            "responsive": true,  // Enable responsive design
+            "responsive": false,  // Enable responsive design
             
 
             aoColumnDefs: [
@@ -301,7 +301,7 @@
     </script>
     <script>
     $(document).ready(function(){
-        $("button").click(function(){
+        $("#display_input").click(function(){
             $("tfoot").toggleClass("click-hide");
         });
     })
