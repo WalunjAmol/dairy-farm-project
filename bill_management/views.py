@@ -30,15 +30,19 @@ class ProcessAndStoreObjectsView(View):
             date__month=month,
             date__day=cycle_day
         )
-        
+
         cycle_day_label = '1st' if cycle_day == 1 else '2nd' if cycle_day == 16 else str(cycle_day)
         
         if month_transactions.exists():
-            current_year = datetime.now().year
+            # Extract the year from the first transaction
+            current_year = month_transactions[0].date.year
+            
             cycle_name = f"{cycle_day_label} Cycle {month_transactions[0].get_month_name()} {current_year}"
+
             # Calculate 'from_date' and 'to_date' based on cycle_day and month
             from_date = datetime(current_year, month, cycle_day)
             _, last_day_of_month = calendar.monthrange(current_year, month)
+
             if cycle_day == 16:
                 to_date = datetime(current_year, month, last_day_of_month)
             elif cycle_day == 1:
