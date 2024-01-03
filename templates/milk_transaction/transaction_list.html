@@ -110,6 +110,8 @@
                                     <tr>
                                         <th>Sr. No.</th>
                                         <th>Customer ID</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
                                         <th>Customer Name</th>
                                         <th>Shift</th>
                                         <th>Liters</th>
@@ -117,8 +119,7 @@
                                         <th>S.N.F</th>
                                         <th>Rate</th>
                                         <th>Total Amount</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
+                                        
                                         <th style="width: 125px;">Action</th>
                                     </tr>
                                 </thead>
@@ -131,32 +132,33 @@
                                             <input type="number" class="form-control">
                                         </th>
                                         <th scope="col">
-                                            <input type="text" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="text" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="number" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="number" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="number" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="number" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="number" class="form-control">
-                                        </th>
-                                        <th scope="col">
                                             <input type="date" class="form-control">
                                         </th>
                                         <th scope="col">
                                             <input type="time" class="form-control">
                                         </th>
+                                        <th scope="col">
+                                            <input type="text" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="text" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="number" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="number" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="number" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="number" class="form-control">
+                                        </th>
+                                        <th scope="col">
+                                            <input type="number" class="form-control">
+                                        </th>
+                                       
                                         <th scope="col"></th>
                                     </tr>
                                 </tfoot>
@@ -165,6 +167,8 @@
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
                                             <td>{{ transaction.end_user.custom_id }}</td>
+                                            <td>{{ transaction.date|date:"d/m/Y" }}</td>
+                                            <td>{{ transaction.time }}</td>
                                             <td>
                                                 <a href="#" class="text-body fw-bold">{{ transaction.end_user.first_name }} {{ transaction.end_user.last_name }}</a>
                                             </td>
@@ -174,8 +178,7 @@
                                             <td>{{ transaction.transaction_snf }}</td>
                                             <td>{{ transaction.transaction_rate }}</td>
                                             <td class="bonus-amount">{{ transaction.transaction_amount }} <span class="currency">&#8377;</span></td>
-                                            <td>{{ transaction.date }}</td>
-                                            <td>{{ transaction.time }}</td>
+                                            
                                             <td>
                                                 {% comment %} <a href="{% url 'employer_details' employer.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a>{% endcomment %}
                                                 <a href="{% url 'milk_transaction:milk-transaction-update' transaction.id %}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
@@ -288,9 +291,24 @@
             "ordering": true,
             "bPaginate": true,
             "searching": true,
-            "bInfo": false,
+            "bInfo": true,
             "order": [],
             'processing': true,
+            'pageLength': 30,  // Set the default number of records per page
+            'lengthMenu': [10, 20, 30, 50],  // Customize the page length dropdown options
+            'language': {
+                'paginate': {
+                    'first': 'First',
+                    'last': 'Last',
+                    'next': 'Next',
+                    'previous': 'Previous'
+                },
+                'lengthMenu': 'Show _MENU_ entries per page',
+                'search': 'Search:',
+                'infoEmpty': 'No records available',
+                'infoFiltered': '(filtered from _MAX_ total records)'
+            },
+            
             aoColumnDefs: [
                 { "aTargets": [ 0 ], "bSortable": false },
                 { "aTargets": [ 1 ], "bSortable": true },
