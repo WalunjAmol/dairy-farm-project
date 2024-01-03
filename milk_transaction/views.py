@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 
 #Python Imports
 from datetime import datetime
+from datetime import date, timedelta
 from decimal import Decimal
 import csv
 
@@ -27,7 +28,10 @@ class MilkTransactionListView(ListView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = MilkTransaction.objects.filter(end_user__dairy_name__role=user.dairy.role)
+        start_date = date.today() - timedelta(days=21)
+        queryset = MilkTransaction.objects.filter(end_user__dairy_name__role=user.dairy.role, date__gte=start_date)
+        queryset = queryset.order_by('-date')  # Order by the 'date' field in descending order
+
         return queryset
 
 
