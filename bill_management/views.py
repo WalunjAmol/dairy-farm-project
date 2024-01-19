@@ -101,10 +101,11 @@ class ProcessAndStoreObjectsView(View):
 
 
         cycles = GeneratedCycle.objects.all().order_by('-from_date')
+        last_transaction_data = MilkTransaction.objects.latest('date')
 
         context = {
             'cycles': cycles,
-            'current_date': current_date,
+            'current_date': last_transaction_data.date,
             'current_month': current_month,
         }
 
