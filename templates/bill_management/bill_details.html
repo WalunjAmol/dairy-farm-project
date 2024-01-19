@@ -603,50 +603,54 @@
         <div class="bonus-deduction-row">
             <div class="bonus-deduction-section">
                 <h5>बोनस तपशील</h5>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>श्रेणीचे नाव</th>
-                            <th>रक्कम (रुपये)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>एकूण बोनस संग्रहित</td>
-                            <td>{{ total_bonus }}</td>
-                        </tr>
-                        <tr>
-                            <td>बोनस कपात</td>
-                            <td>{{ last_cycle_bonus_deduct }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table-res2">
+                        <thead>
+                            <tr>
+                                <th>श्रेणीचे नाव</th>
+                                <th>रक्कम (रुपये)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>एकूण बोनस संग्रहित</td>
+                                <td>{{ total_bonus }}</td>
+                            </tr>
+                            <tr>
+                                <td>बोनस कपात</td>
+                                <td>{{ last_cycle_bonus_deduct }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="bonus-deduction-section">
                 <h5>ऍडव्हान्स तपशील
                 <span><button  class="deduction-button" onclick="showDeductionPopup()">Deduct Amount</button></span></h5>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>श्रेणीचे नाव</th>
-                            <th>रक्कम (रुपये)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>एकूण ऍडव्हान्स रक्कम</td>
-                            <td>{{ total_advanced_amount | default:'0' }}</td>
-                        </tr>
-                        <tr>
-                            <td>उर्वरित ऍडव्हान्स रक्कम</td>
-                            <td><span id="remaining_amount">{{ remaining_amount | default:'0' }}</span></td>
-                        </tr>
-                        <tr>
-                            <td>रक्कम कपात</td>
-                            <td><span id="last_deduction_amount">{{ last_deduction_amount | default:'0' }}</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table-res2">
+                        <thead>
+                            <tr>
+                                <th>श्रेणीचे नाव</th>
+                                <th>रक्कम (रुपये)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>एकूण ऍडव्हान्स रक्कम</td>
+                                <td>{{ total_advanced_amount | default:'0' }}</td>
+                            </tr>
+                            <tr>
+                                <td>उर्वरित ऍडव्हान्स रक्कम</td>
+                                <td><span id="remaining_amount">{{ remaining_amount | default:'0' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>रक्कम कपात</td>
+                                <td><span id="last_deduction_amount">{{ last_deduction_amount | default:'0' }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <!-- <div>
@@ -655,49 +659,51 @@
         <div class="bonus-deduction-row">
             <div class="bonus-deduction-section">
                 <h5>पशुखाद्य तपशील</h5>
-                <table class="bill-table">
-                    <thead>
-                        <tr>
-                            <th>दिनांक</th>
-                            <th>नाव</th>
-                            <th>नग</th>
-                            <th>दर (रुपये)</th>
-                            <th>रक्कम (रुपये)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for feed in feed_purchase %}
+                <div class="table-responsive">
+                    <table class="bill-table table-res2">
+                        <thead>
                             <tr>
-                                <td style="white-space: nowrap;">{{ feed.date_created|date:"d-m-Y" }}</td>
-                                {% if feed.stock.marathit_name %}
-                                    <td>{{ feed.stock.marathit_name }}</td>
-                                {% elif feed.extra_field  %}
-                                     <td>{{ feed.extra_field }}</td>
-                                {% else %}
-                                    <td>{{ feed.stock.name }}</td>
-                                {% endif %}
-
-                                {% if feed.quantity_taken == 0%}
-                                    <td>-</td>
-                                {% else %}
-                                    <td>{{ feed.quantity_taken }}</td>
-                                {% endif %}
-                                <td>{{ feed.purchase_amount }}</td>
-                                <td>{{ feed.total_purchase_amount }}</td>
+                                <th>दिनांक</th>
+                                <th>नाव</th>
+                                <th>नग</th>
+                                <th>दर (रुपये)</th>
+                                <th>रक्कम (रुपये)</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td></td>
-                            <td colspan="1" class="total-column">एकूण</td>
-                            <td colspan="2" class="total-column">{{total_feed_quantity}} पोती</td>
-                            <td class="total-column">
-                                {{ bill_total_purchase_amount }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for feed in feed_purchase %}
+                                <tr>
+                                    <td style="white-space: nowrap;">{{ feed.date_created|date:"d-m-Y" }}</td>
+                                    {% if feed.stock.marathit_name %}
+                                        <td>{{ feed.stock.marathit_name }}</td>
+                                    {% elif feed.extra_field  %}
+                                         <td>{{ feed.extra_field }}</td>
+                                    {% else %}
+                                        <td>{{ feed.stock.name }}</td>
+                                    {% endif %}
+    
+                                    {% if feed.quantity_taken == 0%}
+                                        <td>-</td>
+                                    {% else %}
+                                        <td>{{ feed.quantity_taken }}</td>
+                                    {% endif %}
+                                    <td>{{ feed.purchase_amount }}</td>
+                                    <td>{{ feed.total_purchase_amount }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td colspan="1" class="total-column">एकूण</td>
+                                <td colspan="2" class="total-column">{{total_feed_quantity}} पोती</td>
+                                <td class="total-column">
+                                    {{ bill_total_purchase_amount }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
                 <!-- <table>
                     <tbody>
                         <tr>
@@ -712,34 +718,36 @@
             </div>
             <div class="bonus-deduction-section final-amount-section">
                 <h5>बिल तपशील</h5>
-                <table>
-                    <tr>
-                        <th>श्रेणीचे नाव</th>
-                        <th>रक्कम (रुपये)</th>
-                    </tr>
-                    <tbody>
+                <div class="table-responsive">
+                    <table class="table-res2">
                         <tr>
-                            <td>एकूण बिल रक्कम</td>
-                            <td>{{ milk_transation_sum | default:'0' }}</td>
+                            <th>श्रेणीचे नाव</th>
+                            <th>रक्कम (रुपये)</th>
                         </tr>
-                        <tr>
-                            <td>बोनस कपात</td>
-                            <td>{{ last_cycle_bonus_deduct | default:'0' }}</td>
-                        </tr>
-                        <tr>
-                            <td>ऍडव्हान्स कपात</td>
-                            <td><span id="finale_adv_deduction_amount">{{ last_deduction_amount | default:'0' }}</span></td>
-                        </tr>
-                        <tr>
-                            <td>पशुखाद्य कपात</td>
-                            <td>{{ total_Purchase_amount | default:'0' }}</td>
-                        </tr>
-                        <tr>
-                            <td  style="font-size: 15px; font-weight: bold;">निव्वळ शिलक</td>
-                            <td><span id="finale_amount" style="font-size: 15px; font-weight: bold;">{{ finale_amount | default:'0' }}</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <tbody>
+                            <tr>
+                                <td>एकूण बिल रक्कम</td>
+                                <td>{{ milk_transation_sum | default:'0' }}</td>
+                            </tr>
+                            <tr>
+                                <td>बोनस कपात</td>
+                                <td>{{ last_cycle_bonus_deduct | default:'0' }}</td>
+                            </tr>
+                            <tr>
+                                <td>ऍडव्हान्स कपात</td>
+                                <td><span id="finale_adv_deduction_amount">{{ last_deduction_amount | default:'0' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>पशुखाद्य कपात</td>
+                                <td>{{ total_Purchase_amount | default:'0' }}</td>
+                            </tr>
+                            <tr>
+                                <td  style="font-size: 15px; font-weight: bold;">निव्वळ शिलक</td>
+                                <td><span id="finale_amount" style="font-size: 15px; font-weight: bold;">{{ finale_amount | default:'0' }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             
         </div>
