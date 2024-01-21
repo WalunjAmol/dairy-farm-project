@@ -5,7 +5,7 @@ from .views import *
 app_name = 'bill_management'
 
 urlpatterns = [
-    path('generate-cycle/', ProcessAndStoreObjectsView.as_view(), name='generate_cycle'),
+    # path('generate-cycle/', ProcessAndStoreObjectsView.as_view(), name='generate_cycle'),  ##Commented bcause of the we used Second version
     path('user-bill-mgt/<int:pk>', BillMgtUserListView.as_view(), name='user-bill-mgt-list'),
     path('generate-bill/<int:user_id>/<int:cycle_id>',GenerateBill.as_view(),name='generate_bills'),
     path('deduct_amount/', deduct_amount_view, name='deduct_amount'),
@@ -17,5 +17,7 @@ urlpatterns = [
     path('bank-report-cycle/', BankBillReportCyccle.as_view(), name='bank-report-cycles'),
     path('banking-billing-report/<int:cycle_id>/', BankingBillingReports.as_view(), name='banking-billing-reports'),
 
+    #Version 2 URL
+    path('generate-cycle/', ProcessAndStoreObjectsViewV1.as_view(), name='generate_cycle'),
 
 ]

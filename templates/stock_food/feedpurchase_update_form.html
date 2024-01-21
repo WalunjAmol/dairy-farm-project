@@ -95,7 +95,21 @@
                                         </div>
                                     {% endif %}
                                 </div>
+                                <div class="col-sm-12 position-relative mb-3">
+                                    <label for="purchase_amount" class="form-label">
+                                        Description<span class="required-field"></span>
+                                    </label>
+                                    <div class="input-group">{{ form.description }}</div>
+                                    {% if form.purchase_amount.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.purchase_amount.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
+                            
                             <div class="btn-div">
                                 <button class="btn btn-primary" type="submit">
                                     <i class="mdi mdi-account-circle"></i>
@@ -139,7 +153,8 @@
             $('#id_taken_user').select2();
     
             // Calculate total purchase amount when the page loads and when input fields change
-            function calculateTotalAmount() {
+            function calculateTotalAmo
+            unt() {
                 var quantityTaken = parseFloat($('#id_quantity_taken').val()) || 0;
                 var purchaseAmount = parseFloat($('#id_purchase_amount').val()) || 0;
                 var totalAmount = quantityTaken * purchaseAmount;

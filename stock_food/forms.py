@@ -133,7 +133,13 @@ class FeedPurchaseUpdateForm(forms.ModelForm):
                     "class":"form-control"
                 }
             )
+            self.fields["description"].widget.attrs.update(
+                {      
+                    "placeholder": "Enter description",
+                    "class":"form-control"
+                }
+            )
         class Meta:
             model = FeedPurchase
-            fields = ['stock', 'taken_user', 'quantity_taken', 'purchase_amount','total_purchase_amount','is_paid']
+            fields = ['stock', 'taken_user', 'quantity_taken', 'purchase_amount','total_purchase_amount','is_paid','description']
     

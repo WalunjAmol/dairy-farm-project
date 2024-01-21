@@ -110,6 +110,130 @@ class ProcessAndStoreObjectsView(View):
         }
 
         return render(request, 'bill_management/cycle_list.html', context)
+    
+from django.http import HttpResponseServerError
+import traceback
+class ProcessAndStoreObjectsViewV1(View):
+    CYCLE_LENGTH = 10
+
+    def calculate_cycle_name(self, start_day, end_day, current_month, current_year):
+        month_short_names = [
+                'Jan', 'Feb', 'Mar', 'Apr',
+                'May', 'Jun', 'Jul', 'Aug',
+                'Sep', 'Oct', 'Nov', 'Dec'
+            ]
+        if current_month == 1 and start_day == 21:
+            # If the current month is January and the start_day is 21, consider the previous year
+            current_year -= 1
+            month_short_name = 'Dec'
+
+        elif start_day == 21:
+            month_short_name = month_short_names[current_month - 2]
+    
+        else:
+            month_short_name = month_short_names[current_month - 1]
+
+        return f"{start_day} to {end_day} Cycle {month_short_name} {current_year}"
+
+    
+    def calculate_cycle_dates(self, current_year, month, start_day, end_day):
+        if month == 1 and start_day == 21:
+            # If the current month is January and the start_day is 21, consider the previous year
+            current_year -= 1
+            month = 12    
+            from_date = datetime(current_year, month, start_day)
+            to_date = datetime(current_year, month, end_day)
+        elif start_day == 21:
+            month = month-1    
+            from_date = datetime(current_year, month, start_day)
+            to_date = datetime(current_year, month, end_day)
+        else:
+            from_date = datetime(current_year, month, start_day)
+            to_date = datetime(current_year, month, end_day)
+        return from_date, to_date
+
+    def create_cycle(self, current_date):
+        try:
+            current_month = current_date.month
+            current_year = current_date.year
+            
+            if self.CYCLE_LENGTH == 10:
+                # If the date is between 1 and 10 and the current month is January, create one cycle for the last 10 days of December of the previous year
+                print('current_month',current_month)
+                if 1 <= current_date.day <= 10 and current_month == 1:
+                    start_day = 21
+                    _, last_day_of_prev_month = calendar.monthrange(current_year - 1, 12)
+                    end_day = last_day_of_prev_month
+                # If the date is between 1 and 10 for other months, create one cycle for the last 10 days of the previous month
+                elif 1 <= current_date.day <= 10:
+                    start_day = 21
+                    _, last_day_of_prev_month = calendar.monthrange(current_year, current_month - 1)
+                    end_day = last_day_of_prev_month
+                # If the date is between 11 and 20, create one cycle for the last 10 days of the current month
+                elif 11 <= current_date.day <= 20:
+                    start_day = 1
+                    end_day = 10
+                # If the date is between 21 and the 'end date of month', create one cycle for the last 10 days of the current month
+                elif current_date.day >= 21:
+                    start_day = 11
+                    _, last_day_of_month = calendar.monthrange(current_year, current_month)
+                    end_day = 20
+                else:
+                    return
+            
+            # Create a 15-day cycle if the current date is 16th
+            elif self.CYCLE_LENGTH == 15:
+
+                # If the date ranges from 1 to 15, create one cycle for this period
+                if 1 <= current_date.day <= 15:
+                    start_day = 1
+                    end_day = 15
+
+                # If the date is 16 to 'end date of month', create one cycle for this period
+                elif current_date.day >= 16:
+                    start_day = 16
+                    _, last_day_of_month = calendar.monthrange(current_year, current_month)
+                    end_day = last_day_of_month
+                else:
+                    return  # Skip cycle creation for other dates
+
+            cycle_name = self.calculate_cycle_name(start_day, end_day, current_month, current_year)
+            from_date, to_date = self.calculate_cycle_dates(current_year, current_month, start_day, end_day)
+
+            if not GeneratedCycle.objects.filter(name=cycle_name).exists():
+                print(f"Creating cycle: {cycle_name}")
+                GeneratedCycle.objects.create(
+                    name=cycle_name,
+                    dairy_name=self.request.user.dairy,
+                    dairy_owner=self.request.user,
+                    from_date=from_date,
+                    to_date=to_date
+                )
+            else:
+                print(f"Cycle already exists for {cycle_name}. Skipping...")
+
+        except Exception as e:
+            error_message = f"Error occurred while creating cycle: {str(e)}"
+            traceback_info = traceback.format_exc()
+            print(f"{error_message}\n{traceback_info}")
+            return HttpResponseServerError(error_message)
+
+    def get(self, request, *args, **kwargs):
+        current_date = datetime.now().date()
+
+        self.create_cycle(current_date)
+
+
+        cycles = GeneratedCycle.objects.all().order_by('-from_date')
+        last_transaction_data = MilkTransaction.objects.latest('date')
+
+        context = {
+            'cycles': cycles,
+            'current_date': last_transaction_data.date,
+        }
+
+        return render(request, 'bill_management/cycle_list.html', context)
+
         
 
 @method_decorator(login_required, name='dispatch')
@@ -274,7 +398,7 @@ class GenerateBill(ListView):
                 created_by=self.request.user,
                 dairy=self.request.user.dairy,
                 extra_field="उर्वरित रक्कम",
-                description=f'पशुखाद्य रक्कम - (एकुन बिल रक्‍कम-बोनस रक्‍कम) {{total_purchase_amount}} - ({{milk_transation_amount_sum-last_cycle_bonus_deduct}})={{amt_forward_next_month}}, ही रक्कम पुढच्या बिलिंग सायकल मध्‍ये टाकत आहोत. {{amt_forward_next_month}} '
+                description=f'**** [पशुखाद्य रक्कम - (एकुन बिल रक्‍कम-बोनस रक्‍कम)= उर्वरित रक्कम ] ****[{total_purchase_amount} - ({milk_transation_amount_sum}-{last_cycle_bonus_deduct})={amt_forward_next_month}],**** ही {amt_forward_next_month} रक्कम पुढच्या बिलिंग सायकल मध्‍ये टाकत आहोत. {amt_forward_next_month} ****'
             )
             total_purchase_amount=total_purchase_amount-amt_forward_next_month
 

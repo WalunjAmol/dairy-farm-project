@@ -19,22 +19,96 @@ import csv
 from .models import EndUser, MilkTransaction, ImportTransaction,Dairy
 from  bonus_app.models import Bonus
 from .forms import MilkTransactionForm
+from django.db.models import Q
 
 @method_decorator(login_required, name='dispatch')
 class MilkTransactionListView(ListView):
-    model = MilkTransaction
+    model = Dairy
     template_name = 'milk_transaction/transaction_list.html'
     context_object_name = 'transactions'
 
-    def get_queryset(self):
-        user = self.request.user
-        start_date = date.today() - timedelta(days=21)
-        queryset = MilkTransaction.objects.filter(end_user__dairy_name__role=user.dairy.role, date__gte=start_date)
-        queryset = queryset.order_by('-date')  # Order by the 'date' field in descending order
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     queryset = MilkTransaction.objects.filter(end_user__dairy_name__role=user.dairy.role)
+    #     queryset = queryset.order_by('-date')  # Order by the 'date' field in descending order
 
-        return queryset
+    #     return queryset
 
+from django.views import View
+from django.core.paginator import Paginator
+from django.urls import reverse
 
+@csrf_exempt
+def datatable_data(request):
+    user = request.user
+    queryset = MilkTransaction.objects.filter(end_user__dairy_name__role=user.dairy.role)
+    queryset = queryset.order_by('-date')
+
+    page_length = int(request.GET.get('length', 10))
+    page_number = int(request.GET.get('start', 0)) // page_length + 1
+
+    order_column_index = int(request.GET.get('order[0][column]', 0))
+    order_direction = request.GET.get('order[0][dir]', 'asc')
+    order_column = request.GET.get(f'columns[{order_column_index}][data]', '')
+    if order_direction == 'asc':
+        queryset = queryset.order_by(order_column)
+    else:
+        queryset = queryset.order_by(f'-{order_column}')
+
+     # Apply search filter
+    search_value = request.GET.get('search[value]', '')
+    # print('*'*100,request.GET)
+    if search_value:
+        queryset = queryset.filter(
+            Q(end_user__id__icontains=search_value) |
+            Q(date__icontains=search_value) |
+            Q(time__icontains=search_value) |
+            Q(end_user__first_name__icontains=search_value) |
+            Q(end_user__last_name__icontains=search_value) |
+            Q(transaction_shift__icontains=search_value) |
+            Q(transaction_liters__icontains=search_value) |
+            Q(transaction_fat__icontains=search_value) |
+            Q(transaction_snf__icontains=search_value) |
+            Q(transaction_rate__icontains=search_value) |
+            Q(transaction_amount__icontains=search_value) 
+        )
+    # Modify the search filter block
+    for i in range(12):  # Assuming there are 12 columns in your DataTable
+        column_search_value = request.GET.get(f'columns[{i}][search][value]', '')
+        print('column_search_value',column_search_value)
+        if column_search_value:
+            column_data = request.GET.get(f'columns[{i}][name]', '')
+            print('column_data',column_data)
+            query_filter = f"{column_data}__icontains"
+            print('query_filter',query_filter)
+            queryset = queryset.filter(Q(**{query_filter: column_search_value}))
+
+    paginator = Paginator(queryset, page_length)
+    page = paginator.page(page_number)
+
+    data = [
+        {   
+            'end_user_id': item.end_user.id,
+            'date': item.date,
+            'time': item.time,
+            'end_user':f'{item.end_user.first_name} {item.end_user.last_name}',
+            'transaction_shift': item.transaction_shift,
+            'transaction_liters': item.transaction_liters,
+            'transaction_fat': item.transaction_fat,
+            'transaction_snf': item.transaction_snf,
+            'transaction_rate': item.transaction_rate,
+            'transaction_amount': item.transaction_amount,
+            'update_url': reverse('milk_transaction:milk-transaction-update', args=[item.id])
+        }
+        for item in page.object_list
+    ]
+
+    return JsonResponse({
+        'draw': int(request.GET.get('draw', 1)),
+        'recordsTotal': queryset.count(),
+        'recordsFiltered': paginator.count,
+        'data': data,
+    })
 @method_decorator(login_required, name='dispatch')
 class MilkTransactionCreateView(CreateView):
     model = MilkTransaction
