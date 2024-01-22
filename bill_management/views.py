@@ -332,7 +332,7 @@ class GenerateBill(ListView):
 
         # Calculate bonus-related values
         from_date = cycle_object.from_date
-        to_date = cycle_object.to_date+timedelta(days=1)
+        to_date = cycle_object.to_date
         bonus_sum = Bonus.objects.filter(
             user_id=user_id,
             transaction_type='bonus_added'
@@ -375,9 +375,10 @@ class GenerateBill(ListView):
         #     is_paid=False,
         #     date_created__range=(from_date, to_date),
         # )
+        new_to_date = to_date+timedelta(days=1)
         feed_purchase = FeedPurchase.objects.filter(
             taken_user=user_info,
-            date_created__date__range=(from_date, to_date),
+            date_created__date__range=(from_date, new_to_date),
         )
         for feed in feed_purchase:
             feed.is_paid = True
@@ -608,9 +609,10 @@ class BillingReports(ListView):
                 advance_taken_cycle = cycle_object,
                 transaction_type='deduct'
             )
+            new_to_date = to_date+timedelta(days=1)
             feed_purchase = FeedPurchase.objects.filter(
                 taken_user=enduser,
-                date_created__range=[from_date, to_date]
+                date_created__range=[from_date, new_to_date]
             )
             bonus_data = Bonus.objects.filter(
                 user=enduser,
@@ -719,9 +721,10 @@ class BankingBillingReports(ListView):
                 advance_taken_cycle = cycle_object,
                 transaction_type='deduct'
             )
+            new_to_date = to_date+timedelta(days=1)
             feed_purchase = FeedPurchase.objects.filter(
                 taken_user=enduser,
-                date_created__range=[from_date, to_date]
+                date_created__range=[from_date, new_to_date]
             )
             bonus_data = Bonus.objects.filter(
                 user=enduser,
