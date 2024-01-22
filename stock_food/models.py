@@ -45,3 +45,10 @@ class FeedPurchase(models.Model):
 
     created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='feed_purchases_created_by')
     dairy = models.ForeignKey(Dairy, on_delete=models.SET_NULL, null=True, related_name='feed_purchases_dairy')
+
+    def __str__(self):
+        return f"{self.taken_user} - {self.quantity_taken} units"
+
+    class Meta:
+        verbose_name = "Feed Purchase"
+        verbose_name_plural = "Feed Purchases"
