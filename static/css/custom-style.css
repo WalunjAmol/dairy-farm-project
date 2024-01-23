@@ -96,6 +96,9 @@ table,.text-body td{
     align-items: center;
     column-gap: 16px;
 }
+body[data-leftbar-compact-mode=condensed]{
+    min-height: auto !important;
+}
 
 @media (min-width:1024px) and (max-width: 1300px){
     .table-responsive div.col-sm-12:has(.table-res){
@@ -152,5 +155,13 @@ table,.text-body td{
     }
     .table-responsive table .highlight-bonus{
         font-size: 1rem;
+    }
+    .details-div{
+        flex-direction: column;
+        gap: 5px;
+    }
+    .details-div .first-block{
+        flex-direction: column;
+        gap: 5px;
     }
 }

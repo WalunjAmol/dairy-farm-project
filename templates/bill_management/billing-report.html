@@ -384,6 +384,11 @@
                     overflow-x: scroll;
                 }
             }
+            @media (max-width:767px){
+                .logo-container img{
+                    max-height:35px;
+                }
+            }
            
 
             @media print{
@@ -433,6 +438,17 @@
                 }
                 .total-sale h5{
                     margin: 0;
+                }
+                .logo-container img{
+                    max-height:100px;
+                }
+                .details-div{
+                    flex-direction: row;
+                    gap: 10px;
+                }
+                .details-div .first-block{
+                    flex-direction: row;
+                    gap: 20px;
                 }
             }
                 
