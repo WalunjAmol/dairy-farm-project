@@ -88,9 +88,9 @@ def datatable_data(request):
 
     data = [
         {   
-            'end_user_id': item.end_user.id,
             'date': item.date,
             'time': item.time,
+            'end_user_id': item.end_user.custom_id,
             'end_user':f'{item.end_user.first_name} {item.end_user.last_name}',
             'transaction_shift': item.transaction_shift,
             'transaction_liters': item.transaction_liters,

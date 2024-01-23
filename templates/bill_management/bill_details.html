@@ -377,12 +377,23 @@
                     overflow-x: scroll;
                 }
             }
+            @media (max-width:767px){
+                .logo-container img{
+                    max-height:35px;
+                }
+            }
            
 
             @media print{
                 @page {
-                margin: 16px 0;
+                    size: auto; /* Set the paper size */
+                    margin: 0 !important;
                 }
+            
+                body {
+                    margin: 0 !important;
+                }
+
                 p{
                     margin: 0;
                 }
@@ -427,7 +438,20 @@
                 .total-sale h5{
                     margin: 0;
                 }
-                
+                .logo-container img{
+                    max-height:100px;
+                }
+                .details-div{
+                    flex-direction: row;
+                    gap: 10px;
+                }
+                .details-div .first-block{
+                    flex-direction: row;
+                    gap: 20px;
+                }
+                .table-outer-div .table-div,.table-responsive:has(.table-res2){
+                    overflow-x: hidden;
+                }
             }
                 
     </style>

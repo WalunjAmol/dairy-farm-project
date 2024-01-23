@@ -55,6 +55,15 @@
     label {
         display: none;
     }
+    table .second-row th{
+        background-color: transparent;
+    }
+    table .second-row th::before,table .second-row th::after{
+        display: none;
+    }
+    table .second-row th:first-child input,table .second-row th:last-child input{
+        display: none;
+    }
     </style>
 
     <div class="container-fluid">
@@ -111,10 +120,10 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th>Sr. NO.</th>
-                                        <th>Date</th>
+                                        <th>&nbsp &nbsp Date</th>
                                         <th>Time</th>
-                                        <th>Customer ID</th>
-                                        <th>Customer Name</th>
+                                        <th>ID</th>
+                                        <th>Name</th>
                                         <th>Shift</th>
                                         <th>Liters</th>
                                         <th>FAT</th>
@@ -124,6 +133,7 @@
                                         <th style="width: 125px;">Action</th>
                                     </tr>
                                 </thead>
+                                <tfoot></tfoot>
                                 <tbody>
                                 </tbody>
                             </table>
@@ -142,32 +152,40 @@
 <!-- content -->
 {% endblock %}
 {% block javascripts %}
-    <link rel="stylesheet"
+    {% comment %} <link rel="stylesheet"
           href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet"
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> {% endcomment %}
+    {% comment %} <link rel="stylesheet"
           type="text/css"
           href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script type="text/javascript"
             charset="utf8"
-            src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+            src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> {% endcomment %}
+
+
+            <!-- Datatables js -->
+    <script src="{% static 'saas/assets/js/vendor/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'saas/assets/js/vendor/dataTables.bootstrap5.js' %}"></script>
+    <script src="{% static 'saas/assets/js/vendor/dataTables.responsive.min.js' %}"></script>
     <script>
     $(document).ready(function () {
     $('#milkTransactionDataTable').DataTable({
         serverSide: true,
         searching: true,
-        lengthMenu: [12, 30, 50, 100],
-        pageLength: 12,
+        lengthMenu: [15, 30, 50, 100],
+        pageLength: 15,
+        order: [[1, 'desc']],  // Set the default sorting column to the second column (index 1) in descending order
         ajax: {
             url: "{% url 'milk_transaction:transaction_data' %}",
             type: 'GET',
         },
+       
         columns: [
             { data: 'date', searchable: false, orderable: false, render: function (data, type, row, meta) { return meta.row + 1;} },
             { data: 'date', name: 'date', searchable: true },
             { data: 'time', name: 'time', searchable: true },
-            { data: 'end_user_id', name: 'end_user__id', searchable: true },
+            { data: 'end_user_id', name: 'end_user__custom_id', searchable: true },
             { data: 'end_user', name: 'end_user__first_name', searchable: true },
             { data: 'transaction_shift', name: 'transaction_shift', searchable: true },
             { data: 'transaction_liters', name: 'transaction_liters', searchable: true },
@@ -233,7 +251,7 @@
     $('#milkTransactionDataTable thead tr').clone(true).appendTo('#milkTransactionDataTable thead');
     $('#milkTransactionDataTable thead tr:eq(1) th').each(function (i) {
         var title = $(this).text();
-        $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+        $(this).html('<input type="text" placeholder="Search" />');
         $('input', this).on('keyup change', function () {
             if ($('#milkTransactionDataTable').DataTable().column(i).search() !== this.value) {
                 $('#milkTransactionDataTable').DataTable()
@@ -245,4 +263,21 @@
     });
 });
     </script>
+
+    <script>
+        $(document).ready(function(){
+            $('#milkTransactionDataTable thead tr:eq(1)').addClass('click-hide second-row');
+            $('#milkTransactionDataTable thead tr:eq(1) th input').addClass('form-control');
+            $('#milkTransactionDataTable thead tr:eq(1) th').removeClass('sorting');
+            $('#milkTransactionDataTable thead tr:eq(1) th').removeAttr('aria-controls');
+            
+            $('#milkTransactionDataTable thead tr:nth-child(2) th').each(function() {
+                $(this).unbind('click');
+            });
+
+            $("#display_input").click(function(){
+                $("#milkTransactionDataTable thead tr:eq(1)").toggleClass("click-hide");
+            });
+        })
+        </script>
 {% endblock %}
