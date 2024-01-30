@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <!-- Row 2 -->
-                        <div class="row">
+                        {% comment %} <div class="row">
                             <div class="col-sm-6 position-relative mb-3">
                                 <label for="center_code" class="form-label">
                                     Center Code <span class=""></span>
@@ -74,7 +74,7 @@
                                     </div>
                                 {% endif %}
                             </div>
-                        </div>
+                        </div> {% endcomment %}
                         <!-- Row 3-->
                         <div class="row">
                             <div class="col-sm-4 position-relative mb-3">
@@ -163,7 +163,7 @@
                          <div class="row">
                             <div class="col-sm-6 position-relative mb-3">
                                 <label for="transaction_rate" class="form-label">
-                                     Rate <span class=""></span>
+                                     Rate <span class="required-field"></span>
                                 </label>
                                 {{ form.transaction_rate }}
                                 {% if form.transaction_rate.errors %}
@@ -220,9 +220,15 @@
 </div>
 <!-- end col-->
 <!-- Additional scripts if needed -->
-{% block javascrips %}
-   <!-- ... (existing code) ... -->
 
+{% block javascrips %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+   <script>
+    // Initialize Select2 for the end_user field
+    $(document).ready(function() {
+        $('#id_end_user').select2();
+    });
+    </script>
    <script>
     document.addEventListener('DOMContentLoaded', function () {
        // Get references to relevant form elements

@@ -79,7 +79,7 @@ def datatable_data(request):
         if column_search_value:
             column_data = request.GET.get(f'columns[{i}][name]', '')
             print('column_data',column_data)
-            query_filter = f"{column_data}__icontains"
+            query_filter = f"{column_data}__contains"
             print('query_filter',query_filter)
             queryset = queryset.filter(Q(**{query_filter: column_search_value}))
 

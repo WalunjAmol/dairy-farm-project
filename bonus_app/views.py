@@ -81,6 +81,15 @@ class BonusListView(ListView):
     template_name = 'bonus_app/bonus_list.html'  # Change this to your template path
     context_object_name = 'bonuses'
 
+    def get_queryset(self):
+        # Retrieve the original queryset using super()
+        queryset = super().get_queryset()
+
+        # Add ordering by the EndUser ID
+        queryset = queryset.order_by('enduser__custom_id')
+
+        return queryset
+
 class BonusUpdateView(UpdateView):
     model = Bonus
     template_name = 'bonus/bonus_form.html'  # Change this to your template path

@@ -503,10 +503,10 @@ def deduct_amount_view(request):
                 else:
                     last_deduction_amount = 0
                 
-
+                new_to_date = to_date+timedelta(days=1)
                 milk_transation_amount_sum = MilkTransaction.objects.filter(end_user=user,date__range=(from_date,to_date)).aggregate(Sum('transaction_amount')).get('transaction_amount__sum') or 0
                 last_cycle_bonus_deduct = Bonus.objects.filter(user_id=user, transaction_type='bonus_added',bonus_date__range=(from_date,to_date)).aggregate(Sum('bonus_amount')).get('bonus_amount__sum') or 0
-                total_Purchase_amount = FeedPurchase.objects.filter(taken_user=user,date_created__range=(from_date,to_date)).aggregate(Sum('total_purchase_amount')).get('total_purchase_amount__sum') or 0
+                total_Purchase_amount = FeedPurchase.objects.filter(taken_user=user,date_created__date__range=(from_date,new_to_date)).aggregate(Sum('total_purchase_amount')).get('total_purchase_amount__sum') or 0
                 finale_amount = (milk_transation_amount_sum-last_cycle_bonus_deduct-last_deduction_amount-total_Purchase_amount) or 0
                 
                 # print('milk_transation_amount_sum',milk_transation_amount_sum)

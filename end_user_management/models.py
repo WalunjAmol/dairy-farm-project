@@ -45,3 +45,5 @@ class EndUser(models.Model):
 
     def __str__(self):
         return f"{self.custom_id}-{self.first_name} {self.last_name}"
+    class Meta:
+        ordering = ["custom_id"]
