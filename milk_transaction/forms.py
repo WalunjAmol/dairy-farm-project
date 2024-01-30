@@ -8,6 +8,7 @@ class MilkTransactionForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(MilkTransactionForm, self).__init__(*args, **kwargs)
         self.fields['end_user'].queryset = EndUser.objects.filter(dairy_name__id=user.dairy.id)
+        self.fields['transaction_rate'].required = True 
 
     class Meta:
         model = MilkTransaction
