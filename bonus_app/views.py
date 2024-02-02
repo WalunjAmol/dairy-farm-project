@@ -50,7 +50,7 @@ class BonusDetailView(DetailView):
         user = self.get_object()
         total_bonus = Bonus.objects.filter(user=user).aggregate(total_bonus=Sum('bonus_amount'))['total_bonus']
         context['total_bonus'] = total_bonus
-        context['transactions'] = Bonus.objects.filter(user=user)
+        context['transactions'] = Bonus.objects.filter(user=user).order_by('bonus_date')
         return context
 
 class BonusCreateView(CreateView):
