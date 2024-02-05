@@ -17,6 +17,12 @@ class EndUserForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"placeholder": "Enter First Name", "class": "form-control"}),
         error_messages={"required": "First name cannot be empty."},
     )
+    middle_name = forms.CharField(
+        label="Middle Name",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter Middle Name", "class": "form-control"}),
+        error_messages={"required": "Middle name cannot be empty."},
+    )
     
     last_name = forms.CharField(
         label="Last Name",
@@ -32,6 +38,12 @@ class EndUserForm(forms.ModelForm):
         error_messages={"required": "Custom ID cannot be empty."},
     )
     mobile_number = forms.CharField(
+        label="Mobile Number",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter Mobile Number", "class": "form-control"}),
+        error_messages={"required": "Mobile number cannot be empty."},
+    )
+    addhar_number = forms.CharField(
         label="Mobile Number",
         required=True,
         widget=forms.TextInput(attrs={"placeholder": "Enter Mobile Number", "class": "form-control"}),
@@ -59,6 +71,24 @@ class EndUserForm(forms.ModelForm):
     ifsc_code = forms.CharField(
         required=True,
         error_messages={"required": "IFSC code cannot be empty."},
+    )
+    dist_name = forms.CharField(
+        label="District Name",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter District Name", "class": "form-control"}),
+        error_messages={"required": "District name cannot be empty."},
+    )
+    taluka_name = forms.CharField(
+        label="Taluka Name",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter Taluka Name", "class": "form-control"}),
+        error_messages={"required": "Taluka name cannot be empty."},
+    )
+    village_name = forms.CharField(
+        label="Village Name",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter Village Name", "class": "form-control"}),
+        error_messages={"required": "Village name cannot be empty."},
     )
 
     def __init__(self, *args, **kwargs):
@@ -155,7 +185,7 @@ class EndUserForm(forms.ModelForm):
         if account_number and confirm_account_number and account_number != confirm_account_number:
             raise forms.ValidationError("Account numbers do not match.")
 
-        return cleaned_data
+        return confirm_account_number
     
     def clean_account_number(self):
         account_number = self.cleaned_data.get('account_number')
@@ -165,12 +195,22 @@ class EndUserForm(forms.ModelForm):
             raise forms.ValidationError('Invalid account number. Please enter at least 10-digit number.')
 
         return account_number
+
+    def clean_addhar_number(self):
+        addhar_number = self.cleaned_data.get('addhar_number')
+
+        # Check if the Aadhar number is exactly 12 digits
+        if not re.match(r'^\d{12}$', addhar_number):
+            raise forms.ValidationError('Invalid Aadhar number. Please enter a 12-digit number.')
+
+        return addhar_number
     
     class Meta:
         model = EndUser
         fields = [
             'custom_id',
             'first_name',
+            'middle_name',
             'last_name',
             'marathi_name',
             'birth_date',
@@ -182,5 +222,9 @@ class EndUserForm(forms.ModelForm):
             'bank_name',
             'account_number',
             'confirm_account_number',
-            'ifsc_code'
+            'ifsc_code',
+            'addhar_number',
+            'dist_name',
+            'taluka_name',
+            'village_name',
         ]
