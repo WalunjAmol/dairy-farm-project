@@ -15,6 +15,7 @@ class EndUser(models.Model):
     dairy_name = models.ForeignKey(Dairy, on_delete=models.CASCADE,related_name='dairy_customers')   
     custom_id = models.PositiveIntegerField(blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
+    middle_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
     marathi_name = models.CharField(max_length=255,blank=True,null=True)
     password = models.CharField(max_length=128, default=make_password("User@123"))
@@ -22,7 +23,12 @@ class EndUser(models.Model):
     mobile_number = models.CharField(
         unique=True,
         max_length=15
-    )    
+    ) 
+    addhar_number = models.CharField(
+        unique=True,
+        max_length=15,
+        blank=True, null=True
+    )   
     email = models.EmailField(
         unique=True,
         blank=True,
@@ -32,6 +38,10 @@ class EndUser(models.Model):
         },
     )
     profile_photo = models.ImageField(upload_to='media/profile_photos/', blank=True, null=True)
+    dist_name = models.CharField(max_length=30, blank=True, null=True)
+    taluka_name = models.CharField(max_length=30, blank=True, null=True)
+    village_name = models.CharField(max_length=30, blank=True, null=True)
+
     user_status = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)

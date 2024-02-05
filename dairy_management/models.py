@@ -3,6 +3,8 @@ from django.utils import timezone
 
 class Dairy(models.Model):
     name = models.CharField(max_length=255)
+    english_name = models.CharField(max_length=255, blank=True,null=True)
+
     registration_number = models.CharField(max_length=15, unique=True,blank=True,null=True)
     logo = models.ImageField(upload_to='media/dairy_logos/', blank=True, null=True)
     role = models.CharField(max_length=255, blank=True)
