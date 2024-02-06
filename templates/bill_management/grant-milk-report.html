@@ -528,7 +528,7 @@
                                     <td>{{ data.total_amount | default:"-" }}  </td>
                                     <td>{{ data.average_rate | floatformat:-2 | default:"-" }}</td>
                                     <td>{{ data.total_deduction | default:"-" }}</td>
-                                    <td>{{ data.net_amount | default:"-" }}</td>
+                                    <td>{{ data.net_amount | default:"0.00" }}</td>
                                     <td>{{ data.enduser.bank_name | default:"-" | upper  }}</td>
                                     <td>{{ data.enduser.account_number | default:"-" }}</td>
                                     <td>{{ data.enduser.ifsc_code | default:"-" }}</td>

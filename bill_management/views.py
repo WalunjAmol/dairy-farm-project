@@ -877,8 +877,7 @@ class MIlkGrantReports(ListView):
             average_snf = milk_data.aggregate(Avg('transaction_snf'))['transaction_snf__avg'] or 0
 
 
-            #Total Deduction Amount
-            total_deduction = total_advance_deduction + total_bonus_amount + total_feed_purchase_amount
+            
             # Adjust total_feed_purchase_amount if it exceeds the available amount
             if total_feed_purchase_amount > (total_amount - total_bonus_amount):
                 amt_forward_next_month = total_feed_purchase_amount - (total_amount - total_bonus_amount)
@@ -886,6 +885,10 @@ class MIlkGrantReports(ListView):
 
             # Calculate net amount
             net_amount = total_amount - total_advance_deduction - total_bonus_amount - total_feed_purchase_amount
+
+            # Calculate Total Deduction Amount
+            total_deduction = total_advance_deduction + total_bonus_amount + total_feed_purchase_amount
+            
             # Aggregate values for all endusers
             total_liters_all += total_liters
             total_amount_all += total_amount
