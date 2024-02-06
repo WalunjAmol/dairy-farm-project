@@ -242,4 +242,5 @@ class EndUserForm(forms.ModelForm):
             'dist_name',
             'taluka_name',
             'village_name',
+            'farmer_id',
         ]
