@@ -20,4 +20,7 @@ urlpatterns = [
     #Version 2 URL
     path('generate-cycle/', ProcessAndStoreObjectsViewV1.as_view(), name='generate_cycle'),
 
+    path('grant-cycle-list/', GranrGeneratedCycleListView.as_view(), name='grant-cycle-list'),
+    path('milk-grant-report/<int:cycle_id>/', MIlkGrantReports.as_view(), name='milk-grant-report'),
+
 ]
