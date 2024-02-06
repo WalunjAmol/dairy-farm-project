@@ -300,9 +300,9 @@
                 background-color: #f2f2f2;
             }
         
-            tr:nth-child(even) {
+            {% comment %} tr:nth-child(even) {
                 background-color: #f2f2f2;
-            }
+            } {% endcomment %}
 
             .table-outer-div{
                 display: flex;
@@ -378,20 +378,21 @@
             .highlight-column {
                 font-weight: bold;
             }
-                .bill-table th,
-                .bill-table td {
-                    text-align: center;
-                }
+            .red-row {
+                background-color: #ffdddd; /* Light red background */
+            }
             @media (max-width: 767px){
                 .table-outer-div .table-div{
                     width: 100%;
                     overflow-x: scroll;
                 }
+            }
+            @media (max-width:767px){
                 .logo-container img{
                     max-height:35px;
                 }
             }
-            
+           
 
             @media print{
                 @page {
@@ -452,6 +453,9 @@
                     flex-direction: row;
                     gap: 20px;
                 }
+                .red-row {
+                    background-color: #ffdddd; /* Light red background */
+                }
             }
                 
     </style>
@@ -479,41 +483,88 @@
                         <table class="bill-table">
                             <thead>
                                 <tr>
-                                    <th>Customer ID</th>
-                                    <th>Customer Name</th>
+                                    <th>Sr. No</th>
+                                    <th>Private/ Co-Operative Milk Union </th>
+                                    <th>From Date</th>
+                                    <th>To Date</th>
+                                    <th>District</th>
+                                    <th>Taluka</th>
+                                    <th>Village</th>
+                                    <th>Farmer Name</th>
+                                    <th>Total Liters</th>
+                                    <th>Average FAT</th>
+                                    <th>Average SNF</th>
+                                    <th>Total Amount</th>
+                                    <th>Average Rate</th>
+                                    <th>Total Deduction</th>
+                                    <th>Net Payment</th>
                                     <th>Bank Name</th>
-                                    <th>Account Number</th>
+                                    <th>A/C Number</th>
                                     <th>IFSC Code</th>
-                                    <th class="highlight-column">Total Amount</th>
+                                    <th>Aadhar No.</th>
+                                    <th>Farmer ID</th>
+                                    {% comment %} <th>एकूण पगार</th>
+                                    <th>बोनस कपात</th>
+                                    <th>एकूण पशुखाद्य</th> 
+                                    <th>पशुखाद्य कपात</th>
+                                    <th>ॲडव्हान्स कपात</th>
+                                    <th class="highlight-column">उर्वरित पगार</th> {% endcomment %}
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for data in enduser_data %}
-                                    <tr>
-                                        <td>{{ data.enduser.custom_id | default:'-'}}</td>
-                                        <td>{{ data.enduser.first_name | default:'-'|title }} {{ data.enduser.last_name | default:'-'|title }}</td>
-                                        <td>{{ data.enduser.bank_name | default:'-'|upper }}</td>
-                                        <td class="currency">{{ data.enduser.account_number | default:'-'}}  </td>
-                                        <td class="currency">{{ data.enduser.ifsc_code | default:'-' }}</td>
-                                        <td class="currency highlight-column">{{ data.net_amount }} Rs</td>
+                                  <tr {% if data.total_liters == 0 %}class="red-row"{% endif %}>
+                                    <td>{{ forloop.counter | default:"-"}}</td>
+                                    <td>{{ data.enduser.dairy_name.english_name | default:"-" }}</td>
+                                    <td>{{ from_date|date:"d-m-Y" | default:"-" }}</td>
+                                    <td>{{ to_date|date:"d-m-Y" | default:"-" }}</td>
+                                    <td>{{ data.enduser.dist_name | default:"-" }}</td>
+                                    <td>{{ data.enduser.taluka_name | default:"-" }}</td>
+                                    <td>{{ data.enduser.village_name | default:"-" }}</td>
+                                    <td>{{ data.enduser.first_name | title | default:"-" }} {{ data.enduser.middle_name | default:"" | title }} {{ data.enduser.last_name | title | default:"-" }}</td>
+                                    <td>{{ data.total_liters | default:"-" }}</td>
+                                    <td>{{ data.average_fat | floatformat:-2 | default:"-" }}</td>
+                                    <td>{{ data.average_snf | floatformat:-2 | default:"-" }}</td>
+                                    <td>{{ data.total_amount | default:"-" }}  </td>
+                                    <td>{{ data.average_rate | floatformat:-2 | default:"-" }}</td>
+                                    <td>{{ data.total_deduction | default:"-" }}</td>
+                                    <td>{{ data.net_amount | default:"-" }}</td>
+                                    <td>{{ data.enduser.bank_name | default:"-" | upper  }}</td>
+                                    <td>{{ data.enduser.account_number | default:"-" }}</td>
+                                    <td>{{ data.enduser.ifsc_code | default:"-" }}</td>
+                                    <td>{{ data.enduser.addhar_number | default:"-" }}</td>
+                                    <td>{{ data.enduser.farmer_id | default:"-" }}</td>
+                                    {% comment %} <td class="currency">{{ data.total_bonus_amount }}</td>
+                                    <td class="currency" >{{ data.total_feed_purchase_amount }}</td>
+                                    <td class="currency">{{ data.total_advance_deduction }}</td>
+                                    <td class="currency highlight-column">{{ data.net_amount }} रुपये</td> {% endcomment %}
                                     </tr>
                                 {% endfor %}
-                                <tr id="totals-row">
-                                    <td colspan="5"><b>Total:</b></td>
-                                    <td class="currency highlight-column">{{ reamining_total_amount_all  }} Rs.</td>
-                                </tr>
+                                {% comment %} <tr id="totals-row">
+                                    <td colspan="2"><b>एकूण:</b></td>
+                                    <td>{{ total_liters_all }} लिटर</td>
+                                    <td class="currency highlight-column">{{ total_amount_all }}</td>
+                                    <td class="currency highlight-column">{{ total_bonus_amount_all }}</td>
+                                    <td class="currency highlight-column">{{ total_feed_purchase_amount_all }}</td>
+                                    <td class="currency highlight-column">{{ total_advance_deduction_all }}</td>
+                                    <td class="currency highlight-column">{{ reamining_total_amount_all }} रुपये</td>
+                                </tr> {% endcomment %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div class="col-md-12">
+                {% comment %} <div class="col-md-12">
                     <div class="total-sale">
+                        <div class="total-ltr highlight-column">
+                            <span><h5>एकूण लिटर:</h5></span>
+                            <span>{{total_liters_all}} लिटर</span>
+                        </div>
                         <div class="total-amt highlight-column">
-                            <span><h5>Total Amount:</h5></span>
-                            <span>{{reamining_total_amount_all | default:'-'}} Rs.</span>
+                            <span><h5>एकूण रक्कम:</h5></span>
+                            <span>{{reamining_total_amount_all}} रुपये</span>
                         </div>
                     </div>
-                </div>
+                </div> {% endcomment %}
             </div>
         </div>
        
