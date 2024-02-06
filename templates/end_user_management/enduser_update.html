@@ -120,7 +120,7 @@ input[type=number] {
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-4 position-relative mb-3">
+                                <div class="col-sm-3 position-relative mb-3">
                                     <label for="phone_number" class="form-label">
                                         Mobile Number <span class="required-field"></span>
                                     </label>
@@ -133,7 +133,7 @@ input[type=number] {
                                         </div>
                                     {% endif %}
                                 </div>
-                                <div class="col-sm-4 position-relative mb-3">
+                                <div class="col-sm-3 position-relative mb-3">
                                     <label for="addhar_number" class="form-label">
                                         Addhar Card Number <span class="required-field"></span>
                                     </label>
@@ -148,7 +148,22 @@ input[type=number] {
                                         </div>
                                     {% endif %}
                                 </div>
-                                <div class="col-sm-4 position-relative mb-3">
+                                <div class="col-sm-3 position-relative mb-3">
+                                    <label for="farmer_id" class="form-label">
+                                        Farmer ID <span class="required-field"></span>
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.farmer_id }}
+                                    </div>
+                                    {% if form.farmer_id.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.farmer_id.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-3 position-relative mb-3">
                                     <label for="email" class="form-label">
                                         Email Address <span class=""></span>
                                     </label>

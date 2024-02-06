@@ -44,10 +44,10 @@ class EndUserForm(forms.ModelForm):
         error_messages={"required": "Mobile number cannot be empty."},
     )
     addhar_number = forms.CharField(
-        label="Mobile Number",
+        label="Addhar Number",
         required=True,
-        widget=forms.TextInput(attrs={"placeholder": "Enter Mobile Number", "class": "form-control"}),
-        error_messages={"required": "Mobile number cannot be empty."},
+        widget=forms.TextInput(attrs={"placeholder": "Enter Addhar Number", "class": "form-control"}),
+        error_messages={"required": "Addhar Number  cannot be empty."},
     )
     marathi_name = forms.CharField(
         required=True,
@@ -89,6 +89,12 @@ class EndUserForm(forms.ModelForm):
         required=True,
         widget=forms.TextInput(attrs={"placeholder": "Enter Village Name", "class": "form-control"}),
         error_messages={"required": "Village name cannot be empty."},
+    )
+    farmer_id = forms.CharField(
+        label="Farmer ID",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter Farmer ID", "class": "form-control"}),
+        error_messages={"required": "Farmer ID cannot be empty."},
     )
 
     def __init__(self, *args, **kwargs):
@@ -204,6 +210,15 @@ class EndUserForm(forms.ModelForm):
             raise forms.ValidationError('Invalid Aadhar number. Please enter a 12-digit number.')
 
         return addhar_number
+    
+    def clean_farmer_id(self):
+        farmer_id = self.cleaned_data.get('farmer_id')
+
+        # Check if the Aadhar number is exactly 12 digits
+        if not re.match(r'^\d{15}$', farmer_id):
+            raise forms.ValidationError('Invalid Farmer Id. Please enter a 15-digit number.')
+
+        return farmer_id
     
     class Meta:
         model = EndUser

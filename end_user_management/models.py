@@ -52,6 +52,11 @@ class EndUser(models.Model):
     account_number = models.CharField(max_length=600, blank=True, null=True)  
     confirm_account_number = models.CharField(max_length=600, blank=True, null=True)  
     ifsc_code = models.CharField(max_length=254, blank=True, null=True)
+    farmer_id = models.CharField(
+        unique=True,
+        max_length=15,
+        blank=True, null=True
+    )   
 
     def __str__(self):
         return f"{self.custom_id}-{self.first_name} {self.last_name}"
