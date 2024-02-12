@@ -153,8 +153,7 @@
             $('#id_taken_user').select2();
     
             // Calculate total purchase amount when the page loads and when input fields change
-            function calculateTotalAmo
-            unt() {
+            function calculateTotalAmount() {
                 var quantityTaken = parseFloat($('#id_quantity_taken').val()) || 0;
                 var purchaseAmount = parseFloat($('#id_purchase_amount').val()) || 0;
                 var totalAmount = quantityTaken * purchaseAmount;
