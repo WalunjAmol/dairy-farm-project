@@ -451,7 +451,7 @@ def import_transactions(request):
                 existing_transaction = MilkTransaction.objects.filter(
                     dairy=dairy,
                     end_user=end_user,
-                    society_code=society_code,
+                    # society_code=society_code,
                     center_code=center_code,
                     transaction_type=transaction_type,
                     transaction_subtype=transaction_subtype,

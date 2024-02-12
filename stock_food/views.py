@@ -26,7 +26,7 @@ class StockListView(ListView):
 
     def get_queryset(self):
         # Customize the queryset if needed
-        return Stock.objects.filter(is_deleted=False)
+        return Stock.objects.filter(dairy=self.request.user.dairy, is_deleted=False)
     
 class StockCreateView(CreateView):
     model = Stock
