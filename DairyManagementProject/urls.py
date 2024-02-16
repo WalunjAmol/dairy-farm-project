@@ -22,27 +22,35 @@ from dairy_owner_management.views import HomeView
 from milk_transaction.models import MilkTransaction
 from django.http import HttpResponse  # Import HttpResponse
 from bonus_app.models import Bonus
-
+from pprint import pprint
+from django.http import HttpResponse
+from datetime import date
 
 def deleteData(request):
-    from_date = "2023-08-01"  # Use the 'YYYY-MM-DD' format for dates
-    to_date = "2023-09-30"
 
-    try:
-        delete_data = MilkTransaction.objects.filter(date__range=(from_date, to_date))
-        bonus_date = Bonus.objects.filter(bonus_date__range=(from_date, to_date))
-        print('bonus_datebonus_datebonus_date',bonus_date)
-        for data in delete_data:
-            data.delete()  # Delete each data object
-            print(f'Deleted data with date: {data.date}')
+    # Define the start and end dates for filtering
+    start_date = date(2024, 1, 16)  # Replace with your start date
+    end_date = date(2024, 2, 10)  # Replace with your end date
 
-        for data in bonus_date:
-            data.delete()  # Delete each data object
-            print(f'Deleted data with date: {data.bonus_date}')
-        return HttpResponse('Data deletion successful')  # Respond with a success message
-    except Exception as e:
-        print(f'Error deleting data: {str(e)}')
-        return HttpResponse('Error deleting data')  # Respond with an error message
+    # Filter MilkTransaction records between dates
+    milk_transactions = MilkTransaction.objects.filter(date__range=(start_date, end_date))
+
+    # Filter Bonus records between dates
+    bonuses = Bonus.objects.filter(bonus_date__range=(start_date, end_date))
+
+    # Compare Bonus foreign key IDs with MilkTransaction object IDs
+    for bonus in bonuses:
+        milk_transaction_id = bonus.milk_transaction_id
+
+        # Get the list of MilkTransaction IDs within the date range
+        milk_transaction_ids_within_range = milk_transactions.values_list('id', flat=True)
+
+        if milk_transaction_id not in milk_transaction_ids_within_range:
+            # If MilkTransaction object is not present, delete the Bonus record
+            bonus.delete()
+            print(f"Deleted Bonus record with ID {bonus}")
+
+    return HttpResponse('test')
 
 
 urlpatterns = [
