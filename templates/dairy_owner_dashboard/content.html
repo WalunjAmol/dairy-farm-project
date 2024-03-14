@@ -13,13 +13,14 @@
         .container {
             text-align: center;
             padding: 20px;
-            max-width: 600px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .container h1 {
             font-size: 36px;
-            color: #333;
-            margin-bottom: 20px;
+            color: orange !important;
+            margin-bottom: 10px;
         }
 
         .container p {
@@ -27,14 +28,14 @@
             color: #555;
             margin-bottom: 30px;
         }
-      
+
         .graph {
             width: 100%;
-            max-width: 550px;
+            max-width: 100%% !important;
             height: auto;
-            border: 1px solid #ddd;
+            border: 1px solid #aaa !important;
             border-radius: 5px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         .half-screen {
@@ -43,21 +44,22 @@
             box-sizing: border-box;
             padding: 0 10px;
         }
+
         .header-text {
             font-size: 36px !important;
             color: #4CAF50 !important; /* Green color */
             margin-bottom: 20px !important;
             animation: fadeInUp 1s ease-in-out !important;
         }
-        
+
         .sub-text {
             font-size: 18px !important;
-            color: #FFC107 !important; /* Yellow color */
+            color: blue !important; /* Yellow color */
             margin-bottom: 30px !important;
             animation: fadeInUp 1s ease-in-out !important;
             animation-delay: 0.5s !important; /* Delay the animation */
         }
-        
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -68,160 +70,373 @@
                 transform: translateY(0);
             }
         }
-        
     </style>
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
-                <h1 class="header-text">Coming Soon Dashboard</h1>
-                <p class="sub-text">We're working on something great. Stay tuned for updates!</p>
+            <div class="col-md-12" style="text-align: center;">
+                <h1 class="header-text" style="color: #2980B9; font-size: 48px; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);">Welcome to Your Graphical Dashboard</h1>
+                <p class="sub-text" style="overflow: hidden; white-space: nowrap; color: #7F8C8D; font-size: 22px; font-weight: bold; text-align: center;">
+                    <marquee behavior="scroll" direction="left" style="padding: 20px; background-color: #ECF0F1; color: #34495E; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+                        Elevate your journey with <span style="color: #D35400;">PASSION</span> and <span style="color: #27AE60;">PURPOSE</span>:   
+                        <span style="color: #F39C12;">Discover</span>, 
+                        <span style="color: #2980B9;">Achieve</span>, 
+                        <span style="color: #8E44AD;">Succeed</span> !
+                    </marquee>
+                </p>
             </div>
+
             <div class="col-md-6">
                 <canvas id="milkProductionGraph" class="graph"></canvas>
             </div>
             <div class="col-md-6">
-                <canvas id="salesGraph" class="graph"></canvas>
+                <canvas id="myChart" class="graph"></canvas>
+            </div>
+
+            <div class="col-md-6">
+                <canvas id="avgRateBarGraph" class="graph"></canvas>
             </div>
             <div class="col-md-6">
-                <canvas id="anotherGraph1" class="graph"></canvas>
+                <canvas id="avgRateLineGraph" class="graph"></canvas>
+            </div>
+
+            <div class="col-md-6">
+                <canvas id="avgFatBarGraph" class="graph"></canvas>
             </div>
             <div class="col-md-6">
-                <canvas id="anotherGraph2" class="graph"></canvas>
+                <canvas id="avgFatLineGraph" class="graph"></canvas>
+            </div>
+
+            <div class="col-md-6">
+                <canvas id="avgSNFBarGraph" class="graph"></canvas>
+            </div>
+            <div class="col-md-6">
+                <canvas id="avgSNFLineGraph" class="graph"></canvas>
+            </div>
+
+            <div class="col-md-12">
+                <canvas id="combinedMetricsBarGraph" class="graph"></canvas>
+            </div>
+            <div class="col-md-12">
+                <canvas id="combinedMetricsLineGraph" class="graph"></canvas>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Sample data for the milk production graph
-        const milkProductionData = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+    // Milk Production Graph
+    var ctxMilkProduction = document.getElementById('milkProductionGraph').getContext('2d');
+    var milkProductionChart = new Chart(ctxMilkProduction, {
+        type: 'bar',
+        data: {
+            labels: {{ cycle_names|safe }},
             datasets: [{
-                label: 'Milk Production (in liters)',
-                data: [500, 620, 480, 550, 600, 520],
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
+                label: 'Milk Production',
+                data: {{ total_liters|safe }},
+                backgroundColor: 'rgba(255, 99, 132, 0.3)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
             }]
-        };
-
-        const milkProductionConfig = {
-            type: 'bar',
-            data: milkProductionData,
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
-            }
-        };
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 
-        const milkProductionCtx = document.getElementById('milkProductionGraph').getContext('2d');
-        const milkProductionChart = new Chart(milkProductionCtx, milkProductionConfig);
-
-        // Sample data for the sales graph
-        const salesData = {{milk_production_data | safe}}
-        
-        const salesConfig = {
-            type: 'line',
-            data: salesData,
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        grid: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+</script>
+<script>
+    // Line Chart
+    var ctxLine = document.getElementById('myChart').getContext('2d');
+    var lineChart = new Chart(ctxLine, {
+        type: 'line',
+        data: {
+            labels: {{ cycle_names|safe }},
+            datasets: [
+                {
+                    label: 'Milk Production',
+                    data: {{ total_liters|safe }},
+                    backgroundColor: 'rgba(255, 99, 132, 0.3)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                },
+                {% comment %} {
+                    label: 'Average Fat',
+                    data: {{ avg_fat|safe }},
+                    backgroundColor: 'rgba(255, 205, 86, 0.3)',
+                    borderColor: 'rgba(255, 205, 86, 1)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Average SNF',
+                    data: {{ avg_snf|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.3)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Average Rate',
+                    data: {{ avg_rate|safe }},
+                    backgroundColor: 'rgba(153, 102, 255, 0.3)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2
+                } {% endcomment %}
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
-            }
-        };
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 
-        const salesCtx = document.getElementById('salesGraph').getContext('2d');
-        const salesChart = new Chart(salesCtx, salesConfig);
-        const anotherGraph1Data = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    // Bar Chart - Average Rate
+    var ctxAvgRateBar = document.getElementById('avgRateBarGraph').getContext('2d');
+    var avgRateBarChart = new Chart(ctxAvgRateBar, {
+        type: 'bar',
+        data: {
+            labels: {{ cycle_names|safe }},
             datasets: [{
-                label: 'Data 1',
-                data: [300, 350, 400, 420, 380, 450],
+                label: 'Average Rate',
+                data: {{ avg_rate|safe }},
+                backgroundColor: 'rgba(255, 205, 86, 0.6)',
+                borderColor: 'rgba(255, 205, 86, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Line Chart - Average Rate
+    var ctxAvgRateLine = document.getElementById('avgRateLineGraph').getContext('2d');
+    var avgRateLineChart = new Chart(ctxAvgRateLine, {
+        type: 'line',
+        data: {
+            labels: {{ cycle_names|safe }},
+            datasets: [{
+                label: 'Average Rate',
+                data: {{ avg_rate|safe }},
+                backgroundColor: 'rgba(255, 205, 86, 0.3)',
+                borderColor: 'rgba(255, 205, 86, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Bar Chart - Average Fat
+    var ctxAvgFatBar = document.getElementById('avgFatBarGraph').getContext('2d');
+    var avgFatBarChart = new Chart(ctxAvgFatBar, {
+        type: 'bar',
+        data: {
+            labels: {{ cycle_names|safe }},
+            datasets: [{
+                label: 'Average Fat',
+                data: {{ avg_fat|safe }},
                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
                 borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
+                borderWidth: 2
             }]
-        };
-
-        const anotherGraph1Config = {
-            type: 'bar',
-            data: anotherGraph1Data,
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
-            }
-        };
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 
-        const anotherGraph1Ctx = document.getElementById('anotherGraph1').getContext('2d');
-        const anotherGraph1Chart = new Chart(anotherGraph1Ctx, anotherGraph1Config);
-
-        const anotherGraph2Data = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    // Line Chart - Average Fat
+    var ctxAvgFatLine = document.getElementById('avgFatLineGraph').getContext('2d');
+    var avgFatLineChart = new Chart(ctxAvgFatLine, {
+        type: 'line',
+        data: {
+            labels: {{ cycle_names|safe }},
             datasets: [{
-                label: 'Data 2',
-                data: [200, 250, 270, 300, 280, 320],
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                borderColor: 'rgba(255, 206, 86, 1)',
-                borderWidth: 1
+                label: 'Average Fat',
+                data: {{ avg_fat|safe }},
+                backgroundColor: 'rgba(75, 192, 192, 0.3)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2
             }]
-        };
-
-        const anotherGraph2Config = {
-            type: 'line',
-            data: anotherGraph2Data,
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
-            }
-        };
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 
-        const anotherGraph2Ctx = document.getElementById('anotherGraph2').getContext('2d');
-        const anotherGraph2Chart = new Chart(anotherGraph2Ctx, anotherGraph2Config);
-    
-    </script>
+    // Bar Chart - Average SNF
+    var ctxAvgSNFBar = document.getElementById('avgSNFBarGraph').getContext('2d');
+    var avgSNFBarChart = new Chart(ctxAvgSNFBar, {
+        type: 'bar',
+        data: {
+            labels: {{ cycle_names|safe }},
+            datasets: [{
+                label: 'Average SNF',
+                data: {{ avg_snf|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 
-
+    // Line Chart - Average SNF
+    var ctxAvgSNFLine = document.getElementById('avgSNFLineGraph').getContext('2d');
+    var avgSNFLineChart = new Chart(ctxAvgSNFLine, {
+        type: 'line',
+        data: {
+            labels: {{ cycle_names|safe }},
+            datasets: [{
+                label: 'Average SNF',
+                data: {{ avg_snf|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.3)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+<script>
+    // Bar Chart - Combined Metrics
+    var ctxCombinedMetricsBar = document.getElementById('combinedMetricsBarGraph').getContext('2d');
+    var combinedMetricsBarChart = new Chart(ctxCombinedMetricsBar, {
+        type: 'bar',
+        data: {
+            labels: [{% for data in aggregated_data %}"{{ data.cycle_name }}",{% endfor %}],
+            datasets: [{
+                label: 'Total Liters',
+                data: [{% for data in aggregated_data %}{{ data.total_liters }},{% endfor %}],
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Average Fat',
+                data: [{% for data in aggregated_data %}{{ data.avg_fat }},{% endfor %}],
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Average SNF',
+                data: [{% for data in aggregated_data %}{{ data.avg_snf }},{% endfor %}],
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Average Rate',
+                data: [{% for data in aggregated_data %}{{ data.avg_rate }},{% endfor %}],
+                backgroundColor: 'rgba(255, 205, 86, 0.6)',
+                borderColor: 'rgba(255, 205, 86, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+<script>
+    // Bar Chart - Combined Metrics
+    var ctxCombinedMetricsBar = document.getElementById('combinedMetricsLineGraph').getContext('2d');
+    var combinedMetricsBarChart = new Chart(ctxCombinedMetricsBar, {
+        type: 'line',
+        data: {
+            labels: [{% for data in aggregated_data %}"{{ data.cycle_name }}",{% endfor %}],
+            datasets: [{
+                label: 'Total Liters',
+                data: [{% for data in aggregated_data %}{{ data.total_liters }},{% endfor %}],
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Average Fat',
+                data: [{% for data in aggregated_data %}{{ data.avg_fat }},{% endfor %}],
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Average SNF',
+                data: [{% for data in aggregated_data %}{{ data.avg_snf }},{% endfor %}],
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Average Rate',
+                data: [{% for data in aggregated_data %}{{ data.avg_rate }},{% endfor %}],
+                backgroundColor: 'rgba(255, 205, 86, 0.6)',
+                borderColor: 'rgba(255, 205, 86, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
 {% endblock content %}

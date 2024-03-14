@@ -24,11 +24,21 @@ class BonusEndUserListView(ListView):
         if self.request.user.is_superuser:
             queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
         else:
-            queryset = self.model.objects.filter(dairy_name__role=user_dairy_role)
+            queryset = self.model.objects.filter(dairy_name__role=user_dairy_role).order_by('custom_id')
 
         queryset = queryset.annotate(total_bonus=Sum('bonuses__bonus_amount'))
 
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Calculate total bonus for all end users
+        bonus = Bonus.objects.filter(user__dairy_name=self.request.user.dairy)
+        total_bonus = bonus.aggregate(Sum('bonus_amount'))['bonus_amount__sum']
+        context['total_bonus'] = total_bonus if total_bonus else 0.0
+
+        return context
 
 
 @method_decorator(login_required, name='dispatch')

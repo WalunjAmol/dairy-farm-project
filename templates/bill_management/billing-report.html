@@ -300,9 +300,9 @@
                 background-color: #f2f2f2;
             }
         
-            tr:nth-child(even) {
+            {% comment %} tr:nth-child(even) {
                 background-color: #f2f2f2;
-            }
+            } {% endcomment %}
 
             .table-outer-div{
                 display: flex;
@@ -378,6 +378,9 @@
             .highlight-column {
                 font-weight: bold;
             }
+            .red-row {
+                background-color: #ffdddd; /* Light red background */
+            }
             @media (max-width: 767px){
                 .table-outer-div .table-div{
                     width: 100%;
@@ -450,6 +453,9 @@
                     flex-direction: row;
                     gap: 20px;
                 }
+                .red-row {
+                    background-color: #ffdddd; /* Light red background */
+                }
             }
                 
     </style>
@@ -490,8 +496,8 @@
                             </thead>
                             <tbody>
                                 {% for data in enduser_data %}
-                                    <tr>
-                                        <td>{{ data.enduser.custom_id }}</td>
+                                  <tr {% if data.total_liters == 0 %}class="red-row"{% endif %}>
+                                    <td>{{ data.enduser.custom_id }}</td>
                                         <td>{{ data.enduser.marathi_name }}</td>
                                         <td>{{ data.total_liters }} लिटर</td>
                                         <td class="currency">{{ data.total_amount }}  </td>
