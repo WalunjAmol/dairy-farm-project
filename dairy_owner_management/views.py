@@ -37,9 +37,12 @@ class CustomLoginView(FormView):
 from decimal import Decimal
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
+from django.db.models import Sum, DecimalField
+from bill_management.models import GeneratedCycle
+from django.db.models import Sum, Avg, DecimalField
+
 
 class DashboardView(LoginRequiredMixin, TemplateView):
-    model = MilkTransaction
     template_name = 'dairy_owner_dashboard/content.html'
     login_url = '/dairy-management/login/'
     redirect_field_name = 'redirect_to'
@@ -47,39 +50,72 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Fetching milk production data month-wise
-        milk_production_data = MilkTransaction.objects \
-            .annotate(month=TruncMonth('date')) \
-            .values('month') \
-            .annotate(total_liters=Sum('transaction_liters')) \
-            .order_by('month') \
-            .values_list('month', 'total_liters')
+        # Fetch all cycles for the dairy owner
+        # all_cycles = GeneratedCycle.objects.filter(dairy_owner=self.request.user)
+        all_cycles = GeneratedCycle.objects.all()
 
-        # Converting the fetched data into the required structure
-        labels = [month.strftime('%B') for month in milk_production_data.values_list('month', flat=True)]
 
-        # Convert Decimal values to floats
-        total_liters_list = [float(total_liters) for total_liters in milk_production_data.values_list('total_liters', flat=True)]
-        print('total_liters_list',total_liters_list)
-        datasets = [{
-            'label': 'Milk Production (in liters)',
-            'data': total_liters_list,
-            'backgroundColor': 'rgba(54, 162, 235, 0.6)',
-            'borderColor': 'rgba(54, 162, 235, 1)',
-            'borderWidth': 1
-        }]
-        print('dataset',datasets)
+        # Initialize lists to store data for all cycles
+        all_cycle_names = []
+        all_total_liters = []
+        all_avg_fat = []
+        all_avg_snf = []
+        all_avg_rate = []
+        all_aggregated_data = []
 
-        milk_production_data_structure = {
-            'labels': labels,
-            'datasets': datasets
+
+        for current_cycle in all_cycles:
+            # milk_production_data = MilkTransaction.objects \
+            #     .filter(date__range=[current_cycle.from_date, current_cycle.to_date], dairy=current_cycle.dairy_name) \
+            #     .aggregate(
+            #         total_liters=Sum('transaction_liters', output_field=DecimalField()),
+            #         avg_fat=Avg('transaction_fat'),
+            #         avg_snf=Avg('transaction_snf'),
+            #         avg_rate=Avg('transaction_rate')
+            #     )
+            
+            milk_production_data = MilkTransaction.objects \
+                .filter(date__range=[current_cycle.from_date, current_cycle.to_date]) \
+                .aggregate(
+                    total_liters=Sum('transaction_liters', output_field=DecimalField()),
+                    avg_fat=Avg('transaction_fat'),
+                    avg_snf=Avg('transaction_snf'),
+                    avg_rate=Avg('transaction_rate')
+                )
+
+
+            total_liters = float(milk_production_data['total_liters']) if milk_production_data['total_liters'] else 0
+            avg_fat = float(milk_production_data['avg_fat']) if milk_production_data['avg_fat'] is not None else 0
+            avg_snf = float(milk_production_data['avg_snf']) if milk_production_data['avg_snf'] is not None else 0
+            avg_rate =float(milk_production_data['avg_rate']) if milk_production_data['avg_rate'] is not None else 0
+
+            aggregated_data = {
+            'cycle_name': current_cycle.name,
+            'total_liters': float(milk_production_data['total_liters']) if milk_production_data['total_liters'] else 0,
+            'avg_fat': float(milk_production_data['avg_fat']) if milk_production_data['avg_fat'] is not None else 0,
+            'avg_snf': float(milk_production_data['avg_snf']) if milk_production_data['avg_snf'] is not None else 0,
+            'avg_rate': float(milk_production_data['avg_rate']) if milk_production_data['avg_rate'] is not None else 0,
         }
 
-        context['milk_production_data'] = milk_production_data_structure
+            all_cycle_names.append(current_cycle.name)
+            all_total_liters.append(total_liters)
+            all_avg_fat.append(avg_fat)
+            all_avg_snf.append(avg_snf)
+            all_avg_rate.append(avg_rate)
+            all_aggregated_data.append(aggregated_data)
+
+            
+
+        context['cycle_names'] = all_cycle_names
+        context['total_liters'] = all_total_liters
+        context['avg_fat'] = all_avg_fat
+        context['avg_snf'] = all_avg_snf
+        context['avg_rate'] = all_avg_rate
+        context['aggregated_data'] = all_aggregated_data
 
         return context
-
 class HomeView(TemplateView):
-    template_name='home/home.html'
+    
+        template_name='home/home.html'
     # login_url= '/dairy-management/login/'
     # redirect_field_name = 'redirect_to'

@@ -85,6 +85,28 @@
         transform: scale(1);
     }
 }
+.total-bonus {
+    /* float: right; */
+    font-weight: bold;
+    color: #FF4500; /* Change the text color to a shade of orange red */
+    /* margin-left: 10px; */
+    display: inline-block;
+    transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
+    border-radius: 5px;
+}
+.remaining-amount {
+    font-weight: bold;
+    color: #FF4500; /* Change the text color to a shade of orange red */
+    display: inline-block;
+    transition: transform 0.3s ease-in-out, color 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Add animation for color, scale, and opacity */
+    border-radius: 5px;
+    font-size: 16px;
+    /* padding-top: 4px; */
+    /* margin-left: 400px; */
+}
+.bonus-amount {
+    color: #9932CC; /* Change the color to a shade of dark orchid */
+}
 
 
     </style>
@@ -115,15 +137,23 @@
                                 <form class="row gy-2 gx-2 align-items-center justify-content-xl-start justify-content-between">
                                 </form>
                             </div>
-                            <div class="col-xl-4">
-                                <div class="text-xl-end mt-xl-0 mt-2">
-                                    <a href="{% url 'bonus:bonus-create' %}">
-                                        <button type="button" class="btn btn-danger mb-2 me-2">Add Bonus</button>
-                                    </a> 
-                                    <button type="button" class="btn btn-light mb-2 me-1" id="display_input">Search</button>
-                                </div>
+                            
+                            <div class="user-profile bonus">
+                                <div></div>
+                                <span class="remaining-amount">
+                                    Total Bonus: <span class="bonus-amount">{{ total_bonus|default:0 }}</span> <span class="currency">&#8377;</span>
+                                </span> 
+                                <div class="total-bonus-div">
+                                    <span class="total-bonus">
+                                        <a href="{% url 'bonus:bonus-create' %}">
+                                            <button type="button" class="btn btn-danger mb-2 me-2">Add Bonus</button>
+                                        </a>              
+                                    </span>
+                                    <span class="total-bonus">
+                                        <button type="button" class="btn btn-light" id="display_input">Search</button>
+                                    </span>  
+                                </div> 
                             </div>
-                            <!-- end col-->
                         </div>
                         <div>
                             <div>

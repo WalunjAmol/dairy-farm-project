@@ -1,18 +1,8 @@
-{% extends 'dairy_owner_dashboard/base.html' %}
-{% load static %}
-{% comment %} {% load core %}  {% endcomment %}
-{% comment %} {% load static i18n %}  {% endcomment %}
-{% block stylesheets %}
-    <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}"
-          rel="stylesheet"
-          type="text/css" />
-    <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}"
-          rel="stylesheet"
-          type="text/css" />
-{% endblock %}
-{% block content %}
-    <style>
-        .table-responsive {
+{% extends 'dairy_owner_dashboard/base.html' %} {% load static %} {% comment %} {% load core %} {% endcomment %} {% comment %} {% load static i18n %} {% endcomment %} {% block stylesheets %}
+<link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}" rel="stylesheet" type="text/css" /> {% endblock %} {% block content %}
+<style>
+    .table-responsive {
         overflow-x: auto;
     }
 
@@ -64,118 +54,105 @@
     table .second-row th:first-child input,table .second-row th:last-child input{
         display: none;
     }
-    </style>
+</style>
 
-    <div class="container-fluid">
-        <!-- start page title -->
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <!-- <li class="breadcrumb-item"><a href="javascript: void(0);">Hyper</a></li>
+<div class="container-fluid">
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <!-- <li class="breadcrumb-item"><a href="javascript: void(0);">Hyper</a></li>
                         <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>
                         <li class="breadcrumb-item active">Orders</li> -->
-                        </ol>
-                    </div>
-                    <h4 class="page-title">Daily Transactions List</h4>
+                    </ol>
                 </div>
+                <h4 class="page-title">Daily Transactions List</h4>
             </div>
         </div>
-        <!-- end page title -->
-        {% block body %}{% endblock %}
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row mb-2">
-                            <div class="col-xl-8">
-                                <form class="row gy-2 gx-2 align-items-center justify-content-xl-start justify-content-between">
-                                </form>
-                            </div>
-                            <div class="col-xl-4">
-                                <div class="text-xl-end mt-xl-0 mt-2">
-                                    <a href="{% url 'milk_transaction:milk-transaction-create' %}">
-                                        <button type="button" class="btn btn-danger mb-2 me-2">Add Transaction</button>
-                                    </a>
-                                    <button type="button" class="btn btn-light mb-2 me-1" id="display_input">Search</button>
-                                </div>
-                            </div>
-                            <!-- end col-->
-                        </div>
-                        <div>
-                            <div>
-                                {% if messages %}
-                                    {% for message in messages %}
-                                        <div class="alert alert-dismissible alert-success form-group text-center ">
-                                            <strong>{{ message }}</strong>
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="display table table-centered table table-sm mb-0 nowrap w-100 for-tfoot"
-                                   id="milkTransactionDataTable">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Sr. NO.</th>
-                                        <th>&nbsp &nbsp Date</th>
-                                        <th>Time</th>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Shift</th>
-                                        <th>Liters</th>
-                                        <th>FAT</th>
-                                        <th>S.N.F</th>
-                                        <th>Rate</th>
-                                        <th>Total Amount</th>
-                                        <th style="width: 125px;">Action</th>
-                                    </tr>
-                                </thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <!-- end card-body-->
-                </div>
-                <!-- end card-->
-            </div>
-            <!-- end col -->
-        </div>
-        <!-- end row -->
     </div>
-    <!-- container -->
+    <!-- end page title -->
+    {% block body %}{% endblock %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-xl-8">
+                            <form class="row gy-2 gx-2 align-items-center justify-content-xl-start justify-content-between">
+                            </form>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="text-xl-end mt-xl-0 mt-2">
+                                <a href="{% url 'milk_transaction:milk-transaction-create' %}">
+                                    <button type="button" class="btn btn-danger mb-2 me-2">Add Transaction</button>
+                                </a>
+                                <button type="button" class="btn btn-light mb-2 me-1" id="display_input">Search</button>
+                            </div>
+                        </div>
+                        <!-- end col-->
+                    </div>
+                    <div>
+                        <div>
+                            {% if messages %} {% for message in messages %}
+                            <div class="alert alert-dismissible alert-success form-group text-center ">
+                                <strong>{{ message }}</strong>
+                            </div>
+                            {% endfor %} {% endif %}
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="display table table-centered table table-sm mb-0 nowrap w-100 for-tfoot" id="milkTransactionDataTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Sr. NO.</th>
+                                    <th>&nbsp &nbsp Date</th>
+                                    <th>Time</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Shift</th>
+                                    <th>Liters</th>
+                                    <th>FAT</th>
+                                    <th>S.N.F</th>
+                                    <th>Rate</th>
+                                    <th>Total Amount</th>
+                                    <th style="width: 125px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- end card-body-->
+            </div>
+            <!-- end card-->
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end row -->
+</div>
+<!-- container -->
 </div>
 <!-- content -->
-{% endblock %}
-{% block javascripts %}
-    {% comment %} <link rel="stylesheet"
-          href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> {% endcomment %}
-    {% comment %} <link rel="stylesheet"
-          type="text/css"
-          href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <script type="text/javascript"
-            charset="utf8"
-            src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> {% endcomment %}
-
-
-            <!-- Datatables js -->
-    <script src="{% static 'saas/assets/js/vendor/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'saas/assets/js/vendor/dataTables.bootstrap5.js' %}"></script>
-    <script src="{% static 'saas/assets/js/vendor/dataTables.responsive.min.js' %}"></script>
-    <script>
+{% endblock %} {% block javascripts %}
+<!-- Datatables js -->
+<script src="{% static 'saas/assets/js/vendor/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'saas/assets/js/vendor/dataTables.bootstrap5.js' %}"></script>
+<script src="{% static 'saas/assets/js/vendor/dataTables.responsive.min.js' %}"></script>
+<script>
     $(document).ready(function () {
+
+    // Add search input boxes below each column
     $('#milkTransactionDataTable').DataTable({
         serverSide: true,
         searching: true,
         lengthMenu: [15, 30, 50, 100],
         pageLength: 15,
-        order: [[1, 'desc']],  // Set the default sorting column to the second column (index 1) in descending order
+        order: [[1, 'dsc']],  // Order by Date descending and Time ascending
+        stateSave: true,  // Enable state saving
         ajax: {
             url: "{% url 'milk_transaction:transaction_data' %}",
             type: 'GET',
@@ -183,7 +160,25 @@
        
         columns: [
             { data: 'date', searchable: false, orderable: false, render: function (data, type, row, meta) { return meta.row + 1;} },
-            { data: 'date', name: 'date', searchable: true },
+             {
+                data: 'date',
+                name: 'date',
+                searchable: true,
+                type: 'date', // Specify the column type for correct sorting
+                render: function (data, type, row) {
+                    var dateObj = new Date(data);
+                    var day = dateObj.getDate();
+                    var month = dateObj.getMonth() + 1; // Months are zero-based
+                    var year = dateObj.getFullYear();
+
+                    day = day < 10 ? '0' + day : day;
+                    month = month < 10 ? '0' + month : month;
+
+                    var formattedDate = day + '/' + month + '/' + year;
+
+                    return formattedDate;
+                }
+            },
             { data: 'time', name: 'time', searchable: true },
             { data: 'end_user_id', name: 'end_user__custom_id', searchable: true },
             { data: 'end_user', name: 'end_user__first_name', searchable: true },
@@ -204,68 +199,29 @@
             }
         ],
     });
-    // Add date picker to the second column input
-    $('#milkTransactionDataTable tbody').on('click', 'td:eq(1)', function () {
-                var cell = dataTable.cell(this);
-                var cellData = cell.data();
-                alert('')
-                console.log('alert',cell,cellData);
-                // Create an input element with the current date as its initial value
-                var inputElement = $('<input>', {
-                    type: 'text',
-                    value: cellData,
-                    readonly: 'readonly',
-                });
-
-                // Show date picker on input field click
-                inputElement.datepicker({
-                    dateFormat: 'yy-mm-dd',
-                    onSelect: function (dateText) {
-                        // Update DataTable cell data on date selection
-                        cell.data(dateText);
-                    }
-                });
-
-                // Replace the cell content with the input field
-                cell.node().innerHTML = inputElement.prop('outerHTML');
-                inputElement.datepicker('show');
-            });
-
-    // Add datepicker to the second column (index 1)
-    $('#milkTransactionDataTable thead tr:eq(1) th:eq(1)').each(function () {
-            var title = $(this).text();
-            $(this).html('<input type="text" id="datepicker" placeholder="Select ' + title + '" />');
-
-            // Initialize datepicker
-            $('#datepicker').datepicker({
-                dateFormat: 'yy-mm-dd',
-                onSelect: function (dateText, inst) {
-                    $('#milkTransactionDataTable').DataTable()
-                        .column(1) // Assuming the Date column is at index 1
-                        .search(dateText)
-                        .draw();
-                }
-            });
-        });
+    
     // Add search input boxes below each column
     $('#milkTransactionDataTable thead tr').clone(true).appendTo('#milkTransactionDataTable thead');
-    $('#milkTransactionDataTable thead tr:eq(1) th').each(function (i) {
-        var title = $(this).text();
-        $(this).html('<input type="text" placeholder="Search" />');
-        $('input', this).on('keyup change', function () {
-            if ($('#milkTransactionDataTable').DataTable().column(i).search() !== this.value) {
-                $('#milkTransactionDataTable').DataTable()
-                    .column(i)
-                    .search(this.value)
-                    .draw();
-            }
-        });
-    });
+            $('#milkTransactionDataTable thead tr:eq(1) th').each(function (i) {
+                var title = $(this).text();
+                var inputType = i === 1 ? 'date' : 'text'; // Set input type based on column index
+        
+                $(this).html('<input type="' + inputType + '" placeholder="Search" />');
+        
+                $('input', this).on('keyup change', function () {
+                    if ($('#milkTransactionDataTable').DataTable().column(i).search() !== this.value) {
+                        $('#milkTransactionDataTable').DataTable()
+                            .column(i)
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
 });
-    </script>
+</script>
 
-    <script>
-        $(document).ready(function(){
+<script>
+    $(document).ready(function(){
             $('#milkTransactionDataTable thead tr:eq(1)').addClass('click-hide second-row');
             $('#milkTransactionDataTable thead tr:eq(1) th input').addClass('form-control');
             $('#milkTransactionDataTable thead tr:eq(1) th').removeClass('sorting');
@@ -279,5 +235,5 @@
                 $("#milkTransactionDataTable thead tr:eq(1)").toggleClass("click-hide");
             });
         })
-        </script>
+</script>
 {% endblock %}
