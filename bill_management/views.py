@@ -380,7 +380,7 @@ class GenerateBill(ListView):
         new_to_date = to_date+timedelta(days=1)
         feed_purchase = FeedPurchase.objects.filter(
             taken_user=user_info,
-            date_created__date__range=(from_date, new_to_date),
+            date_created__date__range=(from_date, to_date),
         )
         for feed in feed_purchase:
             feed.is_paid = True
