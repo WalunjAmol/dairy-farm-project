@@ -150,7 +150,7 @@ input[type=number] {
                                 </div>
                                 <div class="col-sm-3 position-relative mb-3">
                                     <label for="farmer_id" class="form-label">
-                                        Farmer ID <span class="required-field"></span>
+                                        Farmer ID <span class=""></span>
                                     </label>
                                     <div class="input-group">
                                         {{ form.farmer_id }}
@@ -222,7 +222,7 @@ input[type=number] {
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-6 position-relative mb-3">
+                                <div class="col-sm-4 position-relative mb-3">
                                     <label for="bank_name" class="form-label">
                                         Bank Name<span class="required-field"></span>
                                     </label>
@@ -235,7 +235,20 @@ input[type=number] {
                                         </div>
                                     {% endif %}
                                 </div>
-                                <div class="col-sm-6 position-relative mb-3">
+                                <div class="col-sm-4 position-relative mb-3">
+                                    <label for="ifsc_code" class="form-label">
+                                        Branch Name<span class="required-field"></span>
+                                    </label>
+                                    <div class="input-group">{{ form.branch_name }}</div>
+                                    {% if form.branch_name.errors %}
+                                        <div class="error-red alert-dismissable">
+                                            <div class="errorlist">
+                                                <small>{{ form.branch_name.errors|escape }}</small>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-4 position-relative mb-3">
                                     <label for="ifsc_code" class="form-label">
                                         IFSC code<span class="required-field"></span>
                                     </label>
@@ -248,6 +261,7 @@ input[type=number] {
                                         </div>
                                     {% endif %}
                                 </div>
+                               
                             </div>
                             <div class="row">
                                 <div class="col-sm-6 position-relative mb-3">

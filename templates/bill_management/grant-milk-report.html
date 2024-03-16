@@ -517,6 +517,7 @@
                                     <th>Bank Name</th>
                                     <th>A/C Number</th>
                                     <th>IFSC Code</th>
+                                    <th>Branch Name</th>
                                     <th>Aadhar No.</th>
                                     <th>Mobile No.</th>
                                     {% comment %} <th>एकूण पगार</th>
@@ -550,6 +551,7 @@
                                     <td>{{ data.enduser.bank_name | default:"-" | upper  }}</td>
                                     <td>{{ data.enduser.account_number | default:"-" }}</td>
                                     <td>{{ data.enduser.ifsc_code | default:"-" }}</td>
+                                    <td>{{ data.enduser.branch_name | default:"-" }}</td>
                                     <td>{{ data.enduser.addhar_number | default:"-" }}</td>
                                     <td>{{ data.enduser.mobile_number | default:"-" }}</td>
                                     {% comment %} <td class="currency">{{ data.total_bonus_amount }}</td>

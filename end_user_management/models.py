@@ -49,7 +49,8 @@ class EndUser(models.Model):
     password = models.CharField()
 
     bank_name = models.CharField(max_length=254, blank=True, null=True)
-    account_number = models.CharField(max_length=600, blank=True, null=True)  
+    account_number = models.CharField(max_length=600, blank=True, null=True) 
+    branch_name = models.CharField(max_length=100, blank=True, null=True)  
     confirm_account_number = models.CharField(max_length=600, blank=True, null=True)  
     ifsc_code = models.CharField(max_length=254, blank=True, null=True)
     farmer_id = models.CharField(

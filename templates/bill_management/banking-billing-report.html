@@ -484,6 +484,7 @@
                                     <th>Bank Name</th>
                                     <th>Account Number</th>
                                     <th>IFSC Code</th>
+                                    <th>Branch Name</th>
                                     <th class="highlight-column">Total Amount</th>
                                 </tr>
                             </thead>
@@ -495,6 +496,7 @@
                                         <td>{{ data.enduser.bank_name | default:'-'|upper }}</td>
                                         <td class="currency">{{ data.enduser.account_number | default:'-'}}  </td>
                                         <td class="currency">{{ data.enduser.ifsc_code | default:'-' }}</td>
+                                        <td class="currency">{{ data.enduser.branch_name | default:'-' }}</td>
                                         <td class="currency highlight-column">{{ data.net_amount }} Rs</td>
                                     </tr>
                                 {% endfor %}
