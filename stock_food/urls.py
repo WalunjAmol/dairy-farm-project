@@ -18,7 +18,4 @@ urlpatterns = [
     path('feedpurchase/user-feed-details/<int:pk>/',UserWiseFeedDetails.as_view(), name='user-wise-feed-purchase-details'),
     path('user-feedpurchase/<int:pk>/create/', UserFeedPurchaseCreateView.as_view(), name='user-feedpurchase-create'),
     path('user-feedpurchase/<int:pk>/edit/', UserFeedPurchaseUpdateView.as_view(), name='user-feedpurchase-update'),
-
-
-
 ]

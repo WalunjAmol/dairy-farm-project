@@ -92,9 +92,15 @@ class EndUserForm(forms.ModelForm):
     )
     farmer_id = forms.CharField(
         label="Farmer ID",
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={"placeholder": "Enter Farmer ID", "class": "form-control"}),
         error_messages={"required": "Farmer ID cannot be empty."},
+    )
+    branch_name = forms.CharField(
+        label="Branch Name",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter Branch Name", "class": "form-control"}),
+        error_messages={"required": "Branch name cannot be empty."},
     )
 
     def __init__(self, *args, **kwargs):
@@ -167,6 +173,12 @@ class EndUserForm(forms.ModelForm):
                 'class': 'form-control'
             }
         )
+        self.fields["branch_name"].widget.attrs.update(
+            {
+                "placeholder": "Enter Branch Name",
+                'class': 'form-control'
+            }
+        )
 
  
     def clean_mobile_number(self):
@@ -214,7 +226,11 @@ class EndUserForm(forms.ModelForm):
     def clean_farmer_id(self):
         farmer_id = self.cleaned_data.get('farmer_id')
 
-        # Check if the Aadhar number is exactly 12 digits
+        # Check if the farmer_id is empty
+        if not farmer_id:
+            return farmer_id
+
+        # Check if the Aadhar number is exactly 15 digits
         if not re.match(r'^\d{15}$', farmer_id):
             raise forms.ValidationError('Invalid Farmer Id. Please enter a 15-digit number.')
 
@@ -243,4 +259,5 @@ class EndUserForm(forms.ModelForm):
             'taluka_name',
             'village_name',
             'farmer_id',
+            'branch_name',
         ]
