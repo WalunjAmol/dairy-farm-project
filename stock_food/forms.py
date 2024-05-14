@@ -100,7 +100,7 @@ class FeedPurchaseCreateForm(forms.ModelForm):
 class FeedPurchaseUpdateForm(forms.ModelForm):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            self.fields['stock'].required = True
+            # self.fields['stock'].required = True
             self.fields['taken_user'].required = True
             self.fields['quantity_taken'].required = True
             self.fields['purchase_amount'].required = True
