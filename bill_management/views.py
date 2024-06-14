@@ -114,7 +114,8 @@ class ProcessAndStoreObjectsView(View):
 from django.http import HttpResponseServerError
 import traceback
 class ProcessAndStoreObjectsViewV1(View):
-    CYCLE_LENGTH = 10
+    # CYCLE_LENGTH = 10
+    CYCLE_LENGTH = 15
 
     def calculate_cycle_name(self, start_day, end_day, current_month, current_year):
         month_short_names = [
