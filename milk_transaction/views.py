@@ -597,3 +597,47 @@ def import_transactions(request):
     return render(request, 'milk_transaction/import_transactions_list.html')
 
 
+from django.views.generic import ListView
+from django.db.models import Avg
+from .models import MilkTransaction
+from bill_management.models import GeneratedCycle
+
+class WorstUsersPerCycleView(ListView):
+    template_name = 'milk_transaction/worst_users.html'
+    context_object_name = 'worst_users_data'
+
+    def get_queryset(self):
+        # Initialize an empty list to hold cycle data
+        worst_users_data = []
+
+        # Fetch all active cycles, ordered by created_at in descending order
+        cycles = GeneratedCycle.objects.filter(is_deleted=False).order_by('-created_at')
+
+        for cycle in cycles:
+            # Filter transactions within the date range for each cycle
+            transactions = MilkTransaction.objects.filter(
+                date__gte=cycle.from_date,
+                date__lte=cycle.to_date,
+                dairy=cycle.dairy_name
+            )
+
+            # Calculate the average fat and SNF for each user in the cycle
+            user_averages = transactions.values(
+                'end_user__id',
+                'end_user__first_name',
+                'end_user__last_name'
+            ).annotate(
+                avg_fat=Avg('transaction_fat'),
+                avg_snf=Avg('transaction_snf')
+            )
+
+            # Get the worst three users by avg_fat and avg_snf
+            worst_users = user_averages.order_by('avg_fat', 'avg_snf')[:3]
+
+            # Append the cycle and its worst users to the data list
+            worst_users_data.append({
+                'cycle': cycle,
+                'worst_users': worst_users
+            })
+
+        return worst_users_data

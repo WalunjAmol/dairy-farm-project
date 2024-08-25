@@ -1,0 +1,208 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% load static %}
+{% block stylesheets %}
+    <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'saas/assets/css/custom.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'saas/assets/css/bootstrap-icons.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block content %}
+    <style>
+        .container {
+            margin-top: 20px;
+            padding: 0 15px;
+            background-color: #f0f4f8;
+        }
+
+        .cycle-header {
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #d0d6e1;
+            position: relative;
+        }
+
+        .cycle-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .table-container {
+            margin-top: 20px;
+        }
+
+        .table {
+            width: 100%;
+            color: #34495e;
+            font-size: 0.875rem;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            vertical-align: middle;
+            border: 1px solid #d0d6e1;
+        }
+
+        .table thead th {
+            background-color: #3498db;
+            color: white;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table tbody tr:hover {
+            background-color: #ecf0f1;
+        }
+
+        .table .low-quality {
+            background-color: #f8c6c6;
+        }
+
+        .table .user-message {
+            color: #f39c12;
+        }
+
+        .table .user-message span {
+            display: block;
+            margin-top: 5px;
+        }
+
+        .no-data {
+            color: #7f8c8d;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.875rem;
+            border: 1px solid #d0d6e1;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+
+        .message-box {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #d9f7be;
+            border-radius: 12px;
+            border: 1px solid #b7e4a0;
+            color: #2e7d32;
+            font-size: 0.875rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-title {
+            font-weight: bold;
+        }
+
+        .table .tooltip-inner {
+            max-width: 200px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            color: #fff;
+            background-color: #333;
+        }
+
+        .table .tooltip.bs-tooltip-top .arrow::before {
+            border-top-color: #333;
+        }
+
+        .icon {
+            font-size: 1rem;
+            margin-left: 5px;
+        }
+    </style>
+
+    <div class="container">
+        <div class="message-box">
+            <strong>टीप:</strong> खालील तक्त्यामध्ये प्रत्येक सायकलसाठी सरासरी FAT आणि SNF वर आधारित तीन सर्वात वाईट कामगिरी करणाऱ्या गवळ्यांची यादी आहे. सर्वात कमी गुणवत्तेच्या घटकांच्या आधारित कामगिरीचे मूल्यांकन केले आहे. प्रत्येक वापरकर्त्याला त्यांच्या दुधाची गुणवत्ता सुधारण्यासाठी सूचना दिली आहे.
+        </div>
+        <h2 class="my-4">Worst Users Per Cycle</h2>
+        {% for cycle_data in worst_users_data %}
+            <div class="cycle-header">
+                <h3>{{ cycle_data.cycle.name }}</h3>
+            </div>
+            {% if cycle_data.worst_users %}
+                <div class="table-container">
+                    <table id="dataTable{{ cycle_data.cycle.id }}" class="table table-striped" data-toggle="tooltip" data-placement="top">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>User Name</th>
+                                <th>Average Fat (%)</th>
+                                <th>Average SNF (%)</th>
+                                <th>Improvement Message</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in cycle_data.worst_users %}
+                                <tr class="low-quality" data-toggle="tooltip" title="Click for more details">
+                                    <td>{{ user.end_user__id }}</td>
+                                    <td>{{ user.end_user__first_name | capfirst }} {{ user.end_user__last_name | capfirst }}</td>
+                                    <td>{{ user.avg_fat|floatformat:2 }}</td>
+                                    <td>{{ user.avg_snf|floatformat:2 }}</td>
+                                    <td class="user-message">
+                                        {% if user.avg_fat > 7.0 %}
+                                        तुमचा सरासरी फॅट टक्केवारी 7.0% पेक्षा जास्त आहे, जे अत्यंत जास्त आहे. कृपया आपल्या पाळीव जनावरांच्या आहाराचे तात्काळ पुनरावलोकन करा. अत्यधिक फॅट कमी करण्यासाठी उच्च गुणवत्तेच्या फीडचा वापर आणि पशुवैद्यकीय तज्ञाशी सल्लामसलत करणे अत्यावश्यक आहे. तुमच्या दूधाच्या गुणवत्तेची तपासणी नियमितपणे करा.
+                                        {% elif user.avg_fat > 6.0 %}
+                                        तुमचा सरासरी फॅट टक्केवारी 6.0% ते 7.0% दरम्यान आहे, जे उच्च आहे. फॅटच्या वाढीचे कारण शोधण्यासाठी आणि कमी करण्यासाठी उच्च गुणवत्तेच्या फीडचा वापर करा. कृपया आपल्या पशुवैद्यकीय तज्ञाशी सल्लामसलत करा.
+                                         {% elif user.avg_snf < 7.0 %}
+                                            तुमचा सरासरी SNF टक्केवारी 7.0% पेक्षा कमी आहे, जे अत्यंत कमी आहे. कमी SNFसाठी आहारात सुधारणा करा आणि दूध गुणवत्ता नियंत्रण उपायांचा पुनरावलोकन करा. उच्च गुणवत्तेच्या फीडचा वापर आणि नियमित गुणवत्ता चाचण्या घ्या.
+                                        {% elif user.avg_snf < 8.0 %}
+                                            तुमचा सरासरी SNF टक्केवारी 7.0% ते 8.0% दरम्यान आहे, जे कमी आहे. कमी SNFसाठी पाळीव जनावरांच्या आहारात सुधारणा करा. उच्च गुणवत्तेचा फीड वापरून आणि दूध गुणवत्ता नियंत्रण पद्धतींचे पुनरावलोकन करा. फीड पुरवठादाराशी सल्लामसलत करा.
+                                        
+                                        {% elif user.transaction_water > 0.5 %}
+                                            तुमच्या दूधात पाणी 0.5% पेक्षा जास्त आहे, जे दूधाची गुणवत्ता कमी करते. पाणी कमी करण्यासाठी दूध प्रक्रिया सुधारण्यासाठी योग्य उपाययोजना करा. नियमित गुणवत्ता तपासणी करा आणि आवश्यक सुधारणा करा.
+                                        {% else %}
+                                            तुमच्या दूधाच्या गुणवत्तेत सुधारणा आवश्यक आहे. फॅट आणि SNF यामध्ये सुधारणा करण्यासाठी तज्ञांच्या सल्ल्यानुसार योग्य आहार आणि गुणवत्ता नियंत्रण उपाययोजना करा. नियमितपणे दूधाची गुणवत्ता तपासून सुधारणा करणे महत्वाचे आहे.
+                                        {% endif %}
+                                    </td>
+                                    
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="no-data">No data available for this cycle.</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'saas/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'saas/assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'saas/assets/js/datatables.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            {% for cycle_data in worst_users_data %}
+                $('#dataTable{{ cycle_data.cycle.id }}').DataTable({
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    language: {
+                        search: "<i class='bi bi-search'></i> Search:",
+                        lengthMenu: "Show _MENU_ entries",
+                        info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                        infoEmpty: "No entries available",
+                        zeroRecords: "No matching records found",
+                        paginate: {
+                            previous: "<i class='bi bi-chevron-left'></i>",
+                            next: "<i class='bi bi-chevron-right'></i>"
+                        }
+                    }
+                });
+            {% endfor %}
+
+            // Enable tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %}
