@@ -1,120 +1,112 @@
 {% extends 'dairy_owner_dashboard/base.html' %}
 {% load static %}
-{% comment %} {% load core %}  {% endcomment %}
-{% comment %} {% load static i18n %}  {% endcomment %}
 {% block stylesheets %}
-    <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}"
-          rel="stylesheet"
-          type="text/css" />
-    <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}"
-          rel="stylesheet"
-          type="text/css" />
+    <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}" rel="stylesheet" type="text/css" />
+    <style>
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fbe9e7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .totals-item {
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        .totals-item span {
+            color: #28a745; /* Green color for the amounts */
+        }
+        .totals-item .label {
+            display: block;
+            font-size: 14px;
+            color: #6c757d; /* Light grey for labels */
+        }
+        /* Add color classes for table columns */
+        .amount-advance {
+            background-color: #e9f5e9; /* Light green */
+            color: #28a745; /* Dark green text */
+            font-weight: bold;
+        }
+        .amount-feed-purchase {
+            background-color: #fef9e7; /* Light yellow */
+            color: #f1c40f; /* Dark yellow text */
+            font-weight: bold;
+        }
+        .amount-bonus {
+            background-color: #fbe9e7; /* Light pink */
+            color: #e57373; /* Dark red text */
+            font-weight: bold;
+        }
+    </style>
 {% endblock %}
 {% block content %}
-    <!-- <style>
-    #jobseeker-list-table_paginate{
-        text-align: center;
-        margin-right: 275px;
-        margin-top: 10px;
-    }
-    </style> -->
-    <style>
-    .text-success{
-        color: var(--brand-gold) !important;
-    }
-    .text-danger{
-        color: var(--brand-grey) !important;
-    }
-    .uil-phone-volume{
-        color: var(--brand-gold);
-    }
-    </style>
     <div class="container-fluid">
         <!-- start page title -->
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <!-- <li class="breadcrumb-item"><a href="javascript: void(0);">Hyper</a></li>
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>
-                        <li class="breadcrumb-item active">Orders</li> -->
-                        </ol>
-                    </div>
-                    <h4 class="page-title">Customers List</h4>
-                </div>
+        <div class="row align-items-center" style="margin-top:20px !important">
+            <div class="col-6">
+                <h4 class="page-title">Customers List</h4>
+            </div>
+            <div class="col-6 text-end">
+                <a href="{% url 'end_user_management:user-create' %}">
+                    <button type="button" class="btn btn-danger mb-2 me-2">Add Customer</button>
+                </a>
+                <button type="button" class="btn btn-light mb-2" id="display_input">Search</button>
             </div>
         </div>
         <!-- end page title -->
+
         {% block body %}{% endblock %}
+
+        <!-- Totals Row -->
+        <div class="totals-row">
+            <div class="totals-item">
+                <span class="label">Total Remaining Advance</span>
+                ₹ <span>{{ total_remaining_advance }}</span>
+            </div>
+            <div class="totals-item">
+                <span class="label">Total Remaining Feed Purchase</span>
+                ₹ <span>{{ total_remaining_feed_purchase }}</span>
+            </div>
+            <div class="totals-item">
+                <span class="label">Total Bonus Amount</span>
+                ₹ <span>{{ total_bonus_amount }}</span>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="row mb-2">
-                            <div class="col-xl-8">
-                                <form class="row gy-2 gx-2 align-items-center justify-content-xl-start justify-content-between">
-                                </form>
-                            </div>
-                            <div class="col-xl-4">
-                                <div class="text-xl-end mt-xl-0 mt-2">
-                                    <a href="{% url 'end_user_management:user-create' %}">
-                                        <button type="button" class="btn btn-danger mb-2 me-2">Add Customer</button>
-                                    </a>
-                                    <button type="button" class="btn btn-light mb-2 me-1" id="display_input">Search</button>
-                                </div>
-                            </div>
-                            <!-- end col-->
-                        </div>
-                        <div>
-                            <div>
-                                {% if messages %}
-                                    {% for message in messages %}
-                                        <div class="alert alert-dismissible alert-success form-group text-center ">
-                                            <strong>{{ message }}</strong>
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
                         <div class="table-responsive">
-                            <table class="table table-centered table table-sm mb-0 nowrap w-100 for-tfoot table-res"
-                                   id="employer-list-table">
+                            <table class="table table-centered table table-sm mb-0 nowrap w-100 for-tfoot table-res" id="employer-list-table">
                                 <thead class="table-dark">
                                     <tr>
                                         <th>Customer ID</th>
                                         <th>Full Name</th>
                                         <th>Marathi Name</th>
                                         <th>Mobile Number</th>
-                                        <th>Bank Name</th>
-                                        <th>Account Number</th>
-                                        <th>IFSC Code</th>
+                                        <th class="amount-advance">Remaining Advance Payment Amount</th>
+                                        <th class="amount-feed-purchase">Remaining Feed Purchase Amount</th>
+                                        <th class="amount-bonus">Bonus Amount</th>
                                         <th style="width: 125px;">Action</th>
                                     </tr>
                                 </thead>
                                 <tfoot class="click-hide">
                                     <tr>
-                                        <th scope="col">
-                                            <input type="number" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="text" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="text" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="text" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="text" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="text" class="form-control">
-                                        </th>
-                                        <th scope="col">
-                                            <input type="text" class="form-control">
-                                        </th>                                        
+                                        <th scope="col"><input type="number" class="form-control"></th>
+                                        <th scope="col"><input type="text" class="form-control"></th>
+                                        <th scope="col"><input type="text" class="form-control"></th>
+                                        <th scope="col"><input type="text" class="form-control"></th>
+                                        <th scope="col"><input type="text" class="form-control"></th>
+                                        <th scope="col"><input type="text" class="form-control"></th>
+                                        <th scope="col"><input type="text" class="form-control"></th>
                                         <th scope="col"></th>
                                     </tr>
                                 </tfoot>
@@ -123,70 +115,19 @@
                                         <tr>
                                             <td>{{ user.custom_id }}</td>
                                             <td>
-                                                <a href="#" class="text-body fw-bold">{{ user.first_name | title }}</a>
-                                                <a href="#" class="text-body fw-bold">{{ user.last_name | title }}</a>
-
+                                                <a href="#" class="text-body fw-bold">{{ user.first_name | title }} {{ user.last_name | title }}</a>
                                             </td>
                                             <td>
                                                 <a href="#" class="text-body fw-bold">{{ user.marathi_name | default:"-" }}</a>
                                             </td>
-                                            <td>{{ user.mobile_number | default:"-"}}</td>
-                                            <td>{{ user.bank_name | default:"-" }}</td>
+                                            <td>{{ user.mobile_number | default:"-" }}</td>
+                                            <td class="amount-advance">₹ {{ user.advance_payment_remaining | default:"-" }}</td>
+                                            <td class="amount-feed-purchase">₹ {{ user.feed_purchase_remaining | default:"-" }}</td>
+                                            <td class="amount-bonus">₹ {{ user.bonus_amount | default:"-" }}</td>
                                             <td>
-                                                <a>{{ user.account_number | default:"-" }}</a>
-                                            </td>
-                                            <td>
-                                               {{user.ifsc_code| default:"-" }}
-                                                {% comment %} {% if user.mobile_number %}
-                                                    <i class="uil uil-phone-volume"  style="font-size: 20px;"></i>
-                                                {% else %}
-                                                    <i class="uil uil-phone-slash"
-                                                       style="font-size: 20px;
-                                                              color: rgb(218, 72, 72)"></i>
-                                                {% endif %} {% endcomment %}
-                                            </td>
-                                            <td>
-                                                {% comment %} <a href="{% url 'employer_details' employer.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a>{% endcomment %}
-                                                <a href="{% url 'end_user_management:user-update' user.id %}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                                <!-- <a onclick="delete_record('{{employer.id}}', '')"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#fill-danger-modal"
-                                                class="action-icon"> <i class="mdi mdi-delete"></i></a> --> 
-                                                
-                                                <div id="fill-danger-modal"
-                                                     class="modal fade"
-                                                     tabindex="-1"
-                                                     role="dialog"
-                                                     aria-labelledby="fill-danger-modalLabel"
-                                                     aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content modal-filled bg-danger">
-                                                            <div class="modal-header">
-                                                                <h4 class="modal-title" id="fill-danger-modalLabel">Alert!!!</h4>
-                                                                <button type="button"
-                                                                        class="btn-close"
-                                                                        data-bs-dismiss="modal"
-                                                                        aria-hidden="true"></button>
-                                                            </div>
-                                                            <div class="modal-body">"Are you sure you want to delete the selected record(s)?"</div>
-                                                            <div class="modal-footer">
-                                                                <!-- <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button> -->
-                                                                <div class="text-center">
-                                                                    <!-- <em class="dripicons-warning h1 text-warning"></em> -->
-                                                                    <h4 class="mt-2 single_delete_h4"></h4>
-                                                                    <p class="mt-3 single_delete_p"></p>
-                                                                    <input type="hidden" id="single-record-id" value="">
-                                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                                                    <button type="button"
-                                                                            class="btn btn-warning my-2"
-                                                                            onclick="remove_confirm('/recstaladmin/manage_user/delete_employer/')">
-                                                                        Delete
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <a href="{% url 'end_user_management:user-update' user.id %}" class="action-icon">
+                                                    <i class="mdi mdi-square-edit-outline"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -195,8 +136,7 @@
                             {% if is_paginated %}
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <nav aria-label="Page navigation example"
-                                             class="d-flex justify-content-center mt-4 mb-4">
+                                        <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-4 mb-4">
                                             <ul class="pagination">
                                                 {% if page_obj.has_previous %}
                                                     <li class="page-item">
@@ -234,17 +174,10 @@
                             {% endif %}
                         </div>
                     </div>
-                    <!-- end card-body-->
                 </div>
-                <!-- end card-->
             </div>
-            <!-- end col -->
         </div>
-        <!-- end row -->
     </div>
-    <!-- container -->
-</div>
-<!-- content -->
 {% endblock %}
 {% block javascripts %}
     <!-- Datatables js -->
@@ -252,58 +185,37 @@
     <script src="{% static 'saas/assets/js/vendor/dataTables.bootstrap5.js' %}"></script>
     <script src="{% static 'saas/assets/js/vendor/dataTables.responsive.min.js' %}"></script>
     <script>
-    $(document).ready(function() {
-        $("#employer-list-table").dataTable({
-            "pageLength": 20,   // Set the default page length to 20
-            "stateSave": true,  // Enable state saving
-            "responsive": false,  // Enable responsive design
-            
-
-            aoColumnDefs: [
-                { "aTargets": [ 0 ], "bSortable": true },
-                { "aTargets": [ 1 ], "bSortable": true },
-                { "aTargets": [ 2 ], "bSortable": true },
-                { "aTargets": [ 3 ], "bSortable": true },
-                { "aTargets": [ 4 ], "bSortable": false },
-                { "aTargets": [ 5 ], "bSortable": false },
-                { "aTargets": [ 6 ], "bSortable": false },
-                { "aTargets": [ 7 ], "bSortable": false },
-            ],
-            initComplete: function () {
-                // Apply the search
-                this.api().columns().every( function () {
-                    var that = this;
-                    $('input', this.footer()).on('keyup change clear', function () {
-                        if (that.search() !== this.value) {
-                            that.search(this.value).draw();
-                        }
+        $(document).ready(function() {
+            $("#employer-list-table").dataTable({
+                "pageLength": 20,
+                "stateSave": true,
+                "responsive": false,
+                aoColumnDefs: [
+                    { "aTargets": [ 0 ], "bSortable": true },
+                    { "aTargets": [ 1 ], "bSortable": true },
+                    { "aTargets": [ 2 ], "bSortable": true },
+                    { "aTargets": [ 3 ], "bSortable": true },
+                    { "aTargets": [ 4 ], "bSortable": false },
+                    { "aTargets": [ 5 ], "bSortable": false },
+                    { "aTargets": [ 6 ], "bSortable": false },
+                    { "aTargets": [ 7 ], "bSortable": false },
+                ],
+                initComplete: function () {
+                    this.api().columns().every( function () {
+                        var that = this;
+                        $('input', this.footer()).on('keyup change clear', function () {
+                            if (that.search() !== this.value) {
+                                that.search(this.value).draw();
+                            }
+                        });
                     });
-                });
-            }
-        })
-        $("#employer-list-table_length").hide();
-        $("#employer-list-table_filter").hide();
-    });
-    function delete_record(id, page_label){
-        $('.single_delete_h4').html(page_label);
-        $('.single_delete_p').html(''+page_label.toLowerCase()+'');
-        $('#single-record-id').val(id);
-        $('#delete-single-modal').modal('show');
-    }
-
-        function remove_confirm(delete_url){
-            var id = $('#single-record-id').val();
-            var url = delete_url + id;
-            window.open(url,"_self")
-        }
-
-
-    </script>
-    <script>
-    $(document).ready(function(){
-        $("#display_input").click(function(){
-            $("tfoot").toggleClass("click-hide");
+                }
+            });
+            $("#employer-list-table_length").hide();
+            $("#employer-list-table_filter").hide();
         });
-    })
+        $(document).on('click', '#display_input', function() {
+            $('.click-hide').toggle();
+        });
     </script>
 {% endblock %}
