@@ -145,7 +145,7 @@
                         <tbody>
                             {% for user in cycle_data.worst_users %}
                                 <tr class="low-quality" data-toggle="tooltip" title="Click for more details">
-                                    <td>{{ user.end_user__id }}</td>
+                                    <td>{{ user.end_user__custom_id }}</td>
                                     <td>{{ user.end_user__first_name | capfirst }} {{ user.end_user__last_name | capfirst }}</td>
                                     <td>{{ user.avg_fat|floatformat:2 }}</td>
                                     <td>{{ user.avg_snf|floatformat:2 }}</td>
