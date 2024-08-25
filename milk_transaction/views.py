@@ -623,7 +623,7 @@ class WorstUsersPerCycleView(ListView):
 
             # Calculate the average fat and SNF for each user in the cycle
             user_averages = transactions.values(
-                'end_user__id',
+                'end_user__custom_id',
                 'end_user__first_name',
                 'end_user__last_name'
             ).annotate(
