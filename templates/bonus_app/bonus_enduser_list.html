@@ -208,6 +208,10 @@
                                             </td>
                                             <td>
                                                 <a href="{% url 'bonus:bonus-detail' user.id %}" class="action-icon"> <i class="mdi mdi-eye"></i></a>
+
+                                                <a href="{% url 'bonus:user_bonuses' user.id %}" class="action-icon"> 
+                                                    <i class="mdi mdi-cash" title="Show Bonus"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     {% endfor %}

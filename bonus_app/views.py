@@ -109,3 +109,37 @@ class BonusDeleteView(DeleteView):
     model = Bonus
     template_name = 'bonus/bonus_confirm_delete.html'  # Change this to your template path
     success_url = reverse_lazy('bonus-list')  # URL to redirect after successful deletion
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Bonus, EndUser
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from datetime import datetime
+def user_bonuses(request, user_id):
+    # Define the date range
+    start_date = datetime(2023, 10, 1)
+    end_date = datetime(2024, 9, 30)
+
+    # Fetch the user and their bonuses
+    user = get_object_or_404(EndUser, id=user_id)
+    bonuses = (
+        Bonus.objects
+        .filter(user=user, bonus_date__range=(start_date, end_date))
+        .annotate(month=TruncMonth('bonus_date'))
+        .values('month')
+        .annotate(total_bonus=Sum('bonus_amount'))
+        .order_by('month')
+    )
+    
+    # Calculate the total bonus amount for the user
+    total_bonus_amount = bonuses.aggregate(Sum('total_bonus'))['total_bonus__sum'] or 0
+
+    return render(request, 'bonus_app/user_bonus.html', {
+        'user': user,
+        'bonuses': bonuses,
+        'total_bonus_amount': total_bonus_amount,
+    })
+
+    # return render(request, 'bonus_app/user_bonus.html', {'user': user, 'bonuses': bonuses})
+

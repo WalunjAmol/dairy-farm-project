@@ -5,7 +5,8 @@ from .views import (
     BonusCreateView, 
     BonusUpdateView, 
     BonusDeleteView,
-    BonusEndUserListView
+    BonusEndUserListView,
+    user_bonuses
 )
 
 app_name = 'bonus'  # app name
@@ -17,4 +18,6 @@ urlpatterns = [
     path('bonuses/create/', BonusCreateView.as_view(), name='bonus-create'),
     path('bonuses/<int:pk>/update/', BonusUpdateView.as_view(), name='bonus-update'),
     path('bonuses/<int:pk>/delete/', BonusDeleteView.as_view(), name='bonus-delete'),
+    path('bonuses/user/<int:user_id>/', user_bonuses, name='user_bonuses'),
+
 ]
