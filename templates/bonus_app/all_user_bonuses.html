@@ -1,0 +1,97 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% load static %}
+{% block stylesheets %}
+<link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'saas/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<style>
+    .page-title {
+        margin-top: 20px;
+        margin-bottom: 30px;
+        font-weight: bold;
+        color: #0056b3;
+    }
+    .table {
+        border: 1px solid #dee2e6;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    th {
+        background-color: #007bff;
+        padding: 12px;
+        text-align: center;
+    }
+    td {
+        padding: 12px;
+        text-align: center;
+    }
+    .total-row {
+        font-weight: bold;
+        background-color: #e9ecef;
+    }
+    .print-button {
+        position: fixed;
+        bottom: 82px;
+        right: 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s;
+    }
+    .print-button:hover {
+        background-color: #218838;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>गवळी क्रमांक</th>
+                <th>गवळ्यांचे नाव</th>
+                <th>एकूण बोनस (₹)</th>
+                <th>एकूण अतिरिक्त बोनस (0.35)(₹)</th>
+                <th>एकूण (बोनस + अतिरिक्त बोनस) (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in user_bonus_data %}
+            <tr>
+                <td>{{ data.user.custom_id }}</td>
+                <td>{{ data.user.marathi_name }}</td>
+                <td>{{ data.total_bonus_amount|floatformat:2 }}</td>
+                <td>{{ data.total_extra_bonus_amount|floatformat:2 }}</td>
+                <td>{{ data.combined_total|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-danger">कोणतेही वापरकर्ते सापडले नाहीत.</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td><strong>एकूण:</strong></td>
+                <td><strong></strong></td>
+                <td><strong>{{ grand_total_bonus_amount|floatformat:2 }}</strong></td>
+                <td><strong>{{ grand_total_extra_bonus_amount|floatformat:2 }}</strong></td>
+                <td><strong>{{ grand_combined_total|floatformat:2 }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button class="print-button" onclick="printTable()">प्रिंट करा</button>
+</div>
+
+<script>
+    function printTable() {
+        window.print(); 
+    }
+</script>
+{% endblock %}

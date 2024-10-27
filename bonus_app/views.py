@@ -116,6 +116,8 @@ from .models import Bonus, EndUser
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from datetime import datetime
+from django.db.models import F, ExpressionWrapper, FloatField
+
 def user_bonuses(request, user_id):
     # Define the date range
     start_date = datetime(2023, 10, 1)
@@ -129,17 +131,105 @@ def user_bonuses(request, user_id):
         .annotate(month=TruncMonth('bonus_date'))
         .values('month')
         .annotate(total_bonus=Sum('bonus_amount'))
+        .annotate(extra_bonus=ExpressionWrapper(F('total_bonus') * 0.35, output_field=FloatField()))
         .order_by('month')
     )
     
     # Calculate the total bonus amount for the user
     total_bonus_amount = bonuses.aggregate(Sum('total_bonus'))['total_bonus__sum'] or 0
+    total_extra_bonus_amount = bonuses.aggregate(Sum('extra_bonus'))['extra_bonus__sum'] or 0
 
     return render(request, 'bonus_app/user_bonus.html', {
         'user': user,
         'bonuses': bonuses,
         'total_bonus_amount': total_bonus_amount,
+        'total_extra_bonus_amount': total_extra_bonus_amount,
     })
 
-    # return render(request, 'bonus_app/user_bonus.html', {'user': user, 'bonuses': bonuses})
 
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
+
+# Define the date range
+START_DATE = datetime(2023, 10, 1)
+END_DATE = datetime(2024, 9, 30)
+
+@csrf_exempt
+def update_bonus_status(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+
+        # Fetch bonuses that have not been paid
+        bonuses = Bonus.objects.filter(user_id=user_id, is_paid=False)
+
+        if bonuses.exists():
+            for bonus in bonuses:
+                # Convert bonus_date to datetime
+                bonus_date = datetime.combine(bonus.bonus_date, datetime.min.time())
+
+                # Check if the bonus_date is within the allowed range
+                if START_DATE <= bonus_date <= END_DATE:
+                    bonus.is_paid = True
+                    bonus.transaction_type = 'withdrawal'  # Set the transaction type as needed
+                    bonus.save()
+                
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'message': 'बोनस आधीच देण्यात आले आहे.'})
+
+    return JsonResponse({'success': False})
+
+
+from decimal import Decimal
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
+from datetime import datetime
+from django.shortcuts import render
+
+def all_user_bonuses(request):
+    # Define the date range
+    start_date = datetime(2023, 10, 1)
+    end_date = datetime(2024, 9, 30)
+
+    # Fetch all users and calculate their bonuses
+    users = EndUser.objects.all().prefetch_related('bonuses')
+
+    user_bonus_data = []
+    grand_total_bonus_amount = Decimal('0.00')
+    grand_total_extra_bonus_amount = Decimal('0.00')
+
+    for user in users:
+        bonuses = (
+            Bonus.objects
+            .filter(user=user, bonus_date__range=(start_date, end_date))
+            .annotate(total_bonus=Sum('bonus_amount'))
+            .annotate(extra_bonus=ExpressionWrapper(F('total_bonus') * Decimal('0.35'), output_field=DecimalField()))
+        )
+
+        total_bonus_amount = bonuses.aggregate(Sum('total_bonus'))['total_bonus__sum'] or Decimal('0.00')
+        total_extra_bonus_amount = bonuses.aggregate(Sum('extra_bonus'))['extra_bonus__sum'] or Decimal('0.00')
+
+        # Only include users with non-zero bonuses
+        if total_bonus_amount > 0 or total_extra_bonus_amount > 0:
+            combined_total = total_bonus_amount + total_extra_bonus_amount
+
+            user_bonus_data.append({
+                'user': user,
+                'total_bonus_amount': total_bonus_amount,
+                'total_extra_bonus_amount': total_extra_bonus_amount,
+                'combined_total': combined_total,
+            })
+
+            # Update grand totals
+            grand_total_bonus_amount += total_bonus_amount
+            grand_total_extra_bonus_amount += total_extra_bonus_amount
+
+    grand_combined_total = grand_total_bonus_amount + grand_total_extra_bonus_amount
+
+    return render(request, 'bonus_app/all_user_bonuses.html', {
+        'user_bonus_data': user_bonus_data,
+        'grand_total_bonus_amount': grand_total_bonus_amount,
+        'grand_total_extra_bonus_amount': grand_total_extra_bonus_amount,
+        'grand_combined_total': grand_combined_total,
+    })

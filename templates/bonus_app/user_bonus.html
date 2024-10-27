@@ -4,6 +4,9 @@
 <link href="{% static 'saas/assets/css/vendor/dataTables.bootstrap5.css' %}" rel="stylesheet" type="text/css" />
 <link href="{% static 'saas/assets/css/vendor/responsive.bootstrap5.css' %}" rel="stylesheet" type="text/css" />
 <link href="{% static 'saas/assets/css/style.css' %}" rel="stylesheet" type="text/css" /> <!-- Custom styles -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -41,7 +44,7 @@
         width: 100%;
         margin: 10px 0;
         /* Reduce margin */
-        font-size: 15px;
+        font-size: 12px;
         /* Smaller font size */
         text-align: center;
         background: white;
@@ -66,7 +69,7 @@
 
     .total-section {
         margin-top: 10px;
-        font-size: 16px;
+        font-size: 12px;
         /* Adjust font size */
         font-weight: bold;
         display: flex;
@@ -93,7 +96,7 @@
     .total-amount {
         color: #28a745;
         /* Green color for the amount */
-        font-size: 18px;
+        font-size: 14px;
         /* Larger font size for the amount */
     }
 
@@ -173,7 +176,7 @@
 
     @media print {
         body {
-            font-size: 13px;
+            font-size: 8px;
             /* Adjust font size for print */
         }
 
@@ -182,6 +185,22 @@
             display: none;
             /* Hide print button when printing */
         }
+        .table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px 0;
+        /* Reduce margin */
+        font-size: 8px;
+        /* Smaller font size */
+        text-align: center;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    }
+    .modal {
+            display: none !important; /* Hide the modal when printing */
+        }
+
     }
 </style>
 
@@ -209,6 +228,8 @@
             <span>दिपक वाळुंज </span>
         </div>
     </div>
+    <!-- Modal -->
+
     <div class="row">
         <div class="col-12">
             <table class="table">
@@ -217,6 +238,7 @@
                         <th>महिना</th>
                         <th>वर्ष</th>
                         <th>एकूण बोनस (₹)</th>
+                        <th>अतिरिक्त बोनस (₹)</th> <!-- New Column for Extra Bonus -->
                     </tr>
                 </thead>
                 <tbody>
@@ -241,10 +263,11 @@
                         </td>
                         <td>{{ bonus.month|date:"Y" }}</td>
                         <td>{{ bonus.total_bonus|floatformat:2 }}</td>
+                        <td>{{ bonus.extra_bonus|floatformat:2 }}</td> <!-- New Column for Extra Bonus -->
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="3" class="text-danger">या वापरकर्त्यासाठी दिलेल्या कालावधीत बोनस सापडले नाहीत.</td>
+                        <td colspan="4" class="text-danger">या वापरकर्त्यासाठी दिलेल्या कालावधीत बोनस सापडले नाहीत.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -255,8 +278,17 @@
                 <span class="total-amount">₹ {{ total_bonus_amount|floatformat:2 }}</span>
             </div>
 
+            <div class="total-section">
+                <span class="total-label">एकूण अतिरिक्त बोनस:</span> <!-- New Section for Total Extra Bonus -->
+                <span class="total-amount">₹ {{ total_extra_bonus_amount|floatformat:2 }}</span>
+            </div>
 
-            <button class="print-button" onclick="window.print()">प्रिंट करा</button>
+            <div class="total-section">
+                <span class="total-label">एकूण (बोनस + अतिरिक्त बोनस):</span> <!-- New Section for Combined Total -->
+                <span class="total-amount">₹ {{ total_bonus_amount|add:total_extra_bonus_amount|floatformat:2 }}</span>
+            </div>
+
+            <button id="print-button" class="print-button">प्रिंट करा</button>
         </div>
     </div>
     <!-- end row -->
@@ -265,5 +297,34 @@
 
     <p class="info-2"><strong>दिपक वाळुंज</strong> :- 9890822821</p>
 </div>
-<!-- container -->
+
+<script>
+    $(document).ready(function() {
+    $('#print-button').click(function() {
+        if (confirm("आपण बोनसची पुष्टी करू इच्छिता?")) {
+            $.ajax({
+                url: "{% url 'bonus:update_bonus_status' %}",
+                type: "POST",
+                data: {
+                    'user_id': '{{ user.id }}',
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert("बोनस यशस्वीरित्या अनुदानित झाला."); // Success message
+                        window.print(); // Print after successful update
+                    } else {
+                        alert(response.message || "बोनस अनुदानित करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा."); // Display custom message
+                    }
+                },
+                error: function() {
+                    alert("AJAX कॉलमध्ये काहीतरी चुकले. कृपया पुन्हा प्रयत्न करा.");
+                }
+            });
+        }
+    });
+});
+
+
+</script>
 {% endblock %}
