@@ -26,5 +26,5 @@ gunicorn==20.1.0
 dj-database-url==1.0.0
 
 # Optional but recommended to avoid pyproject.toml build issues:
-setuptools==67.7.2
-wheel==0.40.0
+# setuptools==67.7.2
+# wheel==0.40.0
