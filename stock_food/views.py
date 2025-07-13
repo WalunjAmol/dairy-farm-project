@@ -213,36 +213,41 @@ class UserFeedPurchaseCreateView(CreateView):
 
         return reverse('stock_food_management:user-wise-feed-purchase-details', kwargs={'pk': feed_purchase_id})
     
+from django.utils.timezone import localtime
 class UserFeedPurchaseUpdateView(UpdateView):
     model = FeedPurchase
     form_class = FeedPurchaseUpdateForm
     template_name = 'stock_food/user_stock_update.html'
     success_message = "Feed Updated Successfully"
 
+    def get_initial(self):
+        initial = super().get_initial()
+        obj = self.get_object()
+        initial['date_created'] = localtime(obj.date_created).strftime('%Y-%m-%dT%H:%M')
+        initial['update_date'] = localtime(obj.update_date).strftime('%Y-%m-%dT%H:%M')
+        return initial
+
     def form_valid(self, form):
-        # Retrieve the original feed purchase object
-        original_feed_purchase = self.get_object()
-        
-        # Calculate the difference in quantity taken
-        quantity_difference = form.cleaned_data['quantity_taken'] - original_feed_purchase.quantity_taken
-        print('quantity_taken',form.cleaned_data['quantity_taken'])
-        print('original_feed_purchase.quantity_taken',original_feed_purchase.quantity_taken)
-        print('quantity_difference',quantity_difference)
+        instance = form.save(commit=False)
 
-        # Update the stock quantity
-        stock_obj = original_feed_purchase.stock
-        stock_obj.quantity -= quantity_difference
-        stock_obj.save()
+        # Parse and manually override auto-managed fields
+        date_created_str = self.request.POST.get('date_created')
+        update_date_str = self.request.POST.get('update_date')
 
+        if date_created_str:
+            instance.date_created = date_created_str
+        if update_date_str:
+            instance.update_date = update_date_str
+
+        # Adjust stock quantity
+        original = self.get_object()
+        quantity_diff = form.cleaned_data['quantity_taken'] - original.quantity_taken
+        instance.stock.quantity -= quantity_diff
+        instance.stock.save()
+
+        instance.save()
         return super().form_valid(form)
-    
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     feed_user = self.kwargs.get('pk')
-    #     user_detail = EndUser.objects.get(id=feed_user)
-    #     context['user_detail'] = user_detail
-    #     return context
-    
+
     def get_success_url(self):
         taken_user_value = self.request.POST.get('taken_user')
         return reverse('stock_food_management:user-wise-feed-purchase-details', kwargs={'pk': taken_user_value})

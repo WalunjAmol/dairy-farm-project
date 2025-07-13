@@ -334,15 +334,19 @@ class GenerateBill(ListView):
         # Calculate bonus-related values
         from_date = cycle_object.from_date
         to_date = cycle_object.to_date
-        bonus_start_date = datetime(2023,1,10)
+        bonus_start_date = datetime(2024,1,10)
+
         bonus_sum = Bonus.objects.filter(
             user_id=user_id,
             transaction_type='bonus_added',
+            is_paid = False,
             bonus_date__range=(bonus_start_date, to_date)
         ).aggregate(Sum('bonus_amount')).get('bonus_amount__sum') or 0
+
         last_cycle_bonus_deduct = Bonus.objects.filter(
             user_id=user_id,
             transaction_type='bonus_added',
+            is_paid = False,
             bonus_date__range=(from_date, to_date)
         ).aggregate(Sum('bonus_amount')).get('bonus_amount__sum') or 0
 

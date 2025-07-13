@@ -84,6 +84,11 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="row">
+                                <div class="col-sm-6 mb-3">
+                                        <label for="id_date_created">Date Taken</label>
+                                        {{ form.date_created }}
+                                    </div>
                                 <div class="col-sm-6 position-relative mb-3">
                                     <label for="is_paid" class="form-label">Is Paid <span class="required-field"></span></label>
                                     {{ form.is_paid }}
@@ -95,6 +100,7 @@
                                         </div>
                                     {% endif %}
                                 </div>
+
                                 <div class="col-sm-12 position-relative mb-3">
                                     <label for="purchase_amount" class="form-label">
                                         Description<span class="required-field"></span>
