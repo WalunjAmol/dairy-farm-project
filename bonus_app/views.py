@@ -189,8 +189,8 @@ from django.shortcuts import render
 
 def all_user_bonuses(request):
     # Define the date range
-    start_date = datetime(2023, 10, 1)
-    end_date = datetime(2024, 9, 30)
+    start_date = datetime(2024, 10, 1)
+    end_date = datetime(2025, 9, 30)
 
     # Fetch all users and calculate their bonuses
     users = EndUser.objects.all().prefetch_related('bonuses')
