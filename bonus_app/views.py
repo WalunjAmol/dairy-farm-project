@@ -120,8 +120,8 @@ from django.db.models import F, ExpressionWrapper, FloatField
 
 def user_bonuses(request, user_id):
     # Define the date range
-    start_date = datetime(2023, 10, 1)
-    end_date = datetime(2024, 9, 30)
+    start_date = datetime(2024, 10, 1)
+    end_date = datetime(2025, 9, 30)
 
     # Fetch the user and their bonuses
     user = get_object_or_404(EndUser, id=user_id)
