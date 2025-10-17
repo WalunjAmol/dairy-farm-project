@@ -131,7 +131,7 @@ def user_bonuses(request, user_id):
         .annotate(month=TruncMonth('bonus_date'))
         .values('month')
         .annotate(total_bonus=Sum('bonus_amount'))
-        .annotate(extra_bonus=ExpressionWrapper(F('total_bonus') * 0.35, output_field=FloatField()))
+        .annotate(extra_bonus=ExpressionWrapper(F('total_bonus') * 0.50, output_field=FloatField()))
         .order_by('month')
     )
     
@@ -153,8 +153,8 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 
 # Define the date range
-START_DATE = datetime(2023, 10, 1)
-END_DATE = datetime(2024, 9, 30)
+START_DATE = datetime(2024, 10, 1)
+END_DATE = datetime(2025, 9, 30)
 
 @csrf_exempt
 def update_bonus_status(request):
@@ -204,7 +204,7 @@ def all_user_bonuses(request):
             Bonus.objects
             .filter(user=user, bonus_date__range=(start_date, end_date))
             .annotate(total_bonus=Sum('bonus_amount'))
-            .annotate(extra_bonus=ExpressionWrapper(F('total_bonus') * Decimal('0.35'), output_field=DecimalField()))
+            .annotate(extra_bonus=ExpressionWrapper(F('total_bonus') * Decimal('0.50'), output_field=DecimalField()))
         )
 
         total_bonus_amount = bonuses.aggregate(Sum('total_bonus'))['total_bonus__sum'] or Decimal('0.00')
