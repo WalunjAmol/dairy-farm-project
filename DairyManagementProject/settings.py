@@ -100,6 +100,15 @@ DATABASES = {
     }
 }
 
+# CORS Configuration
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "https://milkywave.in",
+    "http://35.154.5.46",
+    "http://35.154.5.46:8000",
+    "https://35.154.5.46",
+    "https://35.154.5.46:8000",
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
