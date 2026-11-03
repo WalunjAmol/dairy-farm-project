@@ -324,6 +324,71 @@ def all_user_bonuses(request):
     })
 
 
+def _cycle_customers(request):
+    if not getattr(request.user, 'dairy_id', None):
+        return EndUser.objects.none()
+    return EndUser.objects.filter(dairy_name__role=request.user.dairy.role).order_by('custom_id')
+
+
+def _customer_bonus_slips(customers, start_date, end_date):
+    from collections import defaultdict
+
+    month_rows = (
+        Bonus.objects.filter(user__in=customers, bonus_date__range=(start_date, end_date))
+        .annotate(month=TruncMonth('bonus_date'))
+        .values('user_id', 'month')
+        .annotate(total_bonus=Sum('bonus_amount'))
+        .order_by('month')
+    )
+    months_by_user = defaultdict(list)
+    for row in month_rows:
+        total_bonus = row['total_bonus'] or Decimal('0.00')
+        months_by_user[row['user_id']].append({
+            'month': row['month'],
+            'total_bonus': total_bonus,
+            'extra_bonus': (total_bonus * Decimal('0.50')),
+        })
+
+    slips = []
+    for customer in customers:
+        months = months_by_user.get(customer.id)
+        if not months:
+            continue
+        slips.append({
+            'user': customer,
+            'bonuses': months,
+            'total_bonus_amount': sum(month['total_bonus'] for month in months),
+            'total_extra_bonus_amount': sum(month['extra_bonus'] for month in months),
+        })
+    return slips
+
+
+@login_required(login_url='/dairy-management/login/')
+def print_all_user_bonuses(request):
+    start_date = datetime(2025, 10, 1)
+    end_date = datetime(2026, 9, 30)
+    slips = _customer_bonus_slips(_cycle_customers(request), start_date, end_date)
+    return render(request, 'bonus_app/print_all_bonuses.html', {
+        'slips': slips,
+        'start_date': start_date,
+        'end_date': end_date,
+    })
+
+
+@login_required(login_url='/dairy-management/login/')
+def update_all_bonus_status(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False}, status=405)
+
+    updated = Bonus.objects.filter(
+        user__in=_cycle_customers(request),
+        is_paid=False,
+        bonus_date__gte=START_DATE.date(),
+        bonus_date__lte=END_DATE.date(),
+    ).update(is_paid=True, transaction_type='withdrawal')
+    return JsonResponse({'success': True, 'updated': updated})
+
+
 def _bonus_delete_queryset(user, start_date, end_date, customer_id, search_text):
     bonuses = Bonus.objects.filter(
         user__dairy_name=user.dairy,
