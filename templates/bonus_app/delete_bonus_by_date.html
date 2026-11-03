@@ -1,0 +1,499 @@
+{% extends 'dairy_owner_dashboard/base.html' %}
+{% block content %}
+<style>
+    .bonus-delete-page { margin-top: 18px; }
+    .bonus-delete-page h3 { font-weight: 700; margin-bottom: 6px; }
+    .bonus-delete-note { color: #6c757d; margin-bottom: 16px; }
+    .bonus-toolbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    .bonus-summary { font-weight: 600; }
+    .bonus-table-wrap { position: relative; min-height: 180px; }
+    .bonus-table th { background: #343a40; color: #fff; white-space: nowrap; }
+    .bonus-table td { vertical-align: middle; }
+    .bonus-table .amount { text-align: right; font-variant-numeric: tabular-nums; }
+    .desc-cell {
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .bonus-loading {
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.72);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+    .pager { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap; margin-top: 12px; }
+    .page-size-label { display: flex; align-items: center; gap: 8px; margin-right: auto; }
+    .confirm-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 16px;
+    }
+    .confirm-backdrop.open { display: flex; }
+    .confirm-card {
+        width: min(440px, 100%);
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    }
+    .status-banner { display: none; }
+</style>
+<div class="container-fluid bonus-delete-page">
+    <h3>Delete bonus records</h3>
+    <p class="bonus-delete-note">
+        Each row is one bonus record. The page stays open while you check or delete.
+        Pick one customer, or leave All customers. Defaults are 1 Oct 2024 through 30 Nov 2025.
+    </p>
+
+    <div id="status-banner" class="alert status-banner" role="status"></div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form id="filter-form">
+                <div class="row g-3 align-items-end">
+                    <div class="col-lg-4">
+                        <label for="user_id" class="form-label">Customer</label>
+                        <select class="form-control" id="user_id" name="user_id">
+                            <option value="">All customers</option>
+                            {% for customer in customers %}
+                                <option value="{{ customer.id }}">
+                                    {{ customer.custom_id }} - {{ customer.marathi_name|default:customer.first_name }} {{ customer.last_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-2">
+                        <label for="start_date" class="form-label">Start date</label>
+                        <input type="date" class="form-control" id="start_date" value="{{ start_date }}" required>
+                    </div>
+                    <div class="col-lg-2">
+                        <label for="end_date" class="form-label">End date</label>
+                        <input type="date" class="form-control" id="end_date" value="{{ end_date }}" required>
+                    </div>
+                    <div class="col-lg-2">
+                        <label for="search_text" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="search_text" placeholder="Name or ID">
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="submit" class="btn btn-primary w-100" id="check-button">Check records</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="bonus-toolbar">
+                <div>
+                    <div class="bonus-summary" id="summary-text">No records loaded yet.</div>
+                    <small class="text-muted" id="stale-note" hidden>Filters changed. Click Check records to refresh the list.</small>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-danger" id="delete-selected" disabled>Delete selected</button>
+                    <button type="button" class="btn btn-danger" id="delete-all" disabled>Delete all matching</button>
+                </div>
+            </div>
+            <div class="table-responsive bonus-table-wrap" id="table-wrap">
+                <div class="bonus-loading" id="loading" hidden>Loading records...</div>
+                <table class="table table-sm table-hover table-bordered bonus-table mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 42px;"><input type="checkbox" id="select-page" aria-label="Select all rows on this page"></th>
+                            <th>Customer ID</th>
+                            <th>Name</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Paid</th>
+                            <th class="amount">Amount (₹)</th>
+                            <th>Description</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="record-body">
+                        <tr>
+                            <td colspan="10" class="text-center text-muted py-4">Choose filters and click Check records.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pager">
+                <label class="page-size-label" for="page-size">
+                    Rows per page
+                    <select class="form-control form-control-sm" id="page-size" style="width: auto;">
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="250">250</option>
+                        <option value="all">All</option>
+                    </select>
+                </label>
+                <button type="button" class="btn btn-light btn-sm" id="prev-page" disabled>Previous</button>
+                <span id="page-label">Page 0 of 0</span>
+                <button type="button" class="btn btn-light btn-sm" id="next-page" disabled>Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="confirm-backdrop" id="confirm-dialog">
+    <div class="confirm-card">
+        <h4 id="confirm-title">Delete records</h4>
+        <p id="confirm-body" class="mb-3"></p>
+        <label for="confirm-text" class="form-label">Type <strong>DELETE</strong> to confirm</label>
+        <input type="text" class="form-control mb-2" id="confirm-text" autocomplete="off" placeholder="DELETE">
+        <p id="confirm-error" class="text-danger" hidden>Type DELETE exactly, then click Delete.</p>
+        <div class="text-end">
+            <button type="button" class="btn btn-light" id="confirm-cancel">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirm-ok" disabled>Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const pageUrl = "{% url 'bonus:delete-bonus-range' %}";
+    const csrfToken = "{{ csrf_token }}";
+    const selectedIds = new Set();
+    let activeFilters = null;
+    let currentPage = 1;
+    let totalPages = 0;
+    let loadedCount = 0;
+    let visibleIds = [];
+    let pendingConfirm = null;
+
+    const recordBody = document.getElementById('record-body');
+    const summaryText = document.getElementById('summary-text');
+    const staleNote = document.getElementById('stale-note');
+    const loading = document.getElementById('loading');
+    const statusBanner = document.getElementById('status-banner');
+    const selectPage = document.getElementById('select-page');
+    const deleteSelected = document.getElementById('delete-selected');
+    const deleteAll = document.getElementById('delete-all');
+    const prevPage = document.getElementById('prev-page');
+    const nextPage = document.getElementById('next-page');
+    const pageLabel = document.getElementById('page-label');
+    const confirmDialog = document.getElementById('confirm-dialog');
+
+    const confirmInput = document.getElementById('confirm-text');
+    const confirmOk = document.getElementById('confirm-ok');
+    const confirmError = document.getElementById('confirm-error');
+    const pageSize = document.getElementById('page-size');
+
+    function filtersFromForm() {
+        return {
+            start_date: document.getElementById('start_date').value,
+            end_date: document.getElementById('end_date').value,
+            user_id: document.getElementById('user_id').value,
+            q: document.getElementById('search_text').value.trim(),
+            page_size: pageSize.value,
+        };
+    }
+
+    function showStatus(kind, message) {
+        statusBanner.className = 'alert status-banner alert-' + kind;
+        statusBanner.style.display = 'block';
+        statusBanner.textContent = message;
+    }
+
+    function setLoading(isLoading) {
+        loading.hidden = !isLoading;
+        document.getElementById('check-button').disabled = isLoading;
+    }
+
+    function updateActionButtons(count) {
+        deleteSelected.disabled = !activeFilters || selectedIds.size === 0;
+        deleteSelected.textContent = selectedIds.size ? 'Delete selected (' + selectedIds.size + ')' : 'Delete selected';
+        deleteAll.disabled = !activeFilters || !count;
+        deleteAll.textContent = count ? 'Delete all matching (' + count + ')' : 'Delete all matching';
+    }
+
+    function markStale() {
+        if (!activeFilters) {
+            return;
+        }
+        activeFilters = null;
+        selectedIds.clear();
+        staleNote.hidden = false;
+        updateActionButtons(0);
+        selectPage.checked = false;
+    }
+
+    async function postJson(payload) {
+        const response = await fetch(pageUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify(payload),
+        });
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            throw new Error('Please log in again, then retry.');
+        }
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Something went wrong.');
+        }
+        return data;
+    }
+
+    function cell(text, className) {
+        const td = document.createElement('td');
+        if (className) {
+            td.className = className;
+        }
+        td.textContent = text || '';
+        return td;
+    }
+
+    function renderRecords(data) {
+        recordBody.replaceChildren();
+        visibleIds = data.records.map(function (record) { return record.id; });
+        if (!data.records.length) {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = cell('No bonus records found for these filters.', 'text-center text-muted py-4');
+            emptyCell.colSpan = 10;
+            emptyRow.appendChild(emptyCell);
+            recordBody.appendChild(emptyRow);
+        } else {
+            data.records.forEach(function (record) {
+                const row = document.createElement('tr');
+                const checkCell = document.createElement('td');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = selectedIds.has(record.id);
+                checkbox.setAttribute('aria-label', 'Select record ' + record.id);
+                checkbox.addEventListener('change', function () {
+                    if (checkbox.checked) {
+                        selectedIds.add(record.id);
+                    } else {
+                        selectedIds.delete(record.id);
+                    }
+                    syncPageCheckbox();
+                    updateActionButtons(data.count);
+                });
+                checkCell.appendChild(checkbox);
+                row.appendChild(checkCell);
+                row.appendChild(cell(record.customer_id));
+                row.appendChild(cell(record.name));
+                row.appendChild(cell(record.bonus_date));
+                row.appendChild(cell(record.bonus_time));
+                row.appendChild(cell(record.transaction_type || '—'));
+                row.appendChild(cell(record.is_paid ? 'Yes' : 'No'));
+                row.appendChild(cell(record.amount, 'amount'));
+                const description = cell(record.description, 'desc-cell');
+                description.title = record.description || '';
+                row.appendChild(description);
+                const actionCell = document.createElement('td');
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btn btn-sm btn-outline-danger';
+                removeButton.textContent = 'Delete';
+                removeButton.addEventListener('click', function () {
+                    confirmDelete(
+                        'Delete this record?',
+                        'Customer ' + (record.customer_id || '') + ' on ' + record.bonus_date + ' for ₹' + record.amount + ' will be deleted.'
+                    ).then(function (ok) {
+                        if (ok) {
+                            deleteRecords({ mode: 'ids', ids: [record.id] });
+                        }
+                    });
+                });
+                actionCell.appendChild(removeButton);
+                row.appendChild(actionCell);
+                recordBody.appendChild(row);
+            });
+        }
+
+        const amount = Number(data.total_amount).toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+        summaryText.textContent = data.count + ' records · total ₹' + amount;
+        currentPage = data.page;
+        totalPages = data.pages;
+        if (data.page_size === 'all') {
+            pageLabel.textContent = 'Showing all ' + data.count + ' records';
+            prevPage.disabled = true;
+            nextPage.disabled = true;
+        } else {
+            const start = data.count ? ((data.page - 1) * data.page_size) + 1 : 0;
+            const end = Math.min(data.page * data.page_size, data.count);
+            pageLabel.textContent = 'Showing ' + start + '–' + end + ' of ' + data.count;
+            prevPage.disabled = data.page <= 1;
+            nextPage.disabled = data.page >= data.pages;
+        }
+        loadedCount = data.count;
+        staleNote.hidden = true;
+        syncPageCheckbox();
+        updateActionButtons(data.count);
+    }
+
+    function syncPageCheckbox() {
+        selectPage.checked = visibleIds.length > 0 && visibleIds.every(function (id) { return selectedIds.has(id); });
+    }
+
+    async function loadRecords(page) {
+        const filters = filtersFromForm();
+        if (!filters.start_date || !filters.end_date) {
+            showStatus('danger', 'Select both a start date and an end date.');
+            return;
+        }
+        setLoading(true);
+        try {
+            const data = await postJson(Object.assign({ action: 'list', page: page }, filters));
+            activeFilters = filters;
+            renderRecords(data);
+        } catch (error) {
+            showStatus('danger', error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function deleteRecords(extra) {
+        if (!activeFilters) {
+            showStatus('danger', 'Check records before deleting.');
+            return;
+        }
+        setLoading(true);
+        try {
+            const data = await postJson(Object.assign({ action: 'delete', confirm_text: 'DELETE' }, activeFilters, extra));
+            if (extra.mode === 'ids') {
+                extra.ids.forEach(function (id) { selectedIds.delete(id); });
+            } else {
+                selectedIds.clear();
+            }
+            showStatus('success', 'Deleted ' + data.deleted + ' bonus record' + (data.deleted === 1 ? '' : 's') + '.');
+            await loadRecords(currentPage);
+        } catch (error) {
+            showStatus('danger', error.message);
+            setLoading(false);
+        }
+    }
+
+    function syncConfirmButton() {
+        const typed = confirmInput.value.trim() === 'DELETE';
+        confirmOk.disabled = !typed;
+        if (typed) {
+            confirmError.hidden = true;
+        }
+    }
+
+    function confirmDelete(title, body) {
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-body').textContent = body;
+        confirmInput.value = '';
+        confirmError.hidden = true;
+        syncConfirmButton();
+        confirmDialog.classList.add('open');
+        confirmInput.focus();
+        return new Promise(function (resolve) {
+            pendingConfirm = resolve;
+        });
+    }
+
+    function closeConfirm(accepted) {
+        confirmDialog.classList.remove('open');
+        if (pendingConfirm) {
+            pendingConfirm(accepted);
+            pendingConfirm = null;
+        }
+    }
+
+    document.getElementById('filter-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        selectedIds.clear();
+        loadRecords(1);
+    });
+    ['user_id', 'start_date', 'end_date', 'search_text'].forEach(function (id) {
+        document.getElementById(id).addEventListener('input', markStale);
+        document.getElementById(id).addEventListener('change', markStale);
+    });
+    prevPage.addEventListener('click', function () {
+        if (currentPage > 1) {
+            loadRecords(currentPage - 1);
+        }
+    });
+    nextPage.addEventListener('click', function () {
+        if (currentPage < totalPages) {
+            loadRecords(currentPage + 1);
+        }
+    });
+    pageSize.addEventListener('change', function () {
+        if (activeFilters) {
+            loadRecords(1);
+        }
+    });
+    selectPage.addEventListener('change', function () {
+        visibleIds.forEach(function (id) {
+            if (selectPage.checked) {
+                selectedIds.add(id);
+            } else {
+                selectedIds.delete(id);
+            }
+        });
+        recordBody.querySelectorAll('input[type="checkbox"]').forEach(function (box) {
+            box.checked = selectPage.checked;
+        });
+        updateActionButtons(loadedCount);
+    });
+    deleteSelected.addEventListener('click', function () {
+        const ids = Array.from(selectedIds);
+        confirmDelete('Delete selected records?', ids.length + ' selected bonus records will be deleted. This cannot be undone.').then(function (ok) {
+            if (ok) {
+                deleteRecords({ mode: 'ids', ids: ids });
+            }
+        });
+    });
+    deleteAll.addEventListener('click', function () {
+        const countText = summaryText.textContent.split(' ')[0];
+        confirmDelete('Delete every matching record?', countText + ' bonus records in the current filters will be deleted. This cannot be undone.').then(function (ok) {
+            if (ok) {
+                deleteRecords({ mode: 'all' });
+            }
+        });
+    });
+    document.getElementById('confirm-cancel').addEventListener('click', function () { closeConfirm(false); });
+    confirmInput.addEventListener('input', syncConfirmButton);
+    confirmInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && confirmInput.value.trim() === 'DELETE') {
+            event.preventDefault();
+            closeConfirm(true);
+        }
+    });
+    document.getElementById('confirm-ok').addEventListener('click', function () {
+        if (confirmInput.value.trim() !== 'DELETE') {
+            confirmError.hidden = false;
+            return;
+        }
+        closeConfirm(true);
+    });
+    confirmDialog.addEventListener('click', function (event) {
+        if (event.target === confirmDialog) {
+            closeConfirm(false);
+        }
+    });
+})();
+</script>
+{% endblock %}

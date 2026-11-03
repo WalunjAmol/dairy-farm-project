@@ -9,6 +9,7 @@ from .views import (
     user_bonuses,
     update_bonus_status,
     all_user_bonuses,
+    delete_bonus_by_date,
 )
 
 app_name = 'bonus'  # app name
@@ -22,6 +23,7 @@ urlpatterns = [
     path('bonuses/<int:pk>/delete/', BonusDeleteView.as_view(), name='bonus-delete'),
     path('bonuses/user/<int:user_id>/', user_bonuses, name='user_bonuses'),
     path('bonuses/update-bonus-status/', update_bonus_status, name='update_bonus_status'),
+    path('bonuses/delete-range/', delete_bonus_by_date, name='delete-bonus-range'),
     path('bonuses/', all_user_bonuses, name='all_user_bonuses'),
 
 

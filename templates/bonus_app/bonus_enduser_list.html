@@ -107,6 +107,19 @@
 .bonus-amount {
     color: #9932CC; /* Change the color to a shade of dark orchid */
 }
+tr.bonus-gap-row td {
+    background-color: #ffe08a !important;
+}
+.bonus-gap-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #b45309;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+}
 
 
     </style>
@@ -123,6 +136,7 @@
                         </ol>
                     </div>
                     <h4 class="page-title">Customers List</h4>
+                    <p class="text-muted mb-0">Highlighted rows have a bonus gap of more than 15 days crossing 1 Oct 2025 to 30 Sep 2026. The dates shown are the last bonus before the gap and the next bonus after it.</p>
                 </div>
             </div>
         </div>
@@ -197,10 +211,13 @@
                                 </tfoot>
                                 <tbody>
                                     {% for user in users %}
-                                        <tr>
+                                        <tr class="{% if user.bonus_gaps %}bonus-gap-row{% endif %}">
                                             <td>{{ user.custom_id }}</td>
                                             <td>
                                                 <a href="{% url 'bonus:bonus-detail' user.id %}" class="text-body fw-bold">{{ user.first_name }} {{ user.last_name }}</a>
+                                                {% for gap in user.bonus_gaps %}
+                                                    <span class="bonus-gap-badge">{{ gap.0|date:"N j, Y" }} to {{ gap.1|date:"N j, Y" }}</span>
+                                                {% endfor %}
                                             </td>
                                             <td>{{ user.mobile_number }}</td>
                                             <td>

@@ -81,6 +81,14 @@
             margin-top: 10px;
             text-align: right;
         }
+        tr.bonus-gap-row td {
+            background-color: #ffe08a !important;
+        }
+        tr.bonus-gap-banner td {
+            background-color: #b45309 !important;
+            color: #fff;
+            font-weight: 700;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -94,6 +102,14 @@
             <span class="total-bonus">
                 Total Bonus: <span class="bonus-amount">{{ total_bonus|default:0 }}</span> <span class="currency">&#8377;</span>
             </span>
+            {% if bonus_gaps %}
+                <p class="mt-2 mb-0">Bonus gaps over 15 days crossing 1 Oct 2025 to 30 Sep 2026:</p>
+                <ul>
+                    {% for gap in bonus_gaps %}
+                        <li><strong>{{ gap.0|date:"N j, Y" }} to {{ gap.1|date:"N j, Y" }}</strong></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </div>
 
         <!-- Transaction History Section -->
@@ -112,19 +128,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for transaction in transactions %}
-                        <tr>
-                            <td>{{ transaction.bonus_date }}</td>
-                            <td>{{ transaction.bonus_time }}</td>
-                            <td class="bonus-amount"> {{ transaction.bonus_amount }} <span class="currency">&#8377;</span></td>
-                            <td>{% if transaction.transaction_type == 'bonus_added' %} Deposite {% else %} Withdrawl {% endif %}</td>
-                            {% comment %} <td>{{ transaction.transaction_source }}</td> {% endcomment %}
-                            {% comment %} <td>{% if transaction.is_approved %}Yes{% else %}No{% endif %}</td> {% endcomment %}
-                            <td>{% if transaction.is_paid %}Yes{% else %}No{% endif %}</td>
-                            <td>{{ transaction.description }}</td>
-
-                            <!-- Add more columns as needed -->
-                        </tr>
+                    {% for row in display_rows %}
+                        {% if row.kind == 'gap' %}
+                            <tr class="bonus-gap-banner">
+                                <td colspan="6">Gap: {{ row.start|date:"N j, Y" }} to {{ row.end|date:"N j, Y" }}</td>
+                            </tr>
+                        {% else %}
+                            <tr class="{% if row.highlight %}bonus-gap-row{% endif %}">
+                                <td>{{ row.transaction.bonus_date }}</td>
+                                <td>{{ row.transaction.bonus_time }}</td>
+                                <td class="bonus-amount"> {{ row.transaction.bonus_amount }} <span class="currency">&#8377;</span></td>
+                                <td>{% if row.transaction.transaction_type == 'bonus_added' %} Deposite {% else %} Withdrawl {% endif %}</td>
+                                <td>{% if row.transaction.is_paid %}Yes{% else %}No{% endif %}</td>
+                                <td>{{ row.transaction.description }}</td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                 </tbody>
             </table>
